@@ -33,9 +33,9 @@ updated: 2026-08-30
 
 | 現在のリポジトリの役割 | 直接の親 |
 |--------------------------|----------|
-| 適用可能な保守中の特化テンプレートがない一般プロジェクト | `Yukihide-Mitsuoka/ai-dev-foundation` |
-| Terraformで管理するGoogle Cloud基盤が主要成果物で、Terraform family overlayと`iac-scan`が必要 | `Yukihide-Mitsuoka/terraform-gcp-template` |
-| Next.js SaaS applicationに保守中のNext.js familyとSaaS template契約が必要 | `Yukihide-Mitsuoka/nextjs-saas-template` |
+| 適用可能な保守中の特化テンプレートがない一般プロジェクト | `ea-Mitsuoka/ai-dev-foundation` |
+| Terraformで管理するGoogle Cloud基盤が主要成果物で、Terraform family overlayと`iac-scan`が必要 | `ea-Mitsuoka/terraform-gcp-template` |
+| Next.js SaaS applicationに保守中のNext.js familyとSaaS template契約が必要 | `ea-Mitsuoka/nextjs-saas-template` |
 | 現在必要なfamilyまたはproduct契約を別の保守中テンプレートが公開している | その中間テンプレート |
 
 TerraformやGoogle Cloudを付随的に使うだけでは`terraform-gcp-template`を選びません。
@@ -208,7 +208,7 @@ Claude Codeは薄い`CLAUDE.md`アダプターを自動で読みます。他の�
 ## シナリオB — 基盤リポジトリ自体を別マシンにclone
 
 ```bash
-git clone https://github.com/Yukihide-Mitsuoka/ai-dev-foundation.git
+git clone https://github.com/ea-Mitsuoka/ai-dev-foundation.git
 cd ai-dev-foundation
 # 素のテンプレートのルート Makefile は no-op なので、ここでは `make setup` は何もしません。
 # git フックを直接入れます（pre-commit が必要 — 前提ツール参照）:

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "repository": "Yukihide-Mitsuoka/ai-dev-foundation",
+  "repository": "ea-Mitsuoka/ai-dev-foundation",
   "branch": "main",
   "inherited_paths": [
     ".ai/README.md", ".ai/guardrails.md", ".ai/contracts/foundation/", ".ai/documentation.md",
@@ -27,7 +27,7 @@
   ],
   "agent_inputs": [{
     "layer": "foundation",
-    "repository": "Yukihide-Mitsuoka/ai-dev-foundation",
+    "repository": "ea-Mitsuoka/ai-dev-foundation",
     "path": ".ai/contracts/foundation/agent-entry.md"
   }]
 }

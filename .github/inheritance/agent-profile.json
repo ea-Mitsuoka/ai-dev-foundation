@@ -4,12 +4,12 @@
   "inputs": [
     {
       "layer": "foundation",
-      "repository": "Yukihide-Mitsuoka/ai-dev-foundation",
+      "repository": "ea-Mitsuoka/ai-dev-foundation",
       "path": ".ai/contracts/foundation/agent-entry.md"
     },
     {
       "layer": "project",
-      "repository": "Yukihide-Mitsuoka/ai-dev-foundation",
+      "repository": "ea-Mitsuoka/ai-dev-foundation",
       "path": ".ai/project/agent-overlay.md"
     }
   ]

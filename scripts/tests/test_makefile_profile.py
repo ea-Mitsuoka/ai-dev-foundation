@@ -7,7 +7,7 @@ from scripts import makefile_profile
 
 REPOSITORY_ROOT = Path(__file__).parents[2]
 FOUNDATION_README_MARKER = (
-    "<!-- repository-readme-owner: Yukihide-Mitsuoka/ai-dev-foundation -->"
+    "<!-- repository-readme-owner: ea-Mitsuoka/ai-dev-foundation -->"
 )
 
 

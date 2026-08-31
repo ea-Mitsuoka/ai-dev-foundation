@@ -61,10 +61,10 @@ fi
 # files at these paths, including README files (DOC-010).
 foundation_origin="$(git config --get remote.origin.url 2>/dev/null)"
 case "$foundation_origin" in
-  https://github.com/Yukihide-Mitsuoka/ai-dev-foundation | \
-    https://github.com/Yukihide-Mitsuoka/ai-dev-foundation.git | \
-    git@github.com:Yukihide-Mitsuoka/ai-dev-foundation.git | \
-    ssh://git@github.com/Yukihide-Mitsuoka/ai-dev-foundation.git)
+  https://github.com/ea-Mitsuoka/ai-dev-foundation | \
+    https://github.com/ea-Mitsuoka/ai-dev-foundation.git | \
+    git@github.com:ea-Mitsuoka/ai-dev-foundation.git | \
+    ssh://git@github.com/ea-Mitsuoka/ai-dev-foundation.git)
     is_foundation_root=true
     ;;
   *)
@@ -104,7 +104,7 @@ fi
 # placeholders; a repository-owned explicit "not applicable" implementation is allowed.
 makefile_profile_args=(--root .)
 if [ "$is_foundation_root" = true ] || \
-  grep -qx '<!-- repository-readme-owner: Yukihide-Mitsuoka/ai-dev-foundation -->' README.md 2>/dev/null; then
+  grep -qx '<!-- repository-readme-owner: ea-Mitsuoka/ai-dev-foundation -->' README.md 2>/dev/null; then
   makefile_profile_args+=(--allow-template-placeholders)
 fi
 python3 scripts/makefile_profile.py "${makefile_profile_args[@]}" || \

@@ -44,5 +44,6 @@ broaden the search under ADR-0012 when relevance is uncertain.
 | [0016](0016-gate-private-fleet-automation-on-split-credentials.md) | Gate private fleet automation on split credentials | private repositories, template inheritance, fleet audit, credentials | accepted | 2026-08-09 |
 | [0017](0017-bound-implementation-complexity-with-meaningful-decomposition.md) | Bound implementation complexity with meaningful decomposition | code quality, maintainability, complexity, AI implementation | accepted | 2026-08-29 |
 | [0018](0018-integrate-a-lightweight-inherited-presentation-skill.md) | Integrate a lightweight inherited presentation skill | presentation authoring, AI context, template inheritance | accepted | 2026-08-29 |
+| [0019](0019-repoint-the-inheritance-fleet-identity-to-the-current-account.md) | Repoint the inheritance fleet identity to the current account | template inheritance, repository identity, README ownership | proposed | 2026-09-01 |
 
 <!-- Append new ADRs to this table (newest last). -->

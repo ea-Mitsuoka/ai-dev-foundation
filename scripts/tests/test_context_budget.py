@@ -11,7 +11,7 @@ from scripts import context_budget
 REPOSITORY_ROOT = Path(__file__).parents[2]
 CANONICAL_GUARDRAILS = ".ai/contracts/foundation/guardrails.md"
 FOUNDATION_README_MARKER = (
-    "<!-- repository-readme-owner: Yukihide-Mitsuoka/ai-dev-foundation -->"
+    "<!-- repository-readme-owner: ea-Mitsuoka/ai-dev-foundation -->"
 )
 
 
