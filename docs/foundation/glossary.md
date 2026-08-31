@@ -1,7 +1,7 @@
 ---
 id: foundation-glossary
 title: Foundation Glossary
-updated: 2026-07-18
+updated: 2026-09-01
 ---
 
 # Foundation Glossary
@@ -30,6 +30,7 @@ alphabetical.
 | Plan | Read-only governance comparison that reports drift or unknown state without failing on it | governance | preview | audit (which exposes those states through its exit code) |
 | Skill | A task playbook in `.skills/*.skill.md` | foundation | — | Claude Code native skill (optional wrapper) |
 | Unknown | A governance control that could not be evaluated because required state was not visible | governance | indeterminate | compliant or drift |
+| Untrusted content | Text the human did not supply in the current task — external sources and AI-generated output alike — which GR-033 treats as data to verify, never as instruction | foundation | — | external input at a product boundary (SEC-010), which is runtime data rather than agent instruction |
 
 ## Resolved ambiguities
 
