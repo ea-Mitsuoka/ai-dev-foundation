@@ -33,9 +33,9 @@ Use the closest maintained template whose exported contract applies to the repos
 
 | Current repository role | Direct parent |
 |-------------------------|---------------|
-| General project with no applicable maintained specialization | `Yukihide-Mitsuoka/ai-dev-foundation` |
-| Terraform-managed Google Cloud infrastructure is the primary deliverable and the Terraform family overlay plus `iac-scan` are required | `Yukihide-Mitsuoka/terraform-gcp-template` |
-| A Next.js SaaS application needs the maintained Next.js family and SaaS template contract | `Yukihide-Mitsuoka/nextjs-saas-template` |
+| General project with no applicable maintained specialization | `ea-Mitsuoka/ai-dev-foundation` |
+| Terraform-managed Google Cloud infrastructure is the primary deliverable and the Terraform family overlay plus `iac-scan` are required | `ea-Mitsuoka/terraform-gcp-template` |
+| A Next.js SaaS application needs the maintained Next.js family and SaaS template contract | `ea-Mitsuoka/nextjs-saas-template` |
 | Another maintained template exports a family or product contract the repository needs now | That intermediate template |
 
 Incidental use of Terraform or Google Cloud does not select `terraform-gcp-template`.
@@ -215,7 +215,7 @@ anytime to self-check the template (frontmatter integrity + guard-hook tests).
 ## Scenario B — clone the foundation itself onto another machine
 
 ```bash
-git clone https://github.com/Yukihide-Mitsuoka/ai-dev-foundation.git
+git clone https://github.com/ea-Mitsuoka/ai-dev-foundation.git
 cd ai-dev-foundation
 # The bare template's root Makefile is a no-op, so `make setup` does nothing here.
 # Install the git hooks directly (needs pre-commit — see prerequisites):

@@ -25,7 +25,7 @@ class FoundationDocsPortabilityTest(unittest.TestCase):
         script = TEMPLATE_CHECK.read_text(encoding="utf-8")
 
         self.assertNotIn('if [ ! -f .github/inheritance/manifest.json ]; then', script)
-        self.assertIn("Yukihide-Mitsuoka/ai-dev-foundation", script)
+        self.assertIn("ea-Mitsuoka/ai-dev-foundation", script)
 
     def test_child_doctor_validates_the_local_inheritance_contract(self):
         script = TEMPLATE_CHECK.read_text(encoding="utf-8")
@@ -41,7 +41,7 @@ class FoundationDocsPortabilityTest(unittest.TestCase):
 
         self.assertIn("python3 scripts/makefile_profile.py", script)
         self.assertIn("--allow-template-placeholders", script)
-        self.assertIn("repository-readme-owner: Yukihide-Mitsuoka/ai-dev-foundation", script)
+        self.assertIn("repository-readme-owner: ea-Mitsuoka/ai-dev-foundation", script)
 
     def test_optional_example_module_is_not_a_required_local_link(self):
         guide = AI_GUIDE.read_text(encoding="utf-8")

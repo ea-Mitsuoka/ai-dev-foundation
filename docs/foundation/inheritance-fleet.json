@@ -2,9 +2,9 @@
   "schema_version": 2,
   "repositories": [
     {
-      "repository": "Yukihide-Mitsuoka/nextjs-saas-template",
+      "repository": "ea-Mitsuoka/nextjs-saas-template",
       "directory": "nextjs-saas-template",
-      "parent_repository": "Yukihide-Mitsuoka/ai-dev-foundation",
+      "parent_repository": "ea-Mitsuoka/ai-dev-foundation",
       "parent_directory": "ai-dev-foundation",
       "lifecycle": "active",
       "reason": "maintained Next.js family template"
@@ -18,9 +18,9 @@
       "reason": "maintained application repository"
     },
     {
-      "repository": "Yukihide-Mitsuoka/secure-ga4-bq-template",
+      "repository": "ea-Mitsuoka/secure-ga4-bq-template",
       "directory": "secure-ga4-bq-template",
-      "parent_repository": "Yukihide-Mitsuoka/terraform-gcp-template",
+      "parent_repository": "ea-Mitsuoka/terraform-gcp-template",
       "parent_directory": "terraform-gcp-template",
       "lifecycle": "active",
       "reason": "maintained Terraform family project"
@@ -28,15 +28,15 @@
     {
       "repository": "ea-Mitsuoka/secure-ai-controls",
       "directory": "secure-ai-controls",
-      "parent_repository": "Yukihide-Mitsuoka/terraform-gcp-template",
+      "parent_repository": "ea-Mitsuoka/terraform-gcp-template",
       "parent_directory": "terraform-gcp-template",
       "lifecycle": "paused",
       "reason": "updates paused because owner-level company account access is unavailable"
     },
     {
-      "repository": "Yukihide-Mitsuoka/terraform-gcp-template",
+      "repository": "ea-Mitsuoka/terraform-gcp-template",
       "directory": "terraform-gcp-template",
-      "parent_repository": "Yukihide-Mitsuoka/ai-dev-foundation",
+      "parent_repository": "ea-Mitsuoka/ai-dev-foundation",
       "parent_directory": "ai-dev-foundation",
       "lifecycle": "active",
       "reason": "maintained Terraform family template"

@@ -55,7 +55,7 @@ class LocalWorkflowActionsTest(unittest.TestCase):
                     f"uses: ./{case['action'].removesuffix('/action.yml')}"
                 )
                 self.assertIn("permissions:", workflow)
-                self.assertNotIn("uses: Yukihide-Mitsuoka/ai-dev-foundation/", workflow)
+                self.assertNotIn("uses: ea-Mitsuoka/ai-dev-foundation/", workflow)
                 if local_action in workflow:
                     self.assertIn("actions/checkout@", workflow)
                     self.assertNotIn(case["implementation"], workflow)

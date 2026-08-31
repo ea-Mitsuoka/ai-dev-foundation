@@ -18,17 +18,17 @@ PROFILE_PATH = ".github/inheritance/agent-profile.json"
 FOUNDATION_ENTRY_PATH = ".ai/contracts/foundation/agent-entry.md"
 REPOSITORY_ROOT = Path(__file__).parents[2]
 FOUNDATION_README_OWNER = (
-    "<!-- repository-readme-owner: Yukihide-Mitsuoka/ai-dev-foundation -->"
+    "<!-- repository-readme-owner: ea-Mitsuoka/ai-dev-foundation -->"
 )
 FOUNDATION_ROOT_INPUTS = [
     {
         "layer": "foundation",
-        "repository": "Yukihide-Mitsuoka/ai-dev-foundation",
+        "repository": "ea-Mitsuoka/ai-dev-foundation",
         "path": FOUNDATION_ENTRY_PATH,
     },
     {
         "layer": "project",
-        "repository": "Yukihide-Mitsuoka/ai-dev-foundation",
+        "repository": "ea-Mitsuoka/ai-dev-foundation",
         "path": ".ai/project/agent-overlay.md",
     },
 ]
@@ -236,7 +236,7 @@ class FoundationAgentEntryTest(unittest.TestCase):
         for project_identity in (
             "{{PROJECT_NAME}}",
             "{{STACK}}",
-            "Yukihide-Mitsuoka",
+            "ea-Mitsuoka",
             "ai-dev-foundation",
         ):
             self.assertNotIn(project_identity, content)
@@ -308,7 +308,7 @@ class FoundationRootAgentAdapterTest(unittest.TestCase):
                 for identity in (
                     "{{PROJECT_NAME}}",
                     "{{STACK}}",
-                    "Yukihide-Mitsuoka",
+                    "ea-Mitsuoka",
                     "ai-dev-foundation",
                     "Terraform on GCP",
                 ):
@@ -326,7 +326,7 @@ class FoundationRootAgentAdapterTest(unittest.TestCase):
         overlay = REPOSITORY_ROOT / FOUNDATION_ROOT_INPUTS[-1]["path"]
         self.assertTrue(overlay.is_file())
         content = overlay.read_text(encoding="utf-8")
-        self.assertIn("Yukihide-Mitsuoka/ai-dev-foundation", content)
+        self.assertIn("ea-Mitsuoka/ai-dev-foundation", content)
         self.assertIn("stack-agnostic", content)
         for reusable_rule in (".ai/workflow.md", "make ", "Stop and ask"):
             self.assertNotIn(reusable_rule, content)
