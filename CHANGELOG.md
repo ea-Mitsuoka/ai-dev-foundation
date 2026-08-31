@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v1.10.0...v2.0.0) (2026-08-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* **inheritance:** new children bootstrapped from the ADR-0015 export now record ea-Mitsuoka/ai-dev-foundation as their direct parent.
+
+### Miscellaneous Chores
+
+* **inheritance:** repoint fleet identity to the ea-Mitsuoka account ([aa27d18](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/aa27d18d60979e7a6859d1e7af789e2809d559b9)), closes [#1](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/1)
+
 ## [1.10.0](https://github.com/Yukihide-Mitsuoka/ai-dev-foundation/compare/v1.9.2...v1.10.0) (2026-08-30)
 
 
