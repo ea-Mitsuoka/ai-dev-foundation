@@ -92,8 +92,8 @@ gh variable set TEMPLATE_SYNC_ENABLED --body true
 ```
 
 直接親がprivateの場合、protected workflowへ承認済みの認証分離実装を移植し、
-[Issue #178](https://github.com/Yukihide-Mitsuoka/ai-dev-foundation/issues/178)の限定pilotがその継承関係で
-完了するまで、この変数を無効のままにしてください。設定・pilot・鍵rotation・rollbackの正準手順は
+[ADR-0016](../adr/0016-gate-private-fleet-automation-on-split-credentials.md)が要求する
+限定pilotがその継承関係で完了するまで、この変数を無効のままにしてください。設定・pilot・鍵rotation・rollbackの正準手順は
 [private直接親の認証](../../../.github/inheritance/README.md#authenticate-a-private-direct-parent)に集約します。
 認証の回避策としてrepositoryをpublicへ変更してはいけません。
 
