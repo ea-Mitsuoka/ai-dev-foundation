@@ -185,6 +185,14 @@ unknown state. Both return 2 for policy, input, or GitHub read failures.
 See [GitHub governance troubleshooting](../troubleshooting/github-governance.md) for an
 `audit` exit 1 diagnosis.
 
+Re-run `audit` whenever the repository identity changes — a transfer, a move to another
+account, or a fresh child created from the bootstrap export. Rulesets and repository
+settings are GitHub objects, not files, so they do not travel with the history. A move
+therefore lands on a repository with no branch ruleset, leaving GR-010, GR-011, and
+GR-012 without server-side enforcement while the local hooks still pass.
+`scripts/readme_ownership.py` is what detects the identity change, and its failure
+message names this command.
+
 Review `plan` before `apply`. Only `apply` changes settings; it requires local repository
 Administration access and an exact target confirmation, then verifies each action by
 read-back. Policy enforces squash-only merges and lets repository overrides choose

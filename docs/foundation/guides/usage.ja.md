@@ -179,6 +179,13 @@ profileとrepository policyはcheckを追加できますがfoundation checkを�
 `audit`が1で終了した場合の対処は
 [GitHubガバナンスのトラブルシューティング](../troubleshooting/github-governance.md)を参照してください。
 
+リポジトリのidentityが変わったとき — 譲渡、別アカウントへの移動、bootstrap exportからの
+新規child作成 — は必ず`audit`を再実行してください。rulesetとrepository設定はfileではなく
+GitHub上のobjectなので、historyと一緒には移動しません。移動先はbranch rulesetが存在しない
+状態になり、ローカルhookが通ったままGR-010・GR-011・GR-012のサーバ側強制が失われます。
+identity変更を検出するのは`scripts/readme_ownership.py`で、その失敗メッセージがこの
+コマンドを案内します。
+
 `apply`の前に`plan`を確認してください。設定を変更するのは`apply`だけで、ローカルの
 Administration権限と対象名の完全一致確認が必要です。各操作は再読込で検証されます。
 policyはsquash-only mergeを必須化し、Discussionsとsquash commit messageの既定値は

@@ -75,7 +75,10 @@ def audit_readme(
         return [
             "README.md belongs to "
             f"{declared_repository}, not {current_repository}; preserve it at {archive} "
-            "before replacing the root README"
+            "before replacing the root README, then re-audit GitHub governance with "
+            "`python3 scripts/github_governance.py audit --repo "
+            f"{current_repository}` — rulesets and repository settings live on GitHub "
+            "and do not travel with the git history"
         ], []
     return [], []
 
