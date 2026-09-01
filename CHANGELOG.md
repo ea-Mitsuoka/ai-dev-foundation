@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.1.0](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.0.0...v2.1.0) (2026-09-01)
+
+
+### Features
+
+* **guardrails:** bind untrusted content as data on every task route ([c47e67e](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/c47e67e37362493709b5d31af333fb3ec9b556ca))
+* **guardrails:** bind untrusted content as data on every task route ([48672e4](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/48672e4d12546f67b9eea25a96bca0b1bb41b5e8)), closes [#6](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/6)
+
+
+### Bug Fixes
+
+* **inheritance:** close out the ADR-0019 identity repoint ([#13](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/13)) ([b7678f3](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/b7678f366465f81738709cf094bb952bae66f4f2))
+
 ## [2.0.0](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v1.10.0...v2.0.0) (2026-08-31)
 
 
