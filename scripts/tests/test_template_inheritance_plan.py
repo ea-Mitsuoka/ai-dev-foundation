@@ -627,7 +627,7 @@ class TemplateInheritancePlanTest(unittest.TestCase):
                     "repchat",
                     "Yukihide-Mitsuoka/ai-dev-foundation",
                     "ai-dev-foundation",
-                    "active",
+                    "retired",
                 ),
                 (
                     "ea-Mitsuoka/secure-ga4-bq-template",
