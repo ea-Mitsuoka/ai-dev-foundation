@@ -623,13 +623,6 @@ class TemplateInheritancePlanTest(unittest.TestCase):
                     "active",
                 ),
                 (
-                    "Yukihide-Mitsuoka/repchat",
-                    "repchat",
-                    "Yukihide-Mitsuoka/ai-dev-foundation",
-                    "ai-dev-foundation",
-                    "retired",
-                ),
-                (
                     "ea-Mitsuoka/secure-ga4-bq-template",
                     "secure-ga4-bq-template",
                     "ea-Mitsuoka/terraform-gcp-template",
@@ -643,17 +636,10 @@ class TemplateInheritancePlanTest(unittest.TestCase):
                     "terraform-gcp-template",
                     "paused",
                 ),
-                (
-                    "Yukihide-Mitsuoka/chat-chart",
-                    "chat-chart",
-                    "Yukihide-Mitsuoka/ai-dev-foundation",
-                    "ai-dev-foundation",
-                    "retired",
-                ),
             },
         )
         self.assertTrue(all(item["reason"] for item in config["repositories"]))
-        self.assertEqual(len(config["repositories"]), 6)
+        self.assertEqual(len(config["repositories"]), 4)
 
     def test_fleet_report_rejects_duplicate_children_and_pair_limit(self):
         with self.assertRaisesRegex(inheritance.InheritanceError, "duplicate child"):

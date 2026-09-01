@@ -338,9 +338,10 @@ is the canonical, machine-readable list of direct-parent relationships and their
 child, so adding the config does not require a child-specific ownership migration. It
 stores repository identities and workspace-relative directory names, never absolute
 paths or credentials. Every entry includes a concise reason. The checked-in regression
-test pins the complete fleet, including retired `Yukihide-Mitsuoka/repchat` and
-`Yukihide-Mitsuoka/chat-chart`. No active entry inherits from the former account's
-foundation, so the fleet describes one root.
+test pins the complete fleet, including its lifecycles. Every entry names a repository the
+maintaining account owns, so the fleet describes one root. A repository that leaves the
+graph is removed from the config, not left behind as a retired entry naming an account
+this one cannot read; `.ai/decision-log.md` keeps that history.
 
 Place the configured repositories as sibling Git worktrees under one directory, refresh
 their remote refs explicitly, then run from the `ai-dev-foundation` worktree:
