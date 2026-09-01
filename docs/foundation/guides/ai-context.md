@@ -1,7 +1,7 @@
 ---
 id: ai-context-guide
 title: AI Context Acquisition and Budgets
-updated: 2026-08-01
+updated: 2026-09-01
 ---
 
 # AI Context Acquisition and Budgets
@@ -62,8 +62,8 @@ indexes and search instead of declared as directory-wide reads.
 
 | Metric | Ceiling |
 |--------|--------:|
-| Baseline bytes | 18,500 |
-| Baseline words | 2,600 |
+| Baseline bytes | 20,000 |
+| Baseline words | 2,800 |
 | Any declared task-route bytes | 46,000 |
 | Any declared task-route words | 6,500 |
 
@@ -98,6 +98,14 @@ mandatory source, rule, marker, or discovery condition.
 These changes removed no mandatory source and did not alter Claude Code obligations. A PR
 that intentionally increases a ceiling states the reason and confirms that no narrower
 route preserves completeness.
+
+The baseline ceilings rose from 18,500 bytes and 2,600 words when GR-033 made untrusted
+content a baseline-resident prohibition. No narrower route preserves completeness: SEC-050
+defends the feature and bugfix work that reads issue text, dependency READMEs, and tool
+output, so routing the rule to the security task alone would leave the exposed routes
+undefended. The previous ceilings left 28 bytes under the 90% band, which had turned the
+warning threshold into a hard gate against adding any guardrail; the new pair restores a
+usable warning band rather than authorizing further growth.
 
 **Update trigger:** update this guide and the budget constants or conditional contracts
 together whenever the baseline file set, mandatory skill routes, conditional

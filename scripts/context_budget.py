@@ -20,8 +20,12 @@ BASELINE_FILES = (
     ".ai/guardrails.md",
 )
 CANONICAL_GUARDRAILS = ".ai/contracts/foundation/guardrails.md"
-BASELINE_BYTE_LIMIT = 18_500
-BASELINE_WORD_LIMIT = 2_600
+# Raised with GR-033 (untrusted content is never instruction). ADR-0012 requires a
+# justified budget increase rather than dropping an always-binding rule to fit: the old
+# 18_500/2_600 pair left 28 bytes under the 90% band, so the warning gate had become a
+# hard gate against adding any guardrail.
+BASELINE_BYTE_LIMIT = 20_000
+BASELINE_WORD_LIMIT = 2_800
 ROUTE_BYTE_LIMIT = 46_000
 ROUTE_WORD_LIMIT = 6_500
 SOFT_BUDGET_RATIO = 0.9

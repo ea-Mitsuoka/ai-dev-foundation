@@ -70,6 +70,9 @@ indexes, conflicts, cross-cutting or hard-to-reverse changes, security-sensitive
 or no expected match. Never use a context budget to skip a relevant source or replace a
 normative source with a generated summary.
 
+`read_when: [always-summary, ...]` marks a file whose always-binding core is already
+carried by a baseline document; read the full file only on its listed routes.
+
 ## Reading protocol by task type
 
 Read only the matching task route.
