@@ -1,7 +1,7 @@
 ---
 id: adr-0019
 title: ADR-0019 — Repoint the inheritance fleet identity to the current account
-status: proposed
+status: accepted
 updated: 2026-09-01
 ---
 
@@ -9,7 +9,7 @@ updated: 2026-09-01
 
 | Field | Value |
 |-------|-------|
-| Status | proposed |
+| Status | accepted |
 | Date | 2026-09-01 |
 | Deciders | repository owner |
 | Author | Claude Code (AI agent) |

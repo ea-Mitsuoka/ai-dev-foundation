@@ -66,6 +66,28 @@ class ReadmeOwnershipTest(unittest.TestCase):
             errors[0],
         )
 
+    def test_ownership_mismatch_directs_the_governance_re_audit(self):
+        """An identity change is detected here and nowhere else in `make doctor`.
+
+        The account move that produced ADR-0019 left the new repository with no branch
+        ruleset, because rulesets and repository settings live on GitHub rather than in
+        the history that moved. This marker mismatch is the signal that fires at that
+        moment, so it has to name the governance check.
+        """
+        self.write_readme(
+            "# Parent\n\n<!-- repository-readme-owner: former-owner/foundation -->\n"
+        )
+
+        errors, warnings = readme_ownership.audit_readme(
+            self.root,
+            "acme/child",
+        )
+
+        self.assertEqual([], warnings)
+        self.assertEqual(1, len(errors))
+        self.assertIn("scripts/github_governance.py audit --repo acme/child", errors[0])
+        self.assertIn("do not travel with the git history", errors[0])
+
     def test_legacy_missing_marker_can_warn_without_failing(self):
         self.write_readme("# Legacy child\n")
 
