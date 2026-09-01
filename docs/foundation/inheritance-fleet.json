@@ -15,7 +15,7 @@
       "parent_repository": "Yukihide-Mitsuoka/ai-dev-foundation",
       "parent_directory": "ai-dev-foundation",
       "lifecycle": "active",
-      "reason": "maintained application repository"
+      "reason": "maintained application repository; deliberately not migrated to ea-Mitsuoka, so it keeps the Yukihide-Mitsuoka foundation as its parent"
     },
     {
       "repository": "ea-Mitsuoka/secure-ga4-bq-template",
@@ -47,7 +47,7 @@
       "parent_repository": "Yukihide-Mitsuoka/ai-dev-foundation",
       "parent_directory": "ai-dev-foundation",
       "lifecycle": "retired",
-      "reason": "replaced by Yukihide-Mitsuoka/repchat"
+      "reason": "replaced by Yukihide-Mitsuoka/repchat; retired on the Yukihide-Mitsuoka account and deliberately not migrated"
     }
   ]
 }
