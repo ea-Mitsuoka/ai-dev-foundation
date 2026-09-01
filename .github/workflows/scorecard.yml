@@ -15,6 +15,7 @@ jobs:
     if: github.event.repository.visibility == 'public'
     runs-on: ubuntu-latest
     permissions:
+      contents: read      # checkout of a private repository needs it
       security-events: write
       id-token: write
     steps:
