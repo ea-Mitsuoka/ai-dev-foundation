@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.1.0...v2.1.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* **ci:** keep contents permission on jobs that read the repository ([#19](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/19)) ([9e62a23](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/9e62a23b4e7ffed6415f3d287b71e6295615f035))
+
 ## [2.1.0](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.0.0...v2.1.0) (2026-09-01)
 
 
