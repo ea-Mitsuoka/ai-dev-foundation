@@ -65,7 +65,9 @@ jobs:
           fail: true
 
   pr-quality:
-    # PR hygiene: Conventional Commit title (WF-030) + size guard (GR-020)
+    # PR hygiene: Conventional Commit title (WF-030) + size guard (GR-020). The same step
+    # reports GR-025 decomposition checkpoints because it already holds the changed-file
+    # list; those findings warn and never block (MNT-002 forbids cosmetic splitting).
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
@@ -79,7 +81,7 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-      - name: PR size guard (GR-020)
+      - name: PR size guard (GR-020) and decomposition checkpoints (GR-025)
         env:
           ADDITIONS: ${{ github.event.pull_request.additions }}
           DELETIONS: ${{ github.event.pull_request.deletions }}
