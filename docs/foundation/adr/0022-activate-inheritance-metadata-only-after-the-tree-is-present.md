@@ -1,7 +1,7 @@
 ---
 id: adr-0022
 title: ADR-0022 — Activate inheritance metadata only after the inherited tree is present
-status: proposed
+status: accepted
 updated: 2026-09-02
 ---
 
@@ -9,9 +9,9 @@ updated: 2026-09-02
 
 | Field | Value |
 |-------|-------|
-| Status | proposed |
+| Status | accepted |
 | Date | 2026-09-02 |
-| Deciders | repository owner |
+| Deciders | repository owner (approved 2026-09-02, PR #32) |
 | Author | Claude Code (AI agent) |
 | Supersedes / Superseded by | Partially supersedes ADR-0021 (the "What `adopt-child` writes" and "Copy and acceptance" clauses) |
 
