@@ -30,7 +30,9 @@ Profile order: foundation, owner-qualified templates oldest-to-parent, then proj
 - Use an issue, task branch, reviewed PR, and `.ai/workflow.md`. Land code, tests, and
   required docs together; accept an ADR before structural implementation.
 - Complete the PR template. Titles and commits use Conventional Commits, releases use
-  SemVer, and merges use squash. Self-review with `.ai/review-checklist.md`.
+  SemVer, and merges use squash. In a leaf repository — one that publishes no contract
+  root of its own — write the PR body in Japanese (ADR-0020). Self-review with
+  `.ai/review-checklist.md`.
 - After every edit run `make format` and `make lint`; use only canonical `make` targets.
 - Preserve unrelated changes and checks. Never push to protected main, bypass checks,
   fabricate results, or perform destructive work without specific approval.

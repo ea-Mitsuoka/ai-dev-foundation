@@ -1,8 +1,13 @@
 <!-- Title must be a Conventional Commit: type(scope): summary — it becomes the squash commit. -->
+<!-- Language (ADR-0020): in a leaf repository — one that uses a template and is not itself a
+     template — write this body in Japanese; keep the headings below unchanged. The foundation
+     and template repositories stay English.
+     言語（ADR-0020）: template を利用し、自身は template ではないリポジトリ（利用先）では、
+     この本文を日本語で書く。見出しは変更しない。タイトルは type(scope) を英語、要約を日本語にする。 -->
 
 ## What & why
 
-<!-- 2-5 sentences: the change and the reason. Link the issue. -->
+<!-- 2-5 sentences: the change and the reason. Link the issue. / 変更内容と理由を 2〜5 文で。issue をリンクする。 -->
 
 Refs: #
 

@@ -1,5 +1,6 @@
 # Label taxonomy — synced by .github/workflows/labels-sync.yml (this file is the truth).
-# Four axes: type (what), priority (when), status (where in flow), ai (agent workflow).
+# Five axes: type (what), priority (when), status (where in flow), ai (agent workflow),
+# review (reviewer-granted exceptions).
 
 # --- type ---
 - name: "type:feature"
@@ -71,3 +72,8 @@
 - name: "ai:good-task"
   color: "0e8a16"
   description: "Well-specified, safe for autonomous agent pickup"
+
+# --- review ---
+- name: "review:language-exception"
+  color: "e4e669"
+  description: "Reviewer-approved non-Japanese PR body in a leaf repository — reason stated in the body (ADR-0020)"

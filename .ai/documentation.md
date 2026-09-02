@@ -28,6 +28,13 @@ and **optimized for AI readers** — explicit, structured, unambiguous.
   `docs/` in Japanese unless the repository owner or an external contract explicitly
   requires another language. Do not create another translated sibling solely to
   duplicate the same facts (ADR-0005).
+- In a leaf repository — one that consumes a template without publishing a contract
+  root of its own — pull-request bodies MUST also be Japanese; the title keeps
+  Conventional Commits with an English type and scope and a Japanese summary. The
+  foundation and the template repositories keep English PR text. Trusted automation
+  is exempt, and a reviewer MAY exempt one PR with the `review:language-exception`
+  label when the body states the reason. `pr-quality` enforces this through the
+  inherited `scripts/pr_language_policy.py` (ADR-0020).
 - Files use kebab-case names; headings form a strict hierarchy (one `#`, then `##`...).
 
 ## DOC-002: Objective, structured prose
