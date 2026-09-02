@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.1.1...v2.2.0) (2026-09-02)
+
+
+### Features
+
+* **ci:** require Japanese pull-request bodies in leaf repositories ([#25](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/25)) ([1b4eb8a](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/1b4eb8a3e7dfa3ba16703bea05d369054a312825))
+
 ## [2.1.1](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.1.0...v2.1.1) (2026-09-01)
 
 
