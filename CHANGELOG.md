@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.2.0...v2.3.0) (2026-09-02)
+
+
+### Features
+
+* **inheritance:** add the two-phase adopt-child command ([#33](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/33)) ([3117a3d](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/3117a3d4d949968815111a03942ffc6f6f5891f5))
+
 ## [2.2.0](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.1.1...v2.2.0) (2026-09-02)
 
 
