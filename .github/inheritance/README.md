@@ -260,6 +260,57 @@ inheritance contract afterward. Commit the result before repeating; the same con
 operation then returns `already_bootstrapped` without changing files. Enabling the
 repository variable remains a separate authenticated step after review and merge.
 
+## Adopt an existing repository
+
+`bootstrap-child` requires the inherited tree to match the parent commit, which only
+"Use this template" provides. `adopt-child` serves a repository that already exists
+([ADR-0021](../../docs/foundation/adr/0021-adopt-the-foundation-into-an-existing-repository.md),
+[ADR-0022](../../docs/foundation/adr/0022-activate-inheritance-metadata-only-after-the-tree-is-present.md)).
+It reads the same export, verifies the same origins and ancestry, and classifies the tree
+instead of demanding a match:
+
+```bash
+python3 scripts/template_inheritance.py adopt-child \
+  --root /path/to/existing --parent-root /path/to/direct-parent \
+  --source-commit <40-character-parent-commit> --repository owner/existing
+```
+
+| Field | Meaning |
+|-------|---------|
+| `classification.identical` | Child file equals the parent blob |
+| `classification.pending` | Inherited path absent in the child; the sync brings it |
+| `classification.collision` | `differs` (same path, other content) or `child_only` (child file inside an inherited root) |
+| `resolution.unresolved` | Collisions without `--protect` or `--accept`; every write refuses while non-empty |
+| `activation.missing` / `stray` | Inherited paths that still differ from, or do not exist in, the parent; must be empty before phase 3 |
+| `status` | `blocked`, `ready_to_prepare`, `prepared`, `ready_to_adopt`, or `already_adopted` |
+
+`--accept PATH` leaves the child copy for the sync to overwrite. `--protect PATH` moves the
+path to `protected_paths` and `.templatesyncignore` and stops inheriting it; a protected
+file under an inherited directory splits that directory into the parent's remaining files,
+because ownership roots may not overlap. A `child_only` collision cannot be accepted.
+
+Adoption writes in two phases so that the lock is never ahead of the content:
+
+- **`--prepare --apply`** writes only the transport: the ignore file, the reviewed
+  `template-sync.yml` payload, and `scripts/template_sync_auth.py` byte-identical to the
+  parent (the sync workflow's own dependency). The bot Template Sync PR then delivers the
+  tree; in a repository without `pr-quality` that PR is unchecked against GR-020.
+- **`--apply`** refuses unless every non-protected inherited path matches the source commit,
+  then writes the manifest, lock, agent profile, README payload, and archive, and runs the
+  full contract validation. Pass the commit the sync actually delivered.
+
+```bash
+python3 scripts/template_inheritance.py adopt-child \
+  --root /path/to/existing --parent-root /path/to/direct-parent \
+  --source-commit <commit> --repository owner/existing \
+  --protect scripts/local_tool.py --accept .editorconfig \
+  --prepare --apply --payload-root /path/to/payload \
+  --confirm-repository owner/existing --confirm-source <commit>
+```
+
+Reruns report `already_prepared` / `already_adopted` without flags: protections are read
+back from the ignore file and, once present, the manifest.
+
 ## Report fleet propagation boundaries
 
 Run `fleet-report` against explicit local child/parent worktree pairs. Repeat
