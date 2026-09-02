@@ -47,5 +47,6 @@ broaden the search under ADR-0012 when relevance is uncertain.
 | [0019](0019-repoint-the-inheritance-fleet-identity-to-the-current-account.md) | Repoint the inheritance fleet identity to the current account | template inheritance, repository identity, README ownership | accepted | 2026-09-01 |
 | [0020](0020-require-japanese-pull-request-text-in-leaf-repositories.md) | Require Japanese pull-request text in leaf repositories | pull-request language, template inheritance, review operations | accepted | 2026-09-02 |
 | [0021](0021-adopt-the-foundation-into-an-existing-repository.md) | Adopt the foundation into an existing repository | template inheritance, repository adoption, Template Sync | proposed | 2026-09-02 |
+| [0022](0022-activate-inheritance-metadata-only-after-the-tree-is-present.md) | Activate inheritance metadata only after the inherited tree is present | template inheritance, repository adoption, Template Sync | proposed | 2026-09-02 |
 
 <!-- Append new ADRs to this table (newest last). -->
