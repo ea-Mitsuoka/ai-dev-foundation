@@ -15,6 +15,7 @@ account. **First decide which of two scenarios you are in — the steps differ.*
 |----------|----------------|-----|
 | A | Start a **new project** built on this foundation | GitHub **"Use this template"** (not `git clone`) |
 | B | Continue developing **this foundation itself** on another machine | `git clone` |
+| C | Bring an **existing repository** with its own history into the fleet | `adopt-child` in two phases around one Template Sync ([below](#scenario-c--adopt-the-foundation-into-an-existing-repository)) |
 
 `git clone` alone is only the right answer for Scenario B. For Scenario A, cloning would
 drag this repo's history and identity into your new project; use the template flow.
@@ -249,6 +250,108 @@ from the `ai-dev-foundation` worktree; descendant Makefiles do not inherit this 
 See [Audit the fixed fleet](../../../.github/inheritance/README.md#audit-the-fixed-fleet)
 for workspace requirements and result semantics. A scheduled private fleet audit remains
 disabled under ADR-0016 even after private Template Sync is enabled.
+
+---
+
+## Scenario C — adopt the foundation into an existing repository
+
+Use this when the repository already exists with its own history, code, and CI and
+"Use this template" is not an option
+([ADR-0021](../adr/0021-adopt-the-foundation-into-an-existing-repository.md), sequenced by
+[ADR-0022](../adr/0022-activate-inheritance-metadata-only-after-the-tree-is-present.md)).
+Adoption is three reviewed PRs, and the inheritance metadata is written **last**, so the
+lock is never ahead of the content.
+
+### 1. Choose the direct parent and classify
+
+Select the direct parent exactly as in Scenario A §1 — the closest maintained template
+whose contract applies to the repository's primary deliverable now; never bypass an
+intermediate template. Then, from a clean non-default branch:
+
+```bash
+python3 scripts/template_inheritance.py adopt-child \
+  --root . --parent-root ../<selected-parent-worktree> \
+  --source-commit <40-character-parent-commit> --repository owner/repository
+```
+
+The read-only plan classifies every path under the parent's inherited roots:
+
+| Field | Meaning |
+|-------|---------|
+| `identical` | The repository already has the parent's exact file |
+| `pending` | Inherited file the repository does not have yet; the sync brings it |
+| `collision` `differs` | Same path, different content |
+| `collision` `child_only` | The repository's own file inside an inherited root |
+
+Each collision has exactly two outcomes, because a path is inherited *or* protected,
+never both:
+
+- `--accept PATH` — the sync overwrites the repository's copy. Keep the old content under
+  a project-owned name first if it matters.
+- `--protect PATH` — the path moves to `protected_paths` and `.templatesyncignore`.
+  **This stops inheriting it**: parent updates to that path will not arrive until the
+  decision is reversed. A protected file under an inherited directory splits that
+  directory into the parent's remaining files, so later parent additions there arrive
+  unowned and must be declared.
+
+A `child_only` collision cannot be accepted; protect it or move the file out of the
+inherited root. Every write refuses while any collision is unresolved.
+
+### 2. Phase 1 — prepare the transport (PR 1)
+
+```bash
+python3 scripts/template_inheritance.py adopt-child \
+  --root . --parent-root ../<selected-parent-worktree> \
+  --source-commit <commit> --repository owner/repository \
+  --protect <path> --accept <path> \
+  --prepare --apply --payload-root /path/to/payload \
+  --confirm-repository owner/repository --confirm-source <commit>
+```
+
+This writes exactly three files: `.templatesyncignore` (carrying the protect decisions),
+the reviewed `.github/workflows/template-sync.yml` from the payload directory, and
+`scripts/template_sync_auth.py` byte-identical to the parent — the one inherited file the
+sync workflow needs before it can run. No manifest, lock, or agent profile exists yet.
+Open this as PR 1.
+
+### 3. Phase 2 — let Template Sync deliver the tree (PR 2)
+
+After PR 1 merges: `gh variable set TEMPLATE_SYNC_ENABLED --body true` (for a private
+parent follow ADR-0016 first) and dispatch **Template Sync**. The bot PR copies every
+inherited path the ignore file does not exclude. Note its `Direct-parent-source:` commit.
+
+This PR is **not checked against GR-020**: the repository has no `pr-quality` yet, and the
+ADR-0005 exception lives in each child's own policy script, which has not been ported.
+Compare the PR's file list with the `pending` classification from step 1 before merging.
+
+### 4. Phase 3 — activate the metadata (PR 3)
+
+Prepare the remaining payloads (root `README.md` carrying the ownership marker,
+`.ai/project/agent-overlay.md`, the parent README archive). Commit the README change
+first: activation writes a payload path only when the repository file is absent or already
+identical to it. Then, with the commit the sync **actually delivered**:
+
+```bash
+python3 scripts/template_inheritance.py adopt-child \
+  --root . --parent-root ../<selected-parent-worktree> \
+  --source-commit <delivered-commit> --repository owner/repository \
+  --apply --payload-root /path/to/payload \
+  --confirm-repository owner/repository --confirm-source <delivered-commit>
+```
+
+Activation refuses unless every non-protected inherited path is byte-identical to that
+commit — `bootstrap-child`'s own precondition. Only then does it write the manifest, lock,
+agent profile, README, and archive, and the full contract validates immediately. Protect
+decisions are read back from the ignore file, so no `--protect` flags are needed.
+
+The adopted repository publishes no contract root, so it is a **leaf** under
+[ADR-0020](../adr/0020-require-japanese-pull-request-text-in-leaf-repositories.md):
+pull-request bodies are Japanese from PR 1 on, and the `pr-quality` language step must be
+ported into its protected `ci.yml` by hand — as must every other protected workflow the
+parent ships. List those ports in PR 3.
+
+Rerunning either phase afterwards reports `already_prepared` or `already_adopted` and
+changes nothing.
 
 ---
 

@@ -49,3 +49,24 @@ local parent checkout. Do not replace the lock merely to silence this error; inv
 whether upstream history changed or the wrong parent was selected.
 
 **Refs:** #32, ADR-0004
+
+## `every collision must be resolved with --protect or --accept`
+
+`adopt-child` found a path under an inherited root that differs from the parent or exists
+only in the repository. Rerun the read-only plan, decide each entry in
+`resolution.unresolved`, and pass `--accept` (the sync overwrites it) or `--protect` (it
+stops being inherited). A `child_only` path cannot be accepted; protect it or move it out
+of the inherited root. See ADR-0021.
+
+## `inherited tree does not match the source commit; let Template Sync deliver it first`
+
+Phase 3 of adoption ran before the bot Template Sync PR merged, or with a source commit
+other than the one that PR delivered. Merge the sync PR, then rerun `--apply` with the
+commit from its `Direct-parent-source:` line. Activation never writes the lock ahead of
+the content (ADR-0022).
+
+## `bootstrap target differs from both parent and desired content: README.md`
+
+Adoption writes a payload path only when the repository file is absent or already
+identical to the reviewed payload. Fold the ownership marker into the repository's own
+`README.md`, commit it, and supply that same content as the payload.

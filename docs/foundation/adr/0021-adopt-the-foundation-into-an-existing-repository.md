@@ -1,7 +1,7 @@
 ---
 id: adr-0021
 title: ADR-0021 — Adopt the foundation into an existing repository
-status: proposed
+status: accepted
 updated: 2026-09-02
 ---
 
@@ -9,9 +9,9 @@ updated: 2026-09-02
 
 | Field | Value |
 |-------|-------|
-| Status | proposed |
+| Status | accepted |
 | Date | 2026-09-02 |
-| Deciders | repository owner |
+| Deciders | repository owner (approved 2026-09-02, PR #29) |
 | Author | Claude Code (AI agent) |
 | Supersedes / Superseded by | Extends ADR-0004, ADR-0007, ADR-0015; relies on ADR-0005, ADR-0020 |
 
