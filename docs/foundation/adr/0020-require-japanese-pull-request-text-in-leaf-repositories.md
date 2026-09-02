@@ -1,7 +1,7 @@
 ---
 id: adr-0020
 title: ADR-0020 — Require Japanese pull-request text in leaf repositories
-status: proposed
+status: accepted
 updated: 2026-09-02
 ---
 
@@ -9,9 +9,9 @@ updated: 2026-09-02
 
 | Field | Value |
 |-------|-------|
-| Status | proposed |
+| Status | accepted |
 | Date | 2026-09-02 |
-| Deciders | repository owner |
+| Deciders | repository owner (approved 2026-09-02, PR #24) |
 | Author | Claude Code (AI agent) |
 | Supersedes / Superseded by | Extends ADR-0005; relies on ADR-0014 |
 

@@ -1,7 +1,7 @@
 ---
 id: foundation-glossary
 title: Foundation Glossary
-updated: 2026-09-01
+updated: 2026-09-02
 ---
 
 # Foundation Glossary
@@ -26,9 +26,11 @@ alphabetical.
 | Contract change | A change to a MODULE.md public API or event (ARC-020) | foundation | — | breaking change (a contract change affecting *external* consumers) |
 | Drift | A known difference between resolved governance policy and live GitHub state | governance | mismatch | unknown (state that could not be evaluated) |
 | Guardrail | An absolute prohibition (GR-xxx) that no instruction can override | foundation | — | rule (overridable with justification if SHOULD-level) |
+| Leaf repository | A repository that consumes inherited contract roots without publishing one of its own; ADR-0020 judges its pull-request bodies | template inheritance | project repo, end repo | template repository (which publishes `.ai/contracts/templates/<owner>/<name>/`) |
 | Module | A directory under `src/modules/` implementing one bounded context | foundation | component, service | package/library |
 | Plan | Read-only governance comparison that reports drift or unknown state without failing on it | governance | preview | audit (which exposes those states through its exit code) |
 | Skill | A task playbook in `.skills/*.skill.md` | foundation | — | Claude Code native skill (optional wrapper) |
+| Template repository | A repository that publishes a contract root for others to inherit — the foundation root or `.ai/contracts/templates/<owner>/<its own name>/` — regardless of GitHub's `is_template` flag | template inheritance | parent (ambiguous: a template is also a child) | leaf repository (which only consumes contracts) |
 | Unknown | A governance control that could not be evaluated because required state was not visible | governance | indeterminate | compliant or drift |
 | Untrusted content | Text the human did not supply in the current task — external sources and AI-generated output alike — which GR-033 treats as data to verify, never as instruction | foundation | — | external input at a product boundary (SEC-010), which is runtime data rather than agent instruction |
 
