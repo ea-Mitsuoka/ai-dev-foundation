@@ -22,8 +22,8 @@
       "directory": "secure-ai-controls",
       "parent_repository": "ea-Mitsuoka/terraform-gcp-template",
       "parent_directory": "terraform-gcp-template",
-      "lifecycle": "paused",
-      "reason": "updates paused because owner-level company account access is unavailable"
+      "lifecycle": "active",
+      "reason": "maintained Terraform family project; synchronized from the company account since 2026-09-01"
     },
     {
       "repository": "ea-Mitsuoka/terraform-gcp-template",

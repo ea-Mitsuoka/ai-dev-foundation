@@ -634,7 +634,7 @@ class TemplateInheritancePlanTest(unittest.TestCase):
                     "secure-ai-controls",
                     "ea-Mitsuoka/terraform-gcp-template",
                     "terraform-gcp-template",
-                    "paused",
+                    "active",
                 ),
             },
         )
