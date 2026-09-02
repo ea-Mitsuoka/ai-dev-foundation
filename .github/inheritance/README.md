@@ -260,6 +260,53 @@ inheritance contract afterward. Commit the result before repeating; the same con
 operation then returns `already_bootstrapped` without changing files. Enabling the
 repository variable remains a separate authenticated step after review and merge.
 
+## Adopt an existing repository
+
+`bootstrap-child` requires the inherited tree to match the parent commit, which only
+"Use this template" provides. `adopt-child` serves a repository that already exists
+([ADR-0021](../../docs/foundation/adr/0021-adopt-the-foundation-into-an-existing-repository.md)).
+It reads the same export, verifies the same origins and ancestry, and emits the same
+metadata — but instead of demanding a matching tree it **classifies** it:
+
+```bash
+python3 scripts/template_inheritance.py adopt-child \
+  --root /path/to/existing --parent-root /path/to/direct-parent \
+  --source-commit <40-character-parent-commit> --repository owner/existing
+```
+
+| Field | Meaning |
+|-------|---------|
+| `classification.identical` | Child file equals the parent blob |
+| `classification.pending` | Inherited path absent in the child; the first sync brings it |
+| `classification.collision` | `differs` (same path, other content) or `child_only` (child file inside an inherited root) |
+| `resolution.unresolved` | Collisions without `--protect` or `--accept`; `--apply` refuses while non-empty |
+| `status` | `blocked`, `ready_to_adopt`, or `already_adopted` |
+
+`--accept PATH` leaves the child copy for the first Template Sync to overwrite.
+`--protect PATH` moves the path to `protected_paths` and `.templatesyncignore` and stops
+inheriting it; a protected file under an inherited directory splits that directory into
+the parent's remaining files, because ownership roots may not overlap. A `child_only`
+collision cannot be accepted.
+
+Apply takes the same payload directory as `bootstrap-child` and the same confirmations.
+It writes the manifest, lock, agent profile, ignore file, payloads, and archive — **never
+an inherited path** — refuses a payload target that differs from both parent and payload,
+and validates the contract structurally (`require_agent_inputs=False`, because the
+inherited agent inputs arrive with the first sync). Commit, enable
+`TEMPLATE_SYNC_ENABLED`, let the bot PR copy the tree, then `finalize-sync` it.
+
+```bash
+python3 scripts/template_inheritance.py adopt-child \
+  --root /path/to/existing --parent-root /path/to/direct-parent \
+  --source-commit <commit> --repository owner/existing \
+  --protect scripts/local_tool.py --accept .editorconfig \
+  --apply --payload-root /path/to/payload \
+  --confirm-repository owner/existing --confirm-source <commit>
+```
+
+A rerun after the boundary PR reports `already_adopted` without flags: recorded
+protections are read back from the manifest.
+
 ## Report fleet propagation boundaries
 
 Run `fleet-report` against explicit local child/parent worktree pairs. Repeat

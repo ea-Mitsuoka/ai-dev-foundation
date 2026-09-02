@@ -15,6 +15,7 @@ account. **First decide which of two scenarios you are in — the steps differ.*
 |----------|----------------|-----|
 | A | Start a **new project** built on this foundation | GitHub **"Use this template"** (not `git clone`) |
 | B | Continue developing **this foundation itself** on another machine | `git clone` |
+| C | Bring an **existing repository** with its own history into the fleet | `adopt-child`, then Template Sync ([below](#scenario-c--adopt-the-foundation-into-an-existing-repository)) |
 
 `git clone` alone is only the right answer for Scenario B. For Scenario A, cloning would
 drag this repo's history and identity into your new project; use the template flow.
@@ -249,6 +250,87 @@ from the `ai-dev-foundation` worktree; descendant Makefiles do not inherit this 
 See [Audit the fixed fleet](../../../.github/inheritance/README.md#audit-the-fixed-fleet)
 for workspace requirements and result semantics. A scheduled private fleet audit remains
 disabled under ADR-0016 even after private Template Sync is enabled.
+
+---
+
+## Scenario C — adopt the foundation into an existing repository
+
+Use this when the repository already exists with its own history, code, and CI and
+"Use this template" is not an option
+([ADR-0021](../adr/0021-adopt-the-foundation-into-an-existing-repository.md)).
+Adoption is three reviewed steps; each reuses a command that already exists.
+
+### 1. Choose the direct parent and preview the adoption
+
+Select the direct parent exactly as in Scenario A §1 — the closest maintained template
+whose contract applies to the repository's primary deliverable now; never bypass an
+intermediate template. Then, from a clean non-default branch:
+
+```bash
+python3 scripts/template_inheritance.py adopt-child \
+  --root . --parent-root ../<selected-parent-worktree> \
+  --source-commit <40-character-parent-commit> --repository owner/repository
+```
+
+The read-only plan classifies every path under the parent's inherited roots:
+
+| Field | Meaning |
+|-------|---------|
+| `identical` | The repository already has the parent's exact file |
+| `pending` | Inherited file the repository does not have yet; the first sync brings it |
+| `collision` `differs` | Same path, different content |
+| `collision` `child_only` | The repository's own file inside an inherited root |
+
+### 2. Resolve every collision
+
+Each collision has exactly two outcomes, because a path is inherited *or* protected,
+never both:
+
+- `--accept PATH` — the first Template Sync overwrites the repository's copy. Keep the
+  old content under a project-owned name first if it matters.
+- `--protect PATH` — the path moves to `protected_paths` and `.templatesyncignore`.
+  **This stops inheriting it**: parent updates to that path will not arrive until the
+  decision is reversed. A protected file under an inherited directory splits that
+  directory into the parent's remaining files, so later parent additions there arrive
+  unowned and must be declared (the ADR-0020 rollout shows what that costs).
+
+A `child_only` collision cannot be accepted; protect it or move the file out of the
+inherited root. `--apply` refuses while any collision is unresolved.
+
+### 3. Open the boundary PR, then let Template Sync copy
+
+Prepare the same reviewed payloads as `bootstrap-child` (root `README.md` carrying the
+ownership marker, `.ai/project/agent-overlay.md`, `.github/workflows/template-sync.yml`,
+and the parent README archive). Commit the README change first: `adopt-child` writes a
+payload path only when the repository file is absent or already identical to it.
+
+```bash
+python3 scripts/template_inheritance.py adopt-child \
+  --root . --parent-root ../<selected-parent-worktree> \
+  --source-commit <commit> --repository owner/repository \
+  --protect <path> --accept <path> \
+  --apply --payload-root /path/to/payload \
+  --confirm-repository owner/repository --confirm-source <commit>
+```
+
+Apply writes only the four metadata files, the payloads, and the archive — never an
+inherited path — and validates the contract structurally (the agent inputs resolve after
+the first sync). Open that as the **boundary PR**. After it merges:
+
+1. `gh variable set TEMPLATE_SYNC_ENABLED --body true` (public parent; for a private
+   parent follow ADR-0016 first) and dispatch **Template Sync**. The bot PR copies the
+   whole inherited tree under the ADR-0005 size exception.
+2. On that branch run `finalize-sync` (§3.1). It proves every inherited path
+   byte-identical, lists the protected workflows still to port, and advances the lock.
+
+The adopted repository publishes no contract root, so it is a **leaf** under
+[ADR-0020](../adr/0020-require-japanese-pull-request-text-in-leaf-repositories.md):
+pull-request bodies are Japanese from the boundary PR on, and the `pr-quality` language
+step must be ported into its protected `ci.yml` by hand — as must every other protected
+workflow the parent ships. List those ports in the boundary PR.
+
+Rerunning `adopt-child` after the boundary PR reports `already_adopted` and needs no
+flags: the decisions live in the manifest and ignore file it generated.
 
 ---
 

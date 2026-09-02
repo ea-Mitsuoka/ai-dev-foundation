@@ -239,7 +239,7 @@ def _require_regular_file(root, relative_path, label):
         raise InheritanceError(f"{label} must be a non-symlink file inside the repository root")
 
 
-def _agent_profile_inputs(root, inputs):
+def _agent_profile_inputs(root, inputs, *, require_files=True):
     if type(inputs) is not list or not 2 <= len(inputs) <= MAX_AGENT_INPUTS:
         raise InheritanceError(
             f"agent profile.inputs must contain 2 to {MAX_AGENT_INPUTS} ordered inputs"
@@ -254,7 +254,8 @@ def _agent_profile_inputs(root, inputs):
             raise InheritanceError(f"{label}.layer must be foundation, template, or project")
         repository = _repository(item["repository"], f"{label}.repository")
         path = _ownership_root(item["path"], f"{label}.path", file_only=True)
-        _require_regular_file(root, path, f"{label}.path")
+        if require_files:
+            _require_regular_file(root, path, f"{label}.path")
         validated.append({"layer": layer, "repository": repository, "path": path})
     return validated
 
@@ -312,7 +313,9 @@ def _validate_agent_input_ownership(inputs, inherited, protected):
         raise InheritanceError("agent profile project input must be protected")
 
 
-def _validate_agent_profile(root, parent_repository, inherited, protected):
+def _validate_agent_profile(
+    root, parent_repository, inherited, protected, *, require_agent_inputs=True
+):
     if not _owned_by(AGENT_PROFILE_PATH, protected):
         raise InheritanceError(f"manifest.protected_paths must protect {AGENT_PROFILE_PATH}")
     profile = _read_json(root, AGENT_PROFILE_PATH)
@@ -330,7 +333,9 @@ def _validate_agent_profile(root, parent_repository, inherited, protected):
         )
     if profile["authority_policy"] != "strengthen-only":
         raise InheritanceError("agent profile.authority_policy must be strengthen-only")
-    inputs = _agent_profile_inputs(root, profile["inputs"])
+    inputs = _agent_profile_inputs(
+        root, profile["inputs"], require_files=require_agent_inputs
+    )
     _validate_agent_input_order(inputs, parent_repository)
     _validate_agent_input_ownership(inputs, inherited, protected)
 
@@ -364,8 +369,13 @@ def _validate_template_sync_ignore(root, protected):
     }
 
 
-def validate_inheritance(root):
-    """Validate manifest, lock, and exclusive path ownership without external I/O."""
+def validate_inheritance(root, *, require_agent_inputs=True):
+    """Validate manifest, lock, and exclusive path ownership without external I/O.
+
+    ``require_agent_inputs=False`` accepts an agent profile whose input files have not
+    arrived yet — the state of a repository between ``adopt-child`` and its first
+    Template Sync (ADR-0021). Every other check still applies.
+    """
     try:
         repository_root = Path(root).resolve(strict=True)
     except OSError as error:
@@ -433,6 +443,7 @@ def validate_inheritance(root):
             parent_repository,
             inherited,
             protected,
+            require_agent_inputs=require_agent_inputs,
         )
     return result
 
@@ -1046,6 +1057,221 @@ def apply_bootstrap(
         "repository": repository,
         "parent": plan["parent"],
         "changed_paths": changed,
+    }
+
+
+def _adopt_recorded_protections(child_root, export_protected):
+    """Protections already decided by an earlier adopt-child run live in the manifest."""
+    if not (child_root / MANIFEST_PATH).is_file():
+        return set()
+    manifest = _read_json(child_root, MANIFEST_PATH)
+    if type(manifest) is not dict or type(manifest.get("protected_paths")) is not list:
+        raise InheritanceError("existing manifest.protected_paths must be a list")
+    protected = _ownership_roots(manifest["protected_paths"], "existing manifest.protected_paths")
+    return {path for path in protected if not _owned_by(path, export_protected)}
+
+
+def _adopt_ownership(export, parent_entries, protections):
+    """Move each protected collision out of the inherited roots (ADR-0021).
+
+    A protected file under an inherited directory root splits that root into the parent's
+    remaining files at the source commit, because ownership roots may not overlap.
+    """
+    inherited = list(export["inherited_paths"])
+    protected = list(export["protected_paths"])
+    for path in sorted(protections):
+        if _owned_by(path, protected):
+            continue
+        roots = [root for root in inherited if _owned_by(path, [root])]
+        if not roots:
+            raise InheritanceError(f"protected path is not under an inherited root: {path}")
+        root = roots[0]
+        inherited.remove(root)
+        if root != path:
+            inherited.extend(
+                entry for entry in parent_entries if _owned_by(entry, [root]) and entry != path
+            )
+        protected.append(path)
+    return sorted(set(inherited)), sorted(set(protected))
+
+
+def _adopt_desired(child_root, repository, parent_repository, source_commit, export, ownership):
+    inherited, protected = ownership
+    inputs = [
+        *export["agent_inputs"],
+        {"layer": "project", "repository": repository, "path": ".ai/project/agent-overlay.md"},
+    ]
+    inputs = _agent_profile_inputs(child_root, inputs, require_files=False)
+    _validate_agent_input_order(inputs, parent_repository)
+    _validate_agent_input_ownership(inputs, inherited, protected)
+    ignore = {"docs/**"}
+    ignore.update(f"{path}**" if path.endswith("/") else path for path in protected)
+    if _owned_by("docs/foundation/", inherited):
+        ignore.update({":!docs/foundation/", ":!docs/foundation/**"})
+    return {
+        "manifest": {
+            "schema_version": 2,
+            "parent": {"repository": parent_repository, "branch": export["branch"]},
+            "lock_file": ".github/inheritance/lock.json",
+            "inherited_paths": inherited,
+            "protected_paths": protected,
+        },
+        "lock": {
+            "schema_version": 1,
+            "parent": {"repository": parent_repository, "commit": source_commit},
+        },
+        "agent_profile": {
+            "schema_version": 1,
+            "authority_policy": "strengthen-only",
+            "inputs": inputs,
+        },
+        "template_sync_ignore": sorted(ignore),
+    }
+
+
+def _adopt_metadata_payloads(desired):
+    return {
+        MANIFEST_PATH: (json.dumps(desired["manifest"], indent=2) + "\n").encode(),
+        ".github/inheritance/lock.json": (json.dumps(desired["lock"], indent=2) + "\n").encode(),
+        AGENT_PROFILE_PATH: (json.dumps(desired["agent_profile"], indent=2) + "\n").encode(),
+        TEMPLATE_SYNC_IGNORE_PATH: (
+            "# Generated from the exact direct-parent inheritance export (adopt-child).\n"
+            + "\n".join(desired["template_sync_ignore"])
+            + "\n"
+        ).encode(),
+    }
+
+
+def _adopt_already_applied(child_root, desired):
+    for path, payload in _adopt_metadata_payloads(desired).items():
+        try:
+            if (child_root / path).read_bytes() != payload:
+                return False
+        except OSError:
+            return False
+    return True
+
+
+def plan_adopt(root, parent_root, source_commit, repository, *, protect=(), accept=()):
+    """Classify an existing repository against its direct parent without writing.
+
+    Unlike ``plan_bootstrap`` this never requires the inherited tree to match: the first
+    copy arrives through Template Sync after the boundary PR (ADR-0021).
+    """
+    child_root, child_repository, branch = _child_finalization_worktree(root)
+    repository = _repository(repository, "child repository")
+    if child_repository.casefold() != repository.casefold():
+        raise InheritanceError("child origin does not match requested repository")
+    parent_root, parent_repository, export = _bootstrap_parent(parent_root, source_commit)
+    parent_entries = _parent_inherited_entries(
+        parent_root, source_commit, export["inherited_paths"]
+    )
+    child_entries = _child_inherited_entries(
+        child_root, parent_root, export["inherited_paths"]
+    )
+
+    identical, collisions, pending = [], {}, []
+    for path in sorted(set(parent_entries) | set(child_entries)):
+        parent_entry = parent_entries.get(path)
+        child_entry = child_entries.get(path)
+        if child_entry is None:
+            pending.append(path)
+        elif parent_entry is None:
+            collisions[path] = "child_only"
+        elif child_entry == parent_entry:
+            identical.append(path)
+        else:
+            collisions[path] = "differs"
+
+    protect = {_repository_file_path(path, "protect path") for path in protect}
+    accept = {_repository_file_path(path, "accept path") for path in accept}
+    protect |= _adopt_recorded_protections(child_root, export["protected_paths"])
+    for path in sorted(protect | accept):
+        if path not in collisions:
+            raise InheritanceError(f"resolution names a path that is not a collision: {path}")
+    if protect & accept:
+        raise InheritanceError(f"a collision cannot be both protected and accepted: {sorted(protect & accept)}")
+    for path in sorted(accept):
+        if collisions[path] == "child_only":
+            raise InheritanceError(f"a child-only path has no parent version to accept: {path}")
+    unresolved = sorted(path for path in collisions if path not in protect and path not in accept)
+
+    ownership = _adopt_ownership(export, parent_entries, protect)
+    desired = _adopt_desired(
+        child_root, repository, parent_repository, source_commit, export, ownership
+    )
+    if _adopt_already_applied(child_root, desired):
+        status = "already_adopted"
+    elif unresolved:
+        status = "blocked"
+    else:
+        status = "ready_to_adopt"
+    owner, parent = parent_repository.casefold().split("/", 1)
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "status": status,
+        "repository": repository,
+        "branch": branch,
+        "parent": {
+            "repository": parent_repository,
+            "commit": source_commit,
+            "export": export["path"],
+        },
+        "classification": {
+            "identical": identical,
+            "collision": [
+                {"path": path, "reason": reason} for path, reason in sorted(collisions.items())
+            ],
+            "pending": pending,
+        },
+        "resolution": {
+            "protect": sorted(protect),
+            "accept": sorted(accept),
+            "unresolved": unresolved,
+        },
+        "desired": desired,
+        "payloads": [
+            *sorted(BOOTSTRAP_MANUAL_BOUNDARIES),
+            f"docs/inheritance/readmes/{owner}/{parent}.md",
+        ],
+    }
+
+
+def apply_adopt(
+    root, parent_root, source_commit, repository, *,
+    confirm_repository, confirm_source, payload_root, protect=(), accept=(),
+):
+    """Write the adoption metadata and payloads; never an inherited path (ADR-0021)."""
+    if confirm_repository != repository or confirm_source != source_commit:
+        raise InheritanceError("repository and source confirmation must match exactly")
+    plan = plan_adopt(
+        root, parent_root, source_commit, repository, protect=protect, accept=accept
+    )
+    if plan["status"] == "blocked":
+        raise InheritanceError(
+            "every collision must be resolved with --protect or --accept: "
+            f"{plan['resolution']['unresolved']}"
+        )
+    child_root = Path(root).resolve(strict=True)
+    parent_root = _parent_root(parent_root)
+    payloads = _bootstrap_payloads(plan, child_root, payload_root)
+    payloads.update(_adopt_metadata_payloads(plan["desired"]))
+    changed = [
+        path for path, payload in sorted(payloads.items())
+        if _bootstrap_path_change(child_root, parent_root, source_commit, path, payload)
+    ]
+    for path in changed:
+        _write_bootstrap_payload(child_root, path, payloads[path])
+    validate_inheritance(child_root, require_agent_inputs=False)
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "status": "adopted" if changed else "already_adopted",
+        "repository": repository,
+        "parent": plan["parent"],
+        "changed_paths": changed,
+        "protected_collisions": plan["resolution"]["protect"],
+        "accepted_collisions": plan["resolution"]["accept"],
+        "pending_inherited_paths": len(plan["classification"]["pending"]),
     }
 
 
@@ -1849,6 +2075,26 @@ def main(argv=None):
     bootstrap.add_argument("--payload-root", type=Path)
     bootstrap.add_argument("--confirm-repository")
     bootstrap.add_argument("--confirm-source")
+    adopt = commands.add_parser(
+        "adopt-child",
+        help="plan or apply adoption metadata for an existing repository (ADR-0021)",
+    )
+    adopt.add_argument("--root", type=Path, default=Path("."), help="existing repository root")
+    adopt.add_argument("--parent-root", type=Path, required=True, help="direct-parent worktree")
+    adopt.add_argument("--source-commit", required=True)
+    adopt.add_argument("--repository", required=True, help="child OWNER/REPOSITORY")
+    adopt.add_argument(
+        "--protect", action="append", default=[], metavar="PATH",
+        help="keep the child copy of a colliding path and stop inheriting it",
+    )
+    adopt.add_argument(
+        "--accept", action="append", default=[], metavar="PATH",
+        help="let the first Template Sync overwrite the child copy of a colliding path",
+    )
+    adopt.add_argument("--apply", action="store_true", help="write confirmed payload")
+    adopt.add_argument("--payload-root", type=Path)
+    adopt.add_argument("--confirm-repository")
+    adopt.add_argument("--confirm-source")
     finalize = commands.add_parser(
         "finalize-sync",
         help="plan or apply exact-source manual ports on an existing sync branch",
@@ -1921,6 +2167,22 @@ def main(argv=None):
                     raise InheritanceError("bootstrap payload and confirmations require --apply")
                 report = plan_bootstrap(
                     args.root, args.parent_root, args.source_commit, args.repository
+                )
+        elif args.command == "adopt-child":
+            if args.apply:
+                report = apply_adopt(
+                    args.root, args.parent_root, args.source_commit, args.repository,
+                    confirm_repository=args.confirm_repository,
+                    confirm_source=args.confirm_source,
+                    payload_root=args.payload_root,
+                    protect=args.protect, accept=args.accept,
+                )
+            else:
+                if args.payload_root or args.confirm_repository or args.confirm_source:
+                    raise InheritanceError("adopt payload and confirmations require --apply")
+                report = plan_adopt(
+                    args.root, args.parent_root, args.source_commit, args.repository,
+                    protect=args.protect, accept=args.accept,
                 )
         elif args.command == "finalize-sync":
             if args.apply:
