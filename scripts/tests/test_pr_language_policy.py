@@ -15,6 +15,8 @@ from scripts.pr_language_policy import (
 )
 
 REPOSITORY_ROOT = Path(__file__).parents[2]
+# ADR-0011 marker that only the canonical foundation root carries in its README.
+FOUNDATION_README_OWNER = "<!-- repository-readme-owner: ea-Mitsuoka/ai-dev-foundation -->"
 FOUNDATION = "acme/ai-foundation"
 TEMPLATE = "acme/stack-template"
 LEAF = "acme/product"
@@ -99,8 +101,15 @@ class ClassificationTest(unittest.TestCase):
         with self.assertRaises(PolicyError):
             classify_repository(self.fixture.root)
 
-    def test_this_repository_is_the_root(self):
-        self.assertEqual("root", classify_repository(REPOSITORY_ROOT))
+    def test_this_repository_classifies_from_its_own_contract(self):
+        # This test is inherited: at the canonical foundation root the answer is "root";
+        # in every descendant it must still classify (never raise) as template or leaf.
+        scope = classify_repository(REPOSITORY_ROOT)
+
+        if FOUNDATION_README_OWNER in (REPOSITORY_ROOT / "README.md").read_text(encoding="utf-8"):
+            self.assertEqual("root", scope)
+        else:
+            self.assertIn(scope, {"template", "leaf"})
 
 
 class ProseTest(unittest.TestCase):
