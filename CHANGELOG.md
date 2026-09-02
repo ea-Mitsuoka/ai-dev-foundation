@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.3.0...v2.3.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* **tooling:** leave the release-please changelog to release-please ([#36](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/36)) ([e5eeda9](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/e5eeda958ba39b4cb4e62ba5b072b68ce0b3a40d))
+
 ## [2.3.0](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.2.0...v2.3.0) (2026-09-02)
 
 
