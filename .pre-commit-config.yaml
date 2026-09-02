@@ -27,6 +27,10 @@ repos:
     rev: 1.0.0                           # pinned; Renovate/`pre-commit autoupdate` bumps it
     hooks:
       - id: mdformat                     # config: .mdformat.toml (frontmatter + numbered lists preserved)
+        # CHANGELOG.md belongs to release-please, which regenerates it in its own style
+        # on every release. Formatting it here only re-dirties the file after each
+        # release and blocks the next push; the rendered changelog is unaffected.
+        exclude: ^CHANGELOG\.md$
         additional_dependencies:
           - mdformat-frontmatter         # keep YAML frontmatter (--- ... ---) intact
           - mdformat-gfm                 # GFM tables, task lists, autolinks (repo is table-heavy)
