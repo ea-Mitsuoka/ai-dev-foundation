@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.2](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.3.1...v2.3.2) (2026-09-13)
+
+
+### Bug Fixes
+
+* **tooling:** accept column-padded ADR and guide index tables ([#39](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/39)) ([39cefa0](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/39cefa08428412f08d459ba2bd5f2a07963757a1))
+
 ## [2.3.1](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.3.0...v2.3.1) (2026-09-02)
 
 
