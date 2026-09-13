@@ -33,14 +33,15 @@ HANDOFF_WORD_WARNING = 1_500
 HANDOFF_STALE_DAYS = 30
 READS_PATTERN = re.compile(r"^reads:\s*\[(.*)]\s*$", re.MULTILINE)
 FRONTMATTER_PATTERN = re.compile(r"^---\n(?P<body>.*?)\n---\n", re.DOTALL)
+# Cells may carry any run of spaces: mdformat-gfm pads every cell to its column width.
 ADR_ROW_PATTERN = re.compile(
-    r"^\| \[(?P<number>\d{4})\]\((?P<target>[^)]+)\)"
-    r" \| (?P<title>[^|]+) \| (?P<scope>[^|]*)"
-    r" \| (?P<status>[^|]*) \| (?P<updated>[^|]*) \|$",
+    r"^\| *\[(?P<number>\d{4})\]\((?P<target>[^)]+)\)"
+    r" *\| *(?P<title>[^|]+?) *\| *(?P<scope>[^|]*?)"
+    r" *\| *(?P<status>[^|]*?) *\| *(?P<updated>[^|]*?) *\|$",
     re.MULTILINE,
 )
 GUIDE_ROW_PATTERN = re.compile(
-    r"^\| \[(?P<label>[^]]+\.md)\]\((?P<target>[^)]+\.md)\) \| [^|]+ \|$",
+    r"^\| *\[(?P<label>[^]]+\.md)\]\((?P<target>[^)]+\.md)\) *\| *[^|]+? *\|$",
     re.MULTILINE,
 )
 GLOB_CHARACTERS = frozenset("*?[")
@@ -216,7 +217,7 @@ def adr_metadata_value(path: Path, key: str) -> str | None:
 
     label = "Date" if key == "date" else key.title()
     match = re.search(
-        rf"^\| {re.escape(label)} \| (?P<value>.+?) \|$",
+        rf"^\| *{re.escape(label)} *\| *(?P<value>.+?) *\|$",
         path.read_text(encoding="utf-8"),
         re.MULTILINE,
     )
