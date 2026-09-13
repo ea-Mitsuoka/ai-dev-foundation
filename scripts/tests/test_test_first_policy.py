@@ -41,6 +41,11 @@ class TestFirstPolicyTest(unittest.TestCase):
             ".skills/feature.skill.md": ("TST-004", "TST-010", "COD-021"),
             ".skills/test.skill.md": ("tautological", "TST-010"),
             ".ai/review-checklist.md": ("TST-004", "tautological test (TST-010)"),
+            "docs/foundation/guides/ai-instruction-files.ja.md": (
+                "TST-004",
+                "TST-010",
+                "確定した用語はその場で `docs/glossary.md` へ",
+            ),
         }
 
         for relative_path, markers in expected_references.items():
