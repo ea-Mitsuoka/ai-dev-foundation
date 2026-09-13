@@ -50,13 +50,13 @@ existing solution, so design and acceptance testing can proceed without re-askin
 
 ## Decision criteria
 
-| Decision                     | Rule                                                                                                 |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Functional or non-functional | System behavior is FR; a measurable property is NFR.                                                 |
-| Scope                        | No purpose or metric trace means non-scope unless the human decides otherwise.                       |
-| Priority                     | Must means the purpose fails; rank Should/Could by metric contribution and record Won't as deferred. |
-| Requirement or design        | Technology requires a recorded constraint; otherwise specify outcomes.                               |
-| Sensitive area               | Escalate CLAUDE.md §13 triggers before finalizing.                                                   |
+| Decision | Rule |
+| -- | -- |
+| Functional or non-functional | System behavior is FR; a measurable property is NFR. |
+| Scope | No purpose or metric trace means non-scope unless the human decides otherwise. |
+| Priority | Must means the purpose fails; rank Should/Could by metric contribution and record Won't as deferred. |
+| Requirement or design | Technology requires a recorded constraint; otherwise specify outcomes. |
+| Sensitive area | Escalate CLAUDE.md §13 triggers before finalizing. |
 
 ## Outputs
 

@@ -11,11 +11,11 @@ Canonical commands: `make test` (all), `make test-unit` (fast suite), `make cove
 
 ## TST-001: Test pyramid
 
-| Level       | Location                           | Scope                                | Speed budget | Share                    |
-| ----------- | ---------------------------------- | ------------------------------------ | ------------ | ------------------------ |
-| Unit        | `tests/modules/<ctx>/unit/`        | one class/function, no I/O           | < 100ms each | ~70%                     |
-| Integration | `tests/modules/<ctx>/integration/` | module + real adapter (DB, HTTP)     | < 5s each    | ~25%                     |
-| E2E         | `tests/e2e/`                       | user-visible flow through real stack | minutes      | ~5%, critical paths only |
+| Level | Location | Scope | Speed budget | Share |
+| -- | -- | -- | -- | -- |
+| Unit | `tests/modules/<ctx>/unit/` | one class/function, no I/O | < 100ms each | ~70% |
+| Integration | `tests/modules/<ctx>/integration/` | module + real adapter (DB, HTTP) | < 5s each | ~25% |
+| E2E | `tests/e2e/` | user-visible flow through real stack | minutes | ~5%, critical paths only |
 
 Tests mirror `src/` structure exactly so the test for any file is findable mechanically.
 
