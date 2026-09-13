@@ -1,7 +1,7 @@
 ---
 id: adr-0023
 title: ADR-0023 — Integrate test-first slices and inline domain-term capture
-status: proposed
+status: accepted
 updated: 2026-09-13
 ---
 
@@ -9,9 +9,9 @@ updated: 2026-09-13
 
 | Field | Value |
 | -- | -- |
-| Status | proposed |
+| Status | accepted |
 | Date | 2026-09-13 |
-| Deciders | repository owner |
+| Deciders | repository owner (approved 2026-09-13) |
 | Author | Claude Fable 5.1 (AI agent) |
 | Supersedes / Superseded by | Extends TST-002, TST-010, MNT-001, COD-021, COD-052, GR-022, and the requirements and architecture skills; supersedes none |
 
