@@ -10,3 +10,9 @@
 wrap = "keep"        # never reflow prose — preserve the hand-wrapped ~100-col line breaks
 number = true        # ordered lists keep consecutive 1. 2. 3. numbering (not all "1.")
 end_of_line = "lf"   # match .gitattributes (LF enforced repo-wide)
+
+# Tables: do not pad cells to the widest column. Padding turns a one-row edit into a
+# whole-table diff (GR-020) and once broke the ADR index parser (Issue #38). Equivalent
+# to `mdformat --compact-tables`; read by mdformat-gfm's tables plugin.
+[plugin.tables]
+compact_tables = true
