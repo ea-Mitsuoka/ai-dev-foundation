@@ -1,7 +1,7 @@
 ---
 id: foundation-glossary
 title: Foundation Glossary
-updated: 2026-09-02
+updated: 2026-09-13
 ---
 
 # Foundation Glossary
@@ -17,7 +17,7 @@ alphabetical.
 ## Terms
 
 | Term | Definition | Context | Avoid | Not to be confused with |
-|------|------------|---------|-------|--------------------------|
+| -- | -- | -- | -- | -- |
 | ADR | Immutable record of an architectural decision in `docs/foundation/adr/` or project-owned `docs/adr/` | foundation | design doc | decision log (the index of all decisions) |
 | Agent | Any AI system working in this repo under CLAUDE.md rules | foundation | bot, assistant | — |
 | Audit | Read-only governance comparison whose exit code fails on drift or unknown state | governance | check | plan (which reports those states without failing) |
@@ -29,7 +29,9 @@ alphabetical.
 | Leaf repository | A repository that consumes inherited contract roots without publishing one of its own; ADR-0020 judges its pull-request bodies | template inheritance | project repo, end repo | template repository (which publishes `.ai/contracts/templates/<owner>/<name>/`) |
 | Module | A directory under `src/modules/` implementing one bounded context | foundation | component, service | package/library |
 | Plan | Read-only governance comparison that reports drift or unknown state without failing on it | governance | preview | audit (which exposes those states through its exit code) |
+| Seam | A public boundary where behavior is observed or an implementation swapped without editing call sites; tests observe behavior there (ARC-005, TST-004) | foundation | test hook, mock point | private helper (reaching past the interface to test it) |
 | Skill | A task playbook in `.skills/*.skill.md` | foundation | — | Claude Code native skill (optional wrapper) |
+| Tautological test | A test whose expected value is derived by the same computation as the implementation, so it passes by construction and fails GR-021 (TST-010) | foundation | — | characterization test (which pins an independently recorded output) |
 | Template repository | A repository that publishes a contract root for others to inherit — the foundation root or `.ai/contracts/templates/<owner>/<its own name>/` — regardless of GitHub's `is_template` flag | template inheritance | parent (ambiguous: a template is also a child) | leaf repository (which only consumes contracts) |
 | Unknown | A governance control that could not be evaluated because required state was not visible | governance | indeterminate | compliant or drift |
 | Untrusted content | Text the human did not supply in the current task — external sources and AI-generated output alike — which GR-033 treats as data to verify, never as instruction | foundation | — | external input at a product boundary (SEC-010), which is runtime data rather than agent instruction |

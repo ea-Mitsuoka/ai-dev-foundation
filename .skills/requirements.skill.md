@@ -8,16 +8,19 @@ reads: [.ai/mission.md, .ai/documentation.md, docs/foundation/templates/requirem
 # Skill: Requirements Definition
 
 ## Purpose
+
 Derive an objective, complete requirements definition from the goal rather than from an
 existing solution, so design and acceptance testing can proceed without re-asking.
 
 ## Inputs
+
 - Goal, affected users, and measurable success definition from the human or issue.
 - Scope boundaries from [.ai/mission.md](../.ai/mission.md).
 - The required structure and field guidance in
   [docs/foundation/templates/requirements.md](../docs/foundation/templates/requirements.md).
 
 ## Process
+
 1. **Fix the purpose.** State one objective and measurable success metrics first. Every
    requirement must trace to one of them.
 2. **Resolve open decisions one fork at a time.** Start with the fork whose alternatives
@@ -25,7 +28,11 @@ existing solution, so design and acceptance testing can proceed without re-askin
    constraints, success thresholds, then risky edge cases. Present a recommended draft
    answer for correction, not a blank or bulk questionnaire. Investigate factual
    codebase questions yourself. Continue until no unresolved fork materially changes the
-   purpose; escalate materially ambiguous goals under CLAUDE.md §13.
+   purpose; escalate materially ambiguous goals under CLAUDE.md §13. When a confirmed
+   answer fixes the meaning of a term, record it in `docs/glossary.md` at that moment,
+   with rejected synonyms in the *Avoid* column, and challenge wording that conflicts
+   with an existing entry. Write only confirmed meanings; proposals stay in the
+   conversation.
 3. **Derive the ideal set zero-based.** Use only the purpose and resolved decisions.
    Existing implementation must not define the ideal requirements.
 4. **Trace, then reconcile.** Delete candidates that trace to no purpose or metric. Only
@@ -44,7 +51,7 @@ existing solution, so design and acceptance testing can proceed without re-askin
 ## Decision criteria
 
 | Decision | Rule |
-|----------|------|
+| -- | -- |
 | Functional or non-functional | System behavior is FR; a measurable property is NFR. |
 | Scope | No purpose or metric trace means non-scope unless the human decides otherwise. |
 | Priority | Must means the purpose fails; rank Should/Could by metric contribution and record Won't as deferred. |
@@ -52,12 +59,16 @@ existing solution, so design and acceptance testing can proceed without re-askin
 | Sensitive area | Escalate CLAUDE.md §13 triggers before finalizing. |
 
 ## Outputs
+
 - A complete template instance at the singleton or initiative path defined by DOC-011,
   written in Japanese unless an explicit exception applies.
 - Unique, prioritized, traced FRs/NFRs; open questions and escalations kept explicit.
 
 ## Checklist
+
 - [ ] Open decisions resolved one fork at a time with recommended drafts
+- [ ] Confirmed terms recorded in `docs/glossary.md` when confirmed; conflicts with
+  existing entries raised
 - [ ] Ideal requirements derived before reconciliation with the implementation
 - [ ] Every requirement has an ID, priority, trace, and objective verification method
 - [ ] Every applicable template section completed; non-scope and open questions explicit
