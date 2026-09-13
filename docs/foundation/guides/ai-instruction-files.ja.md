@@ -39,25 +39,25 @@ updated: 2026-09-13
 
 ## 1. カテゴリ早見表
 
-| カテゴリ                | ファイル                                                                             | 一言                                                                 |
-| ----------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
-| 入口                    | [CLAUDE.md](../../../CLAUDE.md), [AGENTS.md](../../../AGENTS.md)                     | 明示的なagent profileを読み込む薄いアダプター                        |
-| 構成                    | [agent-profile.json](../../../.github/inheritance/agent-profile.json)                | 基盤・テンプレート・プロジェクト入力の順序付き一覧                   |
-| 継承契約                | [foundation contract](../../../.ai/contracts/foundation/README.md)                   | identity-freeな基盤指示とguardrail本体                               |
-| template契約            | `.ai/contracts/templates/<owner>/<repository>/`                                      | 中間templateが直接の子へ公開する追加契約                             |
-| プロジェクト情報        | [agent-overlay.md](../../../.ai/project/agent-overlay.md)                            | 利用先固有の識別情報・役割・スタック                                 |
-| 条件付きproject文書規則 | [project-document-maintenance.md](../../../.ai/project-document-maintenance.md)      | handoff・roadmap・root README・継承を扱う時だけ読む規則              |
-| ルール索引              | [.ai/README.md](../../../.ai/README.md)                                              | 優先順位・タスク別ルーティング表                                     |
-| ルール本体              | [.ai/](../../../.ai/) の各 `*.md`                                                    | 分野別の正準ルール（ID付き）                                         |
-| 手順書                  | [.skills/](../../../.skills/) の各 `*.skill.md`                                      | タスク別の実行プレイブック                                           |
-| 自動強制                | [.claude/](../../../.claude/)                                                        | Claude Code のフック（即時ブロック/整形）・権限制御・ネイティブSkill |
-| 意思決定                | [docs/foundation/adr/](../adr/)、`docs/adr/`                                         | 基盤と利用先の「なぜ」を所有者別に記録                               |
-| 用語                    | [docs/foundation/glossary.md](../glossary.md)、`docs/glossary.md`                    | 基盤と利用先プロジェクトの統一用語                                   |
-| ソース構造              | [src/README.md](../../../src/README.md), [tests/README.md](../../../tests/README.md) | コード配置規約・MODULE.md雛形                                        |
-| 方向性                  | `docs/roadmap.md`                                                                    | 利用先で何を作る/作らないかの指針                                    |
-| 契約                    | `src/modules/*/MODULE.md`, [profiles/README.md](../../../profiles/README.md)         | モジュール/makeターゲットの契約                                      |
-| 構造化入力              | [.github/](../../../.github/) の Issue/PR テンプレート                               | AIへの指示を型化                                                     |
-| グローバル              | `~/.claude/CLAUDE.md`, `~/projects/CLAUDE.md`                                        | 全リポ共通の好み（リポ外・Claude固有）                               |
+| カテゴリ | ファイル | 一言 |
+| -- | -- | -- |
+| 入口 | [CLAUDE.md](../../../CLAUDE.md), [AGENTS.md](../../../AGENTS.md) | 明示的なagent profileを読み込む薄いアダプター |
+| 構成 | [agent-profile.json](../../../.github/inheritance/agent-profile.json) | 基盤・テンプレート・プロジェクト入力の順序付き一覧 |
+| 継承契約 | [foundation contract](../../../.ai/contracts/foundation/README.md) | identity-freeな基盤指示とguardrail本体 |
+| template契約 | `.ai/contracts/templates/<owner>/<repository>/` | 中間templateが直接の子へ公開する追加契約 |
+| プロジェクト情報 | [agent-overlay.md](../../../.ai/project/agent-overlay.md) | 利用先固有の識別情報・役割・スタック |
+| 条件付きproject文書規則 | [project-document-maintenance.md](../../../.ai/project-document-maintenance.md) | handoff・roadmap・root README・継承を扱う時だけ読む規則 |
+| ルール索引 | [.ai/README.md](../../../.ai/README.md) | 優先順位・タスク別ルーティング表 |
+| ルール本体 | [.ai/](../../../.ai/) の各 `*.md` | 分野別の正準ルール（ID付き） |
+| 手順書 | [.skills/](../../../.skills/) の各 `*.skill.md` | タスク別の実行プレイブック |
+| 自動強制 | [.claude/](../../../.claude/) | Claude Code のフック（即時ブロック/整形）・権限制御・ネイティブSkill |
+| 意思決定 | [docs/foundation/adr/](../adr/)、`docs/adr/` | 基盤と利用先の「なぜ」を所有者別に記録 |
+| 用語 | [docs/foundation/glossary.md](../glossary.md)、`docs/glossary.md` | 基盤と利用先プロジェクトの統一用語 |
+| ソース構造 | [src/README.md](../../../src/README.md), [tests/README.md](../../../tests/README.md) | コード配置規約・MODULE.md雛形 |
+| 方向性 | `docs/roadmap.md` | 利用先で何を作る/作らないかの指針 |
+| 契約 | `src/modules/*/MODULE.md`, [profiles/README.md](../../../profiles/README.md) | モジュール/makeターゲットの契約 |
+| 構造化入力 | [.github/](../../../.github/) の Issue/PR テンプレート | AIへの指示を型化 |
+| グローバル | `~/.claude/CLAUDE.md`, `~/projects/CLAUDE.md` | 全リポ共通の好み（リポ外・Claude固有） |
 
 ______________________________________________________________________
 
@@ -115,20 +115,20 @@ ______________________________________________________________________
 
 ### ルール各ファイル（早見表）
 
-| ファイル                                                                        | 利用目的（何を規定）                                  | 利用シーン                                              | 利用しないシーン                       | 利用例                                                                                                                                                |
-| ------------------------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [guardrails.md](../../../.ai/guardrails.md)                                     | 絶対禁止（GR）。指示でも覆せない                      | 全タスクの前提。破壊的操作の前                          | 「推奨」レベルの判断（それは各ルール） | `curl\|sh` を実行しようとして GR-032 でブロック                                                                                                       |
-| [security.md](../../../.ai/security.md)                                         | セキュリティ運用（SEC）                               | 認証/入力/秘密情報/依存を扱う時、レビュー、リリース     | UIの見た目調整など非セキュリティ作業   | 新エンドポイント追加時に SEC-020（既定deny）を適用                                                                                                    |
-| [architecture.md](../../../.ai/architecture.md)                                 | 構造・層・依存方向（ARC）                             | 新機能、リファクタ、モジュール変更                      | ドキュメントのみの修正                 | domain から DB ドライバを import しようとして ARC-002 で回避                                                                                          |
-| [coding-rules.md](../../../.ai/coding-rules.md)                                 | 命名・エラー処理・依存方針（COD）                     | コードを書く/直す全般                                   | 設計そのものの是非（architecture へ）  | 3回目の重複で初めて抽象化（COD-020）                                                                                                                  |
-| [testing.md](../../../.ai/testing.md)                                           | テスト戦略・カバレッジ（TST）                         | テスト作成、バグ修正、リファクタ                        | 純粋なドキュメント変更                 | バグ修正で「まず落ちる回帰テスト」を書く（TST-002）。新機能は1振る舞いずつ red → green で進め（TST-004）、期待値を実装と同じ計算で作らない（TST-010） |
-| [workflow.md](../../../.ai/workflow.md)                                         | タスクの進め方・コミット規約（WF）                    | ほぼ全タスク（intake→PR）                               | 単発の質問応答                         | ブランチ名 `fix/207-null-avatar`、Conventional Commits（WF-020）                                                                                      |
-| [release.md](../../../.ai/release.md)                                           | バージョニング・リリース手順（REL）                   | リリース準備                                            | 通常の機能開発中                       | `feat` コミットから MINOR を自動導出（REL-001）                                                                                                       |
-| [documentation.md](../../../.ai/documentation.md)                               | ドキュメント規約・更新マトリクス（DOC）               | ドキュメント作成、機能変更に伴う更新                    | コード内部だけの微修正                 | API変更時に doc-update matrix で `docs/api/` 更新を判定（DOC-030）                                                                                    |
-| [project-document-maintenance.md](../../../.ai/project-document-maintenance.md) | project状態・roadmap・root README所有権の条件付き規則 | handoff、roadmap、root README、onboarding、継承を扱う時 | 無関係な実装タスクの常時読込           | 継承初期化時にroot READMEの所有者を確認し、祖先READMEをnamespaced archiveへ保存（DOC-014）                                                            |
-| [review-checklist.md](../../../.ai/review-checklist.md)                         | 10観点のレビュー基準（REV）                           | PRレビュー、PR前のセルフレビュー                        | 実装中の細かい判断                     | セルフレビューで REV-SEC を走査し秘密混入を確認                                                                                                       |
-| [mission.md](../../../.ai/mission.md)                                           | プロジェクトの目的・成功基準                          | 方向性の妥当性判断、オンボーディング                    | 日々の実装詳細                         | 提案が mission の成功基準に沿うか照合                                                                                                                 |
-| [decision-log.md](../../../.ai/decision-log.md)                                 | 意思決定の追記索引（LOG/ADR）                         | 設計変更前に「既に決まってないか」確認、変更後に追記    | 通常の実装                             | LOG-0006「jq無しでもガードが動く」を読み、正規表現を安易に簡素化しない                                                                                |
+| ファイル | 利用目的（何を規定） | 利用シーン | 利用しないシーン | 利用例 |
+| -- | -- | -- | -- | -- |
+| [guardrails.md](../../../.ai/guardrails.md) | 絶対禁止（GR）。指示でも覆せない | 全タスクの前提。破壊的操作の前 | 「推奨」レベルの判断（それは各ルール） | `curl\|sh` を実行しようとして GR-032 でブロック |
+| [security.md](../../../.ai/security.md) | セキュリティ運用（SEC） | 認証/入力/秘密情報/依存を扱う時、レビュー、リリース | UIの見た目調整など非セキュリティ作業 | 新エンドポイント追加時に SEC-020（既定deny）を適用 |
+| [architecture.md](../../../.ai/architecture.md) | 構造・層・依存方向（ARC） | 新機能、リファクタ、モジュール変更 | ドキュメントのみの修正 | domain から DB ドライバを import しようとして ARC-002 で回避 |
+| [coding-rules.md](../../../.ai/coding-rules.md) | 命名・エラー処理・依存方針（COD） | コードを書く/直す全般 | 設計そのものの是非（architecture へ） | 3回目の重複で初めて抽象化（COD-020） |
+| [testing.md](../../../.ai/testing.md) | テスト戦略・カバレッジ（TST） | テスト作成、バグ修正、リファクタ | 純粋なドキュメント変更 | バグ修正で「まず落ちる回帰テスト」を書く（TST-002）。新機能は1振る舞いずつ red → green で進め（TST-004）、期待値を実装と同じ計算で作らない（TST-010） |
+| [workflow.md](../../../.ai/workflow.md) | タスクの進め方・コミット規約（WF） | ほぼ全タスク（intake→PR） | 単発の質問応答 | ブランチ名 `fix/207-null-avatar`、Conventional Commits（WF-020） |
+| [release.md](../../../.ai/release.md) | バージョニング・リリース手順（REL） | リリース準備 | 通常の機能開発中 | `feat` コミットから MINOR を自動導出（REL-001） |
+| [documentation.md](../../../.ai/documentation.md) | ドキュメント規約・更新マトリクス（DOC） | ドキュメント作成、機能変更に伴う更新 | コード内部だけの微修正 | API変更時に doc-update matrix で `docs/api/` 更新を判定（DOC-030） |
+| [project-document-maintenance.md](../../../.ai/project-document-maintenance.md) | project状態・roadmap・root README所有権の条件付き規則 | handoff、roadmap、root README、onboarding、継承を扱う時 | 無関係な実装タスクの常時読込 | 継承初期化時にroot READMEの所有者を確認し、祖先READMEをnamespaced archiveへ保存（DOC-014） |
+| [review-checklist.md](../../../.ai/review-checklist.md) | 10観点のレビュー基準（REV） | PRレビュー、PR前のセルフレビュー | 実装中の細かい判断 | セルフレビューで REV-SEC を走査し秘密混入を確認 |
+| [mission.md](../../../.ai/mission.md) | プロジェクトの目的・成功基準 | 方向性の妥当性判断、オンボーディング | 日々の実装詳細 | 提案が mission の成功基準に沿うか照合 |
+| [decision-log.md](../../../.ai/decision-log.md) | 意思決定の追記索引（LOG/ADR） | 設計変更前に「既に決まってないか」確認、変更後に追記 | 通常の実装 | LOG-0006「jq無しでもガードが動く」を読み、正規表現を安易に簡素化しない |
 
 ______________________________________________________________________
 
@@ -146,18 +146,18 @@ ______________________________________________________________________
 
 ### スキル早見表
 
-| スキル                                                   | 利用目的                                                         | 利用しないシーン              | 利用例                                                                                                                  |
-| -------------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| [requirements](../../../.skills/requirements.skill.md)   | 何を作るかを要件定義（目的優先・ゼロベース・対話で決定を詰める） | 実装作業そのもの（featureへ） | 目的を1文で固定→決定を1つずつ推奨案付きで詰める（確定した用語はその場で `docs/glossary.md` へ）→FR/NFR採番→テンプレ記入 |
-| [feature](../../../.skills/feature.skill.md)             | 新機能を端から端まで実装                                         | 既存バグの修正（bugfixへ）    | issue の受入基準を Definition of Done として実装                                                                        |
-| [bugfix](../../../.skills/bugfix.skill.md)               | 欠陥を堅牢・冪等な恒久修正で根本解決                             | 新機能追加、純粋な整形        | 再現→落ちる回帰テスト→原因修正→再実行安全性→周辺捜索。明示指示時のみ期限付き応急処置                                    |
-| [refactor](../../../.skills/refactor.skill.md)           | 振る舞いを変えず構造改善                                         | 挙動を変える変更（featureへ） | 特性テストで固定→機械的に段階リネーム/抽出                                                                              |
-| [architecture](../../../.skills/architecture.skill.md)   | 構造/境界/技術の変更（ADR必須）                                  | 局所的なコード修正            | 2〜4案（何もしない含む）比較→ADR→人間承認→段階移行                                                                      |
-| [test](../../../.skills/test.skill.md)                   | テストの追加/改善/flaky修復                                      | 実装そのもの                  | 振る舞い列挙→境界マトリクス（空/1/多/最大/異常）                                                                        |
-| [security](../../../.skills/security.skill.md)           | 脆弱性対応・堅牢化・監査                                         | 通常の機能実装                | スキャナ指摘の分類→信頼境界で修正→性質をテスト化                                                                        |
-| [documentation](../../../.skills/documentation.skill.md) | ドキュメント作成/保守                                            | コードのみの変更              | doc-update matrix の義務を満たし、リンク/コマンドを実検証                                                               |
-| [review](../../../.skills/review.skill.md)               | PRレビュー/セルフレビュー                                        | 実装作業そのもの              | 10観点を走査し Blocker>Major>Minor で file:line+ID+修正案                                                               |
-| [release](../../../.skills/release.skill.md)             | リリース準備（人間が承認）                                       | 日常開発                      | REL-020 ゲート検証→リスク要約→**マージは人間**                                                                          |
+| スキル | 利用目的 | 利用しないシーン | 利用例 |
+| -- | -- | -- | -- |
+| [requirements](../../../.skills/requirements.skill.md) | 何を作るかを要件定義（目的優先・ゼロベース・対話で決定を詰める） | 実装作業そのもの（featureへ） | 目的を1文で固定→決定を1つずつ推奨案付きで詰める（確定した用語はその場で `docs/glossary.md` へ）→FR/NFR採番→テンプレ記入 |
+| [feature](../../../.skills/feature.skill.md) | 新機能を端から端まで実装 | 既存バグの修正（bugfixへ） | issue の受入基準を Definition of Done として実装 |
+| [bugfix](../../../.skills/bugfix.skill.md) | 欠陥を堅牢・冪等な恒久修正で根本解決 | 新機能追加、純粋な整形 | 再現→落ちる回帰テスト→原因修正→再実行安全性→周辺捜索。明示指示時のみ期限付き応急処置 |
+| [refactor](../../../.skills/refactor.skill.md) | 振る舞いを変えず構造改善 | 挙動を変える変更（featureへ） | 特性テストで固定→機械的に段階リネーム/抽出 |
+| [architecture](../../../.skills/architecture.skill.md) | 構造/境界/技術の変更（ADR必須） | 局所的なコード修正 | 2〜4案（何もしない含む）比較→ADR→人間承認→段階移行 |
+| [test](../../../.skills/test.skill.md) | テストの追加/改善/flaky修復 | 実装そのもの | 振る舞い列挙→境界マトリクス（空/1/多/最大/異常） |
+| [security](../../../.skills/security.skill.md) | 脆弱性対応・堅牢化・監査 | 通常の機能実装 | スキャナ指摘の分類→信頼境界で修正→性質をテスト化 |
+| [documentation](../../../.skills/documentation.skill.md) | ドキュメント作成/保守 | コードのみの変更 | doc-update matrix の義務を満たし、リンク/コマンドを実検証 |
+| [review](../../../.skills/review.skill.md) | PRレビュー/セルフレビュー | 実装作業そのもの | 10観点を走査し Blocker>Major>Minor で file:line+ID+修正案 |
+| [release](../../../.skills/release.skill.md) | リリース準備（人間が承認） | 日常開発 | REL-020 ゲート検証→リスク要約→**マージは人間** |
 
 - **スキル全体を使わないシーン**：会話的な単発質問、些末な機械的編集（スキルを読むまでもない場合）。
 
@@ -284,10 +284,10 @@ ______________________________________________________________________
 
 Claude Code は起動時に**親ディレクトリを遡って** `CLAUDE.md` を読み込みます。全リポ共通の指示を効かせられます。
 
-| 場所                   | 利用目的                         | 利用シーン                           | 利用しないシーン                       | 利用例                         |
-| ---------------------- | -------------------------------- | ------------------------------------ | -------------------------------------- | ------------------------------ |
-| `~/.claude/CLAUDE.md`  | 全プロジェクト共通の個人設定     | 「常に日本語で応答」等の恒常的な好み | ハードなガードレール（失われる）       | 応答言語・コミット文体を指定   |
-| `~/projects/CLAUDE.md` | その配下の全リポ共通ハウスルール | 複数リポをまとめる作業ディレクトリ   | リポ固有の正準ルール（各 .ai/ が持つ） | 優先ライブラリ・役割分担を記述 |
+| 場所 | 利用目的 | 利用シーン | 利用しないシーン | 利用例 |
+| -- | -- | -- | -- | -- |
+| `~/.claude/CLAUDE.md` | 全プロジェクト共通の個人設定 | 「常に日本語で応答」等の恒常的な好み | ハードなガードレール（失われる） | 応答言語・コミット文体を指定 |
+| `~/projects/CLAUDE.md` | その配下の全リポ共通ハウスルール | 複数リポをまとめる作業ディレクトリ | リポ固有の正準ルール（各 .ai/ が持つ） | 優先ライブラリ・役割分担を記述 |
 
 - **重要**：これは Claude Code 固有。ChatGPT/Gemini は親/グローバル `CLAUDE.md` を読みません。
   **ハードな禁止事項は各リポの `.ai/` と PreToolUse フックに置く**こと（グローバル層“だけ”に置くと、
@@ -297,12 +297,12 @@ ______________________________________________________________________
 
 ## 10. エージェント別の使い分け
 
-|               | Claude Code                            | ChatGPT / Gemini / Codex                                       |
-| ------------- | -------------------------------------- | -------------------------------------------------------------- |
-| 入口          | `CLAUDE.md`（自動読込）→ agent profile | `AGENTS.md` → `CLAUDE.md` → agent profileを明示的に読ませる    |
-| ルール/スキル | 同じ（`.ai/`, `.skills/`）             | 同じ（プレーンMarkdownなので読める）                           |
-| 自動強制      | `.claude/` フックが自動で効く          | フックは効かない → `make lint` 等を手動実行、GR を自己チェック |
-| グローバル層  | `~/.claude`・親 `CLAUDE.md` 自動       | 読まれない → 必要なら手動で貼る                                |
+|  | Claude Code | ChatGPT / Gemini / Codex |
+| -- | -- | -- |
+| 入口 | `CLAUDE.md`（自動読込）→ agent profile | `AGENTS.md` → `CLAUDE.md` → agent profileを明示的に読ませる |
+| ルール/スキル | 同じ（`.ai/`, `.skills/`） | 同じ（プレーンMarkdownなので読める） |
+| 自動強制 | `.claude/` フックが自動で効く | フックは効かない → `make lint` 等を手動実行、GR を自己チェック |
+| グローバル層 | `~/.claude`・親 `CLAUDE.md` 自動 | 読まれない → 必要なら手動で貼る |
 
 ______________________________________________________________________
 
@@ -329,15 +329,15 @@ ______________________________________________________________________
 本書は「主目的がAIの振る舞いを**指示・案内・制約**すること」を収録基準にしています。以下は基準から外れるため
 意図的に除外しました（AIが"使う/従う"対象ではあっても、指示文そのものではない）。
 
-| グループ            | ファイル                                                                                                             | 除外理由                                                                                                                                                                                    |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ツール/自動化       | `Makefile`, `profiles/*/Makefile`, `.pre-commit-config.yaml`, `.github/workflows/*`, `scripts/*.sh`, `renovate.json` | 実行インターフェースや強制機構であって挙動の"指示文"ではない（正準ターゲットの契約 = profiles/README.md は §7 に収録）                                                                      |
-| 設定                | `.gitignore`, `.gitattributes`, `.editorconfig`, `.env.example`, `.mdformat.toml`, `.templatesyncignore`             | 環境・整形・同期の設定                                                                                                                                                                      |
-| ガバナンス metadata | `.github/CODEOWNERS`, `labels.yml`, `discussion-categories.md`                                                       | レビュー経路・ラベル・カテゴリ定義。AIは使うが指示ではない                                                                                                                                  |
-| 人間向け            | `README.md`, `SECURITY.md`, `docs/foundation/guides/usage.md`, `usage.ja.md`                                         | 人間向け。特に `README.md` はAIを「CLAUDE.mdへ」と誘導する側。AI向けセキュリティは `.ai/security.md`（§3収録）が担う                                                                        |
-| 記述的ドキュメント  | `docs/foundation/guides/*.md`                                                                                        | 権威レベル5の**記述（informative）**。利用先所有の`docs/**`を占有せず、各配置先の目的・構造・更新トリガーを案内する                                                                         |
-| ドキュメント雛形    | `docs/foundation/templates/`                                                                                         | 基盤所有の記入用テンプレート（例：`requirements.md`）。指示文ではなく、`requirements` スキルが利用先の `docs/` へ展開する対象。文章規約は DOC-002、文書構造は DOC-003（ともに§3収録）が担う |
-| 例コード            | `src/modules/catalog/**/*.py`, `tests/**/*.py`                                                                       | "指示"ではなく"手本（imitateする参照, COD-050）"。契約は代表として `MODULE.md` を §7 に収録                                                                                                 |
+| グループ | ファイル | 除外理由 |
+| -- | -- | -- |
+| ツール/自動化 | `Makefile`, `profiles/*/Makefile`, `.pre-commit-config.yaml`, `.github/workflows/*`, `scripts/*.sh`, `renovate.json` | 実行インターフェースや強制機構であって挙動の"指示文"ではない（正準ターゲットの契約 = profiles/README.md は §7 に収録） |
+| 設定 | `.gitignore`, `.gitattributes`, `.editorconfig`, `.env.example`, `.mdformat.toml`, `.templatesyncignore` | 環境・整形・同期の設定 |
+| ガバナンス metadata | `.github/CODEOWNERS`, `labels.yml`, `discussion-categories.md` | レビュー経路・ラベル・カテゴリ定義。AIは使うが指示ではない |
+| 人間向け | `README.md`, `SECURITY.md`, `docs/foundation/guides/usage.md`, `usage.ja.md` | 人間向け。特に `README.md` はAIを「CLAUDE.mdへ」と誘導する側。AI向けセキュリティは `.ai/security.md`（§3収録）が担う |
+| 記述的ドキュメント | `docs/foundation/guides/*.md` | 権威レベル5の**記述（informative）**。利用先所有の`docs/**`を占有せず、各配置先の目的・構造・更新トリガーを案内する |
+| ドキュメント雛形 | `docs/foundation/templates/` | 基盤所有の記入用テンプレート（例：`requirements.md`）。指示文ではなく、`requirements` スキルが利用先の `docs/` へ展開する対象。文章規約は DOC-002、文書構造は DOC-003（ともに§3収録）が担う |
+| 例コード | `src/modules/catalog/**/*.py`, `tests/**/*.py` | "指示"ではなく"手本（imitateする参照, COD-050）"。契約は代表として `MODULE.md` を §7 に収録 |
 
 **線引きの原則**：規範（normative, 従うべき）は収録、記述（descriptive, 参考情報）と純粋な実行/設定は除外。
 記述的docsやツールも間接的にAIの行動に影響しますが、"指示の発生源"は `.ai/`・`.skills/`・契約ファイルに集約されています。
