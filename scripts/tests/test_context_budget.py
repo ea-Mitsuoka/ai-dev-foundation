@@ -576,6 +576,56 @@ class ContextBudgetTest(unittest.TestCase):
 
             self.assertEqual([], errors)
 
+    def test_adr_index_accepts_column_padded_tables(self):
+        # mdformat-gfm pads every cell to the column width; the index and the legacy
+        # metadata table must parse with any run of spaces around a cell.
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            directory = root / "docs/foundation/adr"
+            directory.mkdir(parents=True)
+            (directory / "0001-padded.md").write_text(
+                "# ADR-0001: Padded\n\n"
+                "| Field  | Value      |\n"
+                "| ------ | ---------- |\n"
+                "| Status | accepted   |\n"
+                "| Date   | 2026-07-01 |\n",
+                encoding="utf-8",
+            )
+            (directory / "0002-longer-name.md").write_text(
+                "---\nstatus: proposed\nupdated: 2026-07-02\n---\n",
+                encoding="utf-8",
+            )
+            (directory / "README.md").write_text(
+                "| #                            | Title  | Scope   | Status   | Date       |\n"
+                "| ---------------------------- | ------ | ------- | -------- | ---------- |\n"
+                "| [0001](0001-padded.md)       | Padded | context | accepted | 2026-07-01 |\n"
+                "| [0002](0002-longer-name.md)  | Longer | context | proposed | 2026-07-02 |\n",
+                encoding="utf-8",
+            )
+
+            errors = context_budget.validate_adr_index(root)
+
+            self.assertEqual([], errors)
+
+    def test_guide_index_accepts_column_padded_tables(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            directory = root / "docs/foundation/guides"
+            directory.mkdir(parents=True)
+            (directory / "short.md").write_text("# Short\n", encoding="utf-8")
+            (directory / "much-longer-guide.md").write_text("# Long\n", encoding="utf-8")
+            (directory / "README.md").write_text(
+                "| Guide                                      | Purpose |\n"
+                "| ------------------------------------------ | ------- |\n"
+                "| [short.md](short.md)                       | Short   |\n"
+                "| [much-longer-guide.md](much-longer-guide.md) | Long    |\n",
+                encoding="utf-8",
+            )
+
+            errors = context_budget.validate_guide_index(root)
+
+            self.assertEqual([], errors)
+
     def test_guide_index_rejects_missing_duplicate_and_stale_entries(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory)
