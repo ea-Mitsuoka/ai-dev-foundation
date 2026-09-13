@@ -48,6 +48,6 @@ broaden the search under ADR-0012 when relevance is uncertain.
 | [0020](0020-require-japanese-pull-request-text-in-leaf-repositories.md) | Require Japanese pull-request text in leaf repositories | pull-request language, template inheritance, review operations | accepted | 2026-09-02 |
 | [0021](0021-adopt-the-foundation-into-an-existing-repository.md) | Adopt the foundation into an existing repository | template inheritance, repository adoption, Template Sync | accepted | 2026-09-02 |
 | [0022](0022-activate-inheritance-metadata-only-after-the-tree-is-present.md) | Activate inheritance metadata only after the inherited tree is present | template inheritance, repository adoption, Template Sync | accepted | 2026-09-02 |
-| [0023](0023-integrate-test-first-slices-and-inline-domain-terms.md) | Integrate test-first slices and inline domain-term capture | testing policy, requirements, glossary, AI implementation | proposed | 2026-09-13 |
+| [0023](0023-integrate-test-first-slices-and-inline-domain-terms.md) | Integrate test-first slices and inline domain-term capture | testing policy, requirements, glossary, AI implementation | accepted | 2026-09-13 |
 
 <!-- Append new ADRs to this table (newest last). -->
