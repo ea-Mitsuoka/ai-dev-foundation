@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.4.0](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.3.1...v2.4.0) (2026-09-23)
+
+
+### Features
+
+* **contracts:** inherit the canonical make target contract (ADR-0024) ([#48](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/48)) ([2c6428a](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/2c6428a37e9b571994c67e015187cd1527b5a885))
+
+
+### Bug Fixes
+
+* **tooling:** accept column-padded ADR and guide index tables ([#39](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/39)) ([39cefa0](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/39cefa08428412f08d459ba2bd5f2a07963757a1))
+
 ## [2.3.1](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.3.0...v2.3.1) (2026-09-02)
 
 
