@@ -52,6 +52,6 @@ broaden the search under ADR-0012 when relevance is uncertain.
 
 | [0024](0024-keep-inherited-documents-free-of-links-into-optional-repository-owned-paths.md) | Keep inherited documents free of links into optional repository-owned paths | template inheritance, documentation, make targets | accepted | 2026-09-23 |
 
-| [0025](0025-declare-the-direct-parent-with-an-adoption-marker-until-activation.md) | Declare the direct parent with an adoption marker until activation | template inheritance, repository adoption, Template Sync | proposed | 2026-09-24 |
+| [0025](0025-declare-the-direct-parent-with-an-adoption-marker-until-activation.md) | Declare the direct parent with an adoption marker until activation | template inheritance, repository adoption, Template Sync | accepted | 2026-09-24 |
 
 <!-- Append new ADRs to this table (newest last). -->

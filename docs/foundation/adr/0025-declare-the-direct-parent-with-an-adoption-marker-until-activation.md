@@ -1,7 +1,7 @@
 ---
 id: adr-0025
 title: ADR-0025 — Declare the direct parent with an adoption marker until activation
-status: proposed
+status: accepted
 updated: 2026-09-24
 ---
 
@@ -9,9 +9,9 @@ updated: 2026-09-24
 
 | Field | Value |
 | -- | -- |
-| Status | proposed |
+| Status | accepted |
 | Date | 2026-09-24 |
-| Deciders | repository owner |
+| Deciders | repository owner (approved 2026-09-24) |
 | Author | Claude Opus 5.5 (AI agent) |
 | Supersedes / Superseded by | Amends ADR-0022 (phase 1 writes one more file; phase 3 removes it); supersedes none |
 

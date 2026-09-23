@@ -103,6 +103,60 @@ class TemplateSyncAuthTest(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn("requires a child inheritance manifest", result.stderr)
 
+    # -- ADR-0025: the adoption marker declares the parent before activation -------------
+
+    def use_adoption_marker(self, document: object) -> None:
+        (self.repository / ".github/inheritance/manifest.json").unlink()
+        (self.repository / ".github/inheritance/adoption.json").write_text(
+            json.dumps(document), encoding="utf-8"
+        )
+
+    def test_adoption_marker_declares_the_parent_before_activation(self) -> None:
+        self.use_adoption_marker({"schema_version": 1, "parent": {"repository": "acme/parent"}})
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout)["repository"], "parent")
+
+    def test_adoption_marker_keeps_the_source_check(self) -> None:
+        self.use_adoption_marker({"schema_version": 1, "parent": {"repository": "acme/parent"}})
+
+        result = self.run_validator(source="acme/other")
+
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("declared direct parent does not match", result.stderr)
+
+    def test_adoption_marker_requires_its_schema_version(self) -> None:
+        self.use_adoption_marker({"parent": {"repository": "acme/parent"}})
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("adoption marker schema_version must be 1", result.stderr)
+
+    def test_manifest_and_adoption_marker_together_are_refused(self) -> None:
+        (self.repository / ".github/inheritance/adoption.json").write_text(
+            json.dumps({"schema_version": 1, "parent": {"repository": "acme/parent"}}),
+            encoding="utf-8",
+        )
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("adoption marker must be removed once the manifest exists", result.stderr)
+
+    def test_symlinked_declaration_is_refused(self) -> None:
+        manifest = self.repository / ".github/inheritance/manifest.json"
+        target = self.repository / "elsewhere.json"
+        manifest.rename(target)
+        manifest.symlink_to(target)
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("must not be a symlink", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

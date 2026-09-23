@@ -65,6 +65,21 @@ other than the one that PR delivered. Merge the sync PR, then rerun `--apply` wi
 commit from its `Direct-parent-source:` line. Activation never writes the lock ahead of
 the content (ADR-0022).
 
+## `Template Sync requires a child inheritance manifest or adoption marker`
+
+The sync workflow's first step found neither `.github/inheritance/manifest.json` nor
+`.github/inheritance/adoption.json`, so it cannot confirm which repository it may pull
+from. In a repository being adopted, run phase 1 (`adopt-child --prepare --apply`) with a
+foundation release that includes ADR-0025; it writes the marker. A repository that ran
+phase 1 before ADR-0025 reports the older message `Template Sync requires a child
+inheritance manifest` and must re-run phase 1.
+
+## `Template Sync adoption marker must be removed once the manifest exists`
+
+Activation deletes the marker in the change that writes the manifest. If both files are
+present, the marker was restored or re-added by hand. Delete
+`.github/inheritance/adoption.json`; the manifest is the declaration from then on.
+
 ## `bootstrap target differs from both parent and desired content: README.md`
 
 Adoption writes a payload path only when the repository file is absent or already
