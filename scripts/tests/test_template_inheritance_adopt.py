@@ -15,6 +15,12 @@ MODULE_PATH = Path(__file__).parents[1] / "template_inheritance.py"
 SPEC = importlib.util.spec_from_file_location("template_inheritance_adopt", MODULE_PATH)
 inheritance = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(inheritance)
+# The real transport check every sync runs first (ADR-0025), not the placeholder below.
+AUTH_SPEC = importlib.util.spec_from_file_location(
+    "template_sync_auth_adopt", Path(__file__).parents[1] / "template_sync_auth.py"
+)
+transport = importlib.util.module_from_spec(AUTH_SPEC)
+AUTH_SPEC.loader.exec_module(transport)
 
 PARENT = "acme/parent-template"
 CHILD = "acme/existing-service"
@@ -24,7 +30,8 @@ AUTH = "scripts/template_sync_auth.py"
 WORKFLOW = ".github/workflows/template-sync.yml"
 ARCHIVE = "docs/inheritance/readmes/acme/parent-template.md"
 CHILD_README = f"<!-- repository-readme-owner: {CHILD} -->\n# Existing Service\n"
-TRANSPORT_FILES = [WORKFLOW, ".templatesyncignore", AUTH]
+MARKER = ".github/inheritance/adoption.json"
+TRANSPORT_FILES = [WORKFLOW, ".templatesyncignore", MARKER, AUTH]
 METADATA_FILES = [
     ".ai/project/agent-overlay.md",
     ".github/inheritance/agent-profile.json",
@@ -272,6 +279,31 @@ class AdoptChildTest(unittest.TestCase):
         self.assertIn(AUTH, result["changed_paths"])
         self.assertEqual((self.child / AUTH).read_text(), "print('auth v1')\n")
 
+    def transport_check(self, source=PARENT):
+        return transport.validate(self.child.resolve(), source, "public", False, False)
+
+    def test_the_real_transport_check_passes_in_phase_2_and_after_activation(self):
+        # Regression (ADR-0025): phase 2 used to stop at this check, which needed a manifest.
+        with self.assertRaises(transport.ConfigurationError):
+            self.transport_check()  # no declaration of any kind yet
+        self.prepare()
+        self.commit(self.child, "chore: prepare adoption")
+
+        self.assertEqual(self.transport_check()["repository"], "parent-template")
+        with self.assertRaisesRegex(transport.ConfigurationError, "does not match"):
+            self.transport_check("acme/elsewhere")
+
+        self.simulate_sync()
+        self.apply()
+        self.commit(self.child, "chore(inheritance): adopt the foundation")
+        self.assertEqual(self.transport_check()["repository"], "parent-template")  # now via the manifest
+
+    def test_marker_declares_only_the_direct_parent(self):
+        self.prepare()
+
+        marker = json.loads((self.child / MARKER).read_text())
+        self.assertEqual(marker, {"schema_version": 1, "parent": {"repository": PARENT}})
+
     # -- phase 3: activation -------------------------------------------------------------
 
     def test_activation_refuses_until_the_tree_has_been_delivered(self):
@@ -292,6 +324,8 @@ class AdoptChildTest(unittest.TestCase):
 
         self.assertEqual(result["status"], "adopted")
         self.assertEqual(result["changed_paths"], sorted(set(METADATA_FILES) - {"README.md"}))
+        self.assertEqual(result["removed_paths"], [MARKER])
+        self.assertFalse((self.child / MARKER).exists())
         self.assertEqual(result["protected_collisions"], ["scripts/local_tool.py"])
         lock = json.loads((self.child / ".github/inheritance/lock.json").read_text())
         self.assertEqual(lock["parent"], {"repository": PARENT, "commit": self.source})

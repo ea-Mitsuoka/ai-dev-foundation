@@ -10,6 +10,9 @@ from pathlib import Path
 
 REPOSITORY = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 MAX_MANIFEST_BYTES = 1_000_000
+MANIFEST_PATH = ".github/inheritance/manifest.json"
+# ADR-0025: during adoption (before phase 3 writes the manifest) the parent is declared here.
+ADOPTION_MARKER_PATH = ".github/inheritance/adoption.json"
 SUPPORTED_MODES = {"public", "github-app"}
 
 
@@ -23,6 +26,40 @@ def configured(value: str, name: str) -> bool:
     return value == "true"
 
 
+def _present(path: Path) -> bool:
+    if path.is_symlink():
+        raise ConfigurationError("Template Sync parent declaration must not be a symlink")
+    return path.is_file()
+
+
+def declared_direct_parent(root: Path) -> object:
+    """The parent from the manifest, or from the adoption marker before activation."""
+    manifest_path = root / MANIFEST_PATH
+    marker_path = root / ADOPTION_MARKER_PATH
+    has_manifest = _present(manifest_path)
+    has_marker = _present(marker_path)
+    if has_manifest and has_marker:
+        raise ConfigurationError(
+            "Template Sync adoption marker must be removed once the manifest exists"
+        )
+    if not has_manifest and not has_marker:
+        raise ConfigurationError(
+            "Template Sync requires a child inheritance manifest or adoption marker"
+        )
+    declaration = manifest_path if has_manifest else marker_path
+    try:
+        if declaration.stat().st_size > MAX_MANIFEST_BYTES:
+            raise ConfigurationError("Template Sync parent declaration is too large")
+        document = json.loads(declaration.read_text(encoding="utf-8"))
+        if has_marker and document.get("schema_version") != 1:
+            raise ConfigurationError("Template Sync adoption marker schema_version must be 1")
+        return document["parent"]["repository"]
+    except (OSError, UnicodeError, json.JSONDecodeError, KeyError, TypeError, AttributeError) as error:
+        raise ConfigurationError(
+            "Template Sync could not read the declared direct parent"
+        ) from error
+
+
 def validate(
     root: Path,
     source_repository: str,
@@ -34,18 +71,7 @@ def validate(
         raise ConfigurationError(
             "Template Sync source repository must be one owner/repository value"
         )
-    manifest_path = root / ".github/inheritance/manifest.json"
-    if not manifest_path.is_file() or manifest_path.is_symlink():
-        raise ConfigurationError("Template Sync requires a child inheritance manifest")
-    try:
-        if manifest_path.stat().st_size > MAX_MANIFEST_BYTES:
-            raise ConfigurationError("Template Sync inheritance manifest is too large")
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        declared_parent = manifest["parent"]["repository"]
-    except (OSError, UnicodeError, json.JSONDecodeError, KeyError, TypeError) as error:
-        raise ConfigurationError(
-            "Template Sync could not read the declared direct parent"
-        ) from error
+    declared_parent = declared_direct_parent(root)
     if not isinstance(declared_parent, str) or not REPOSITORY.fullmatch(
         declared_parent
     ):

@@ -292,12 +292,15 @@ because ownership roots may not overlap. A `child_only` collision cannot be acce
 Adoption writes in two phases so that the lock is never ahead of the content:
 
 - **`--prepare --apply`** writes only the transport: the ignore file, the reviewed
-  `template-sync.yml` payload, and `scripts/template_sync_auth.py` byte-identical to the
-  parent (the sync workflow's own dependency). The bot Template Sync PR then delivers the
-  tree; in a repository without `pr-quality` that PR is unchecked against GR-020.
+  `template-sync.yml` payload, `scripts/template_sync_auth.py` byte-identical to the
+  parent (the sync workflow's own dependency), and `.github/inheritance/adoption.json`,
+  which declares only the direct parent for the transport check until a manifest exists
+  (ADR-0025). The bot Template Sync PR then delivers the tree; in a repository without
+  `pr-quality` that PR is unchecked against GR-020.
 - **`--apply`** refuses unless every non-protected inherited path matches the source commit,
-  then writes the manifest, lock, agent profile, README payload, and archive, and runs the
-  full contract validation. Pass the commit the sync actually delivered.
+  then writes the manifest, lock, agent profile, README payload, and archive, deletes the
+  adoption marker, and runs the full contract validation. Pass the commit the sync
+  actually delivered.
 
 ```bash
 python3 scripts/template_inheritance.py adopt-child \

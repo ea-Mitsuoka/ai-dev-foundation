@@ -309,11 +309,14 @@ python3 scripts/template_inheritance.py adopt-child \
   --confirm-repository owner/repository --confirm-source <commit>
 ```
 
-This writes exactly three files: `.templatesyncignore` (carrying the protect decisions),
-the reviewed `.github/workflows/template-sync.yml` from the payload directory, and
+This writes exactly four files: `.templatesyncignore` (carrying the protect decisions),
+the reviewed `.github/workflows/template-sync.yml` from the payload directory,
 `scripts/template_sync_auth.py` byte-identical to the parent — the one inherited file the
-sync workflow needs before it can run. No manifest, lock, or agent profile exists yet.
-Open this as PR 1.
+sync workflow needs before it can run — and the adoption marker
+`.github/inheritance/adoption.json`, which declares only the direct parent so that the
+transport check can pass before a manifest exists
+([ADR-0025](../adr/0025-declare-the-direct-parent-with-an-adoption-marker-until-activation.md)).
+No manifest, lock, or agent profile exists yet. Open this as PR 1.
 
 ### 3. Phase 2 — let Template Sync deliver the tree (PR 2)
 
@@ -342,8 +345,9 @@ python3 scripts/template_inheritance.py adopt-child \
 
 Activation refuses unless every non-protected inherited path is byte-identical to that
 commit — `bootstrap-child`'s own precondition. Only then does it write the manifest, lock,
-agent profile, README, and archive, and the full contract validates immediately. Protect
-decisions are read back from the ignore file, so no `--protect` flags are needed.
+agent profile, README, and archive, deletes the adoption marker, and the full contract
+validates immediately. Protect decisions are read back from the ignore file, so no
+`--protect` flags are needed.
 
 The adopted repository publishes no contract root, so it is a **leaf** under
 [ADR-0020](../adr/0020-require-japanese-pull-request-text-in-leaf-repositories.md):

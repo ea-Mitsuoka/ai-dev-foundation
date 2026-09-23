@@ -1056,6 +1056,8 @@ def apply_bootstrap(
 
 ADOPT_TRANSPORT_DEPENDENCY = "scripts/template_sync_auth.py"
 ADOPT_WORKFLOW_PATH = ".github/workflows/template-sync.yml"
+# ADR-0025: declares the direct parent for the transport check until the manifest exists.
+ADOPT_MARKER_PATH = ".github/inheritance/adoption.json"
 ADOPT_REPORT_LIMIT = 50
 
 
@@ -1172,6 +1174,11 @@ def _adopt_ignore_payload(desired):
     ).encode()
 
 
+def _adopt_marker_payload(parent_repository):
+    document = {"schema_version": 1, "parent": {"repository": parent_repository}}
+    return (json.dumps(document, indent=2) + "\n").encode()
+
+
 def _adopt_metadata_payloads(desired):
     return {
         MANIFEST_PATH: (json.dumps(desired["manifest"], indent=2) + "\n").encode(),
@@ -1238,6 +1245,7 @@ def plan_adopt(root, parent_root, source_commit, repository, *, protect=(), acce
     desired = _adopt_desired(repository, parent_repository, source_commit, export, ownership)
     prepared = (
         _adopt_matches(child_root, TEMPLATE_SYNC_IGNORE_PATH, _adopt_ignore_payload(desired))
+        and _adopt_matches(child_root, ADOPT_MARKER_PATH, _adopt_marker_payload(parent_repository))
         and (child_root / ADOPT_WORKFLOW_PATH).is_file()
         and child_entries.get(ADOPT_TRANSPORT_DEPENDENCY) == parent_entries.get(ADOPT_TRANSPORT_DEPENDENCY)
     )
@@ -1256,7 +1264,7 @@ def plan_adopt(root, parent_root, source_commit, repository, *, protect=(), acce
         path for path in child_entries
         if _owned_by(path, effective_inherited) and path not in parent_entries
     )
-    activated = all(
+    activated = not (child_root / ADOPT_MARKER_PATH).exists() and all(
         _adopt_matches(child_root, path, payload)
         for path, payload in _adopt_metadata_payloads(desired).items()
     )
@@ -1321,6 +1329,7 @@ def _adopt_prepare_payloads(plan, child_root, parent_root, payload_root):
     dependency = _git_blob(parent_root, entry[0], ADOPT_TRANSPORT_DEPENDENCY)
     return {
         TEMPLATE_SYNC_IGNORE_PATH: _adopt_ignore_payload(plan["desired"]),
+        ADOPT_MARKER_PATH: _adopt_marker_payload(plan["parent"]["repository"]),
         ADOPT_WORKFLOW_PATH: workflow,
         ADOPT_TRANSPORT_DEPENDENCY: dependency,
     }
@@ -1329,7 +1338,7 @@ def _adopt_prepare_payloads(plan, child_root, parent_root, payload_root):
 def _adopt_prepare_change(child_root, parent_root, source_commit, path, payload):
     # The ignore file is generated, and the transport dependency is the parent's exact blob:
     # a differing child copy is a collision that plan_adopt already required to be accepted.
-    if path in {TEMPLATE_SYNC_IGNORE_PATH, ADOPT_TRANSPORT_DEPENDENCY}:
+    if path in {TEMPLATE_SYNC_IGNORE_PATH, ADOPT_MARKER_PATH, ADOPT_TRANSPORT_DEPENDENCY}:
         return not _adopt_matches(child_root, path, payload)
     return _bootstrap_path_change(child_root, parent_root, source_commit, path, payload)
 
@@ -1384,13 +1393,21 @@ def apply_adopt(
     ]
     for path in changed:
         _write_bootstrap_payload(child_root, path, payloads[path])
+    # ADR-0025: the manifest now declares the parent; the transport refuses both at once.
+    marker = child_root / ADOPT_MARKER_PATH
+    removed = [ADOPT_MARKER_PATH] if marker.is_file() and not marker.is_symlink() else []
+    if marker.is_symlink():
+        raise InheritanceError(f"{ADOPT_MARKER_PATH} must not be a symlink")
+    for path in removed:
+        (child_root / path).unlink()
     validate_inheritance(child_root)
     return {
         "schema_version": SCHEMA_VERSION,
-        "status": "adopted" if changed else "already_adopted",
+        "status": "adopted" if changed or removed else "already_adopted",
         "repository": repository,
         "parent": plan["parent"],
         "changed_paths": changed,
+        "removed_paths": removed,
         "protected_collisions": plan["resolution"]["protect"],
         "accepted_collisions": plan["resolution"]["accept"],
     }
