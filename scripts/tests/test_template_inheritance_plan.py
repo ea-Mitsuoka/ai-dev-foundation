@@ -636,10 +636,17 @@ class TemplateInheritancePlanTest(unittest.TestCase):
                     "terraform-gcp-template",
                     "active",
                 ),
+                (
+                    "ea-Mitsuoka/writing-style",
+                    "writing-style",
+                    "ea-Mitsuoka/ai-dev-foundation",
+                    "ai-dev-foundation",
+                    "active",
+                ),
             },
         )
         self.assertTrue(all(item["reason"] for item in config["repositories"]))
-        self.assertEqual(len(config["repositories"]), 4)
+        self.assertEqual(len(config["repositories"]), 5)
 
     def test_fleet_report_rejects_duplicate_children_and_pair_limit(self):
         with self.assertRaisesRegex(inheritance.InheritanceError, "duplicate child"):

@@ -32,6 +32,14 @@
       "parent_directory": "ai-dev-foundation",
       "lifecycle": "active",
       "reason": "maintained Terraform family template"
+    },
+    {
+      "repository": "ea-Mitsuoka/writing-style",
+      "directory": "writing-style",
+      "parent_repository": "ea-Mitsuoka/ai-dev-foundation",
+      "parent_directory": "ai-dev-foundation",
+      "lifecycle": "active",
+      "reason": "maintained leaf project created from the foundation template; not previously registered"
     }
   ]
 }
