@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.0](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.4.0...v2.5.0) (2026-09-23)
+
+
+### Features
+
+* **inheritance:** declare the direct parent with an adoption marker (ADR-0025) ([#52](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/52)) ([1f0684c](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/1f0684c5a71e571c839aae8cd3d5d9d445c1590d))
+
 ## [2.4.0](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.3.1...v2.4.0) (2026-09-23)
 
 
