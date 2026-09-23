@@ -45,7 +45,8 @@ make test-integration   make coverage   make build   make run
 make security-scan   make sbom   make clean   make doctor
 ```
 
-Binding semantics live in `profiles/README.md`; documented no-ops may remain until wired.
+Binding semantics live in `.ai/contracts/foundation/make-targets.md`; documented no-ops may
+remain until wired.
 
 ## Runtime integration
 

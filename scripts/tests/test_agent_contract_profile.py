@@ -246,7 +246,7 @@ class FoundationAgentEntryTest(unittest.TestCase):
             ".ai/workflow.md",
             ".ai/review-checklist.md",
             "docs/development-handoff.md",
-            "profiles/README.md",
+            ".ai/contracts/foundation/make-targets.md",
             ".claude/README.md",
             "AGENTS.md",
             "Conventional Commits",

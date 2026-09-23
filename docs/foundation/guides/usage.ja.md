@@ -147,7 +147,8 @@ agent profileとproject overlayを保護対象にしてください。
 ```bash
 cp profiles/python-uv/Makefile ./Makefile      # または typescript-node / terraform-gcp
 ```
-正準ターゲット契約は [profiles/README.md](../../../profiles/README.md) を参照。
+正準ターゲット契約は [.ai/contracts/foundation/make-targets.md](../../../.ai/contracts/foundation/make-targets.md) を参照。
+`profiles/` は利用先が所有する参考実装で、存在しないこともあります。
 インスタンス化後は、必須ターゲットにテンプレートの `not wired yet` 実装が残っていると
 `make doctor` が失敗します。対象外のターゲットは、たとえば
 `[project] build: not applicable — no deployable artifact` のように、利用先が所有する
