@@ -32,6 +32,22 @@
       "parent_directory": "ai-dev-foundation",
       "lifecycle": "active",
       "reason": "maintained Terraform family template"
+    },
+    {
+      "repository": "ea-Mitsuoka/writing-style",
+      "directory": "writing-style",
+      "parent_repository": "ea-Mitsuoka/ai-dev-foundation",
+      "parent_directory": "ai-dev-foundation",
+      "lifecycle": "active",
+      "reason": "maintained leaf project created from the foundation template; not previously registered"
+    },
+    {
+      "repository": "ea-Mitsuoka/gc-project-move",
+      "directory": "gc-project-move",
+      "parent_repository": "ea-Mitsuoka/ai-dev-foundation",
+      "parent_directory": "ai-dev-foundation",
+      "lifecycle": "paused",
+      "reason": "private project created from the foundation template; adopt-child in progress (gc-project-move #24), set to active once the metadata is activated"
     }
   ]
 }
