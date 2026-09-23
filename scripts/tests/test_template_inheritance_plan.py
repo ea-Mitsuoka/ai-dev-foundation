@@ -643,10 +643,17 @@ class TemplateInheritancePlanTest(unittest.TestCase):
                     "ai-dev-foundation",
                     "active",
                 ),
+                (
+                    "ea-Mitsuoka/gc-project-move",
+                    "gc-project-move",
+                    "ea-Mitsuoka/ai-dev-foundation",
+                    "ai-dev-foundation",
+                    "paused",
+                ),
             },
         )
         self.assertTrue(all(item["reason"] for item in config["repositories"]))
-        self.assertEqual(len(config["repositories"]), 5)
+        self.assertEqual(len(config["repositories"]), 6)
 
     def test_fleet_report_rejects_duplicate_children_and_pair_limit(self):
         with self.assertRaisesRegex(inheritance.InheritanceError, "duplicate child"):
