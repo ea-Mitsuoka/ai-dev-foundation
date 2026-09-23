@@ -648,7 +648,7 @@ class TemplateInheritancePlanTest(unittest.TestCase):
                     "gc-project-move",
                     "ea-Mitsuoka/ai-dev-foundation",
                     "ai-dev-foundation",
-                    "paused",
+                    "active",
                 ),
             },
         )
