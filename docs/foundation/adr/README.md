@@ -50,4 +50,6 @@ broaden the search under ADR-0012 when relevance is uncertain.
 | [0022](0022-activate-inheritance-metadata-only-after-the-tree-is-present.md) | Activate inheritance metadata only after the inherited tree is present | template inheritance, repository adoption, Template Sync | accepted | 2026-09-02 |
 | [0023](0023-integrate-test-first-slices-and-inline-domain-terms.md) | Integrate test-first slices and inline domain-term capture | testing policy, requirements, glossary, AI implementation | accepted | 2026-09-13 |
 
+| [0024](0024-keep-inherited-documents-free-of-links-into-optional-repository-owned-paths.md) | Keep inherited documents free of links into optional repository-owned paths | template inheritance, documentation, make targets | proposed | 2026-09-23 |
+
 <!-- Append new ADRs to this table (newest last). -->
