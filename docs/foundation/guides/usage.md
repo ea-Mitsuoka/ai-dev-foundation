@@ -155,7 +155,8 @@ Copy the closest reference implementation to the repo root and wire it to your s
 ```bash
 cp profiles/python-uv/Makefile ./Makefile      # or typescript-node / terraform-gcp
 ```
-See [profiles/README.md](../../../profiles/README.md) for the canonical target contract.
+See [.ai/contracts/foundation/make-targets.md](../../../.ai/contracts/foundation/make-targets.md) for the canonical target contract;
+`profiles/` holds repository-owned reference implementations and may be absent.
 After instantiation, `make doctor` rejects the template `not wired yet` implementation
 for required targets. If a target does not apply, replace it with an explicit
 repository-owned result such as `[project] build: not applicable — no deployable

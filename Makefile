@@ -2,8 +2,8 @@
 # Every agent, hook, and CI job calls ONLY these targets, so automation stays stable
 # across stacks. TEMPLATE: replace each no-op with your project's real commands and
 # delete the placeholder echo — or start from a reference implementation in profiles/
-# (contract semantics: profiles/README.md). Optional FILE=<path> narrows format/lint
-# to one file.
+# (contract semantics: .ai/contracts/foundation/make-targets.md). Optional FILE=<path>
+# narrows format/lint to one file.
 
 .PHONY: setup format lint test test-unit test-integration coverage build run \
         security-scan sbom clean help doctor fleet-audit

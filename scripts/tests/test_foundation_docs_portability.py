@@ -1,3 +1,5 @@
+import json
+import re
 import unittest
 from pathlib import Path
 
@@ -20,7 +22,47 @@ PROJECT_DOCUMENTATION_GUIDE = (
 )
 
 
+INHERITANCE_EXPORT = REPOSITORY_ROOT / ".ai" / "contracts" / "foundation" / "inheritance-export.json"
+OPTIONAL_REPOSITORY_OWNED_ROOTS = ("profiles/", "src/", "tests/")
+RELATIVE_LINK = re.compile(r"\]\((?!https?://|mailto:|#)([^)#\s]+)")
+
+
+def inherited_markdown_documents():
+    export = json.loads(INHERITANCE_EXPORT.read_text(encoding="utf-8"))
+    for declared in export["inherited_paths"]:
+        path = REPOSITORY_ROOT / declared
+        if path.is_dir():
+            yield from sorted(path.rglob("*.md"))
+        elif path.suffix == ".md":
+            yield path
+
+
 class FoundationDocsPortabilityTest(unittest.TestCase):
+    def test_inherited_documents_do_not_link_into_optional_repository_owned_paths(self):
+        # ADR-0024: a descendant may delete profiles/, src/, and tests/; an inherited
+        # document that links into them breaks that descendant's offline link check.
+        offenders = []
+        for document in inherited_markdown_documents():
+            for match in RELATIVE_LINK.finditer(document.read_text(encoding="utf-8")):
+                target = (document.parent / match.group(1)).resolve()
+                try:
+                    relative = target.relative_to(REPOSITORY_ROOT.resolve()).as_posix()
+                except ValueError:
+                    continue
+                if relative.startswith(OPTIONAL_REPOSITORY_OWNED_ROOTS):
+                    offenders.append(f"{document.relative_to(REPOSITORY_ROOT)} -> {relative}")
+        self.assertEqual(offenders, [])
+
+    def test_agent_entry_routes_to_the_inherited_make_target_contract(self):
+        entry = (REPOSITORY_ROOT / ".ai" / "contracts" / "foundation" / "agent-entry.md").read_text(
+            encoding="utf-8"
+        )
+        contract = REPOSITORY_ROOT / ".ai" / "contracts" / "foundation" / "make-targets.md"
+
+        self.assertTrue(contract.is_file())
+        self.assertIn(".ai/contracts/foundation/make-targets.md", entry)
+        self.assertNotIn("profiles/README.md", entry)
+
     def test_root_check_does_not_classify_legacy_children_by_manifest_absence(self):
         script = TEMPLATE_CHECK.read_text(encoding="utf-8")
 
