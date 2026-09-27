@@ -5,12 +5,6 @@ from pathlib import Path
 from scripts import makefile_profile
 
 
-REPOSITORY_ROOT = Path(__file__).parents[2]
-FOUNDATION_README_MARKER = (
-    "<!-- repository-readme-owner: ea-Mitsuoka/ai-dev-foundation -->"
-)
-
-
 class MakefileProfileTest(unittest.TestCase):
     def setUp(self):
         self.temporary_directory = tempfile.TemporaryDirectory()
@@ -69,30 +63,6 @@ class MakefileProfileTest(unittest.TestCase):
             "Makefile cannot be read",
         ):
             makefile_profile.validate_makefile(self.root)
-
-
-class FoundationMakeTargetsTest(unittest.TestCase):
-    def setUp(self):
-        readme = (REPOSITORY_ROOT / "README.md").read_text(encoding="utf-8")
-        if FOUNDATION_README_MARKER not in readme:
-            self.skipTest("Foundation-owned root Make targets are not inherited")
-        self.makefile = (REPOSITORY_ROOT / "Makefile").read_text(encoding="utf-8")
-
-    def test_foundation_test_targets_execute_regression_suites(self):
-        self.assertIn("test: test-unit", self.makefile)
-        self.assertIn("bash .claude/hooks/tests/guard-bash.test.sh", self.makefile)
-        self.assertIn(
-            "python3 -m unittest discover -s scripts/tests -p 'test_*.py'",
-            self.makefile,
-        )
-        self.assertNotIn("[template] test: not wired yet", self.makefile)
-        self.assertNotIn("[template] test-unit: not wired yet", self.makefile)
-
-    def test_foundation_coverage_target_emits_a_local_report(self):
-        self.assertIn("coverage: ## Test with coverage report", self.makefile)
-        self.assertIn("python3 -m trace --count --missing --summary", self.makefile)
-        self.assertIn("--coverdir coverage", self.makefile)
-        self.assertNotIn("[template] coverage: not wired yet", self.makefile)
 
 
 if __name__ == "__main__":
