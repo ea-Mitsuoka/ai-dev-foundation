@@ -18,7 +18,7 @@ meeting the Definition of Done (WF-090).
   criteria first and get them confirmed (escalate if ambiguous — CLAUDE.md §13).
 - Target module(s): identify via `src/modules/*/MODULE.md`; read the MODULE.md of every
   module you will touch.
-- Green baseline: `make test-unit` passes before you start (TST-030).
+- Green baseline: `task test-unit` passes before you start (TST-030).
 
 ## Process
 
@@ -41,7 +41,7 @@ meeting the Definition of Done (WF-090).
     values from a source independent of the implementation (TST-010).
 08. Update docs per the doc-update matrix (DOC-030): MODULE.md, `docs/api/`,
     `.env.example`, glossary.
-09. Run `make format && make lint && make test`.
+09. Run `task format && task lint && task test`.
 10. Self-review with review.skill.md; then open the PR with the template fully filled.
 
 ## Decision criteria
@@ -73,4 +73,4 @@ meeting the Definition of Done (WF-090).
 - [ ] Complexity checkpoint resolved without cosmetic splitting (MNT-001/MNT-002/GR-025)
 - [ ] Doc-update matrix satisfied (DOC-030)
 - [ ] Diff within size limits (GR-020); no unrelated changes
-- [ ] `make format`, `make lint`, `make test` all green — output reported verbatim
+- [ ] `task format`, `task lint`, `task test` all green — output reported verbatim

@@ -50,6 +50,7 @@ Refs: #<issue>
 Whether commits carry an AI co-author trailer (e.g.
 `Co-Authored-By: Claude <noreply@anthropic.com>`) is a **per-repository decision**,
 because GitHub renders the trailer and thereby discloses AI involvement in history and PRs.
+
 - This template's default: **include it** — transparency about how the code was produced.
 - Client / engagement repos where disclosure conflicts with the contract MUST turn it off,
   record the decision in `.ai/decision-log.md`, and enforce it. The reliable mechanism is a
@@ -69,6 +70,7 @@ because GitHub renders the trailer and thereby discloses AI involvement in histo
 ## WF-040: Parallel-agent protocol
 
 Multiple AI agents may work simultaneously. To avoid collisions:
+
 - One branch = one agent = one task. Never commit to another agent's branch.
 - Claim work by assigning the GitHub issue / adding `status:in-progress` label.
 - Contract changes (ARC-020 "Contract" scope) are serialized: announce in the issue,
@@ -78,9 +80,10 @@ Multiple AI agents may work simultaneously. To avoid collisions:
 ## WF-090: Definition of Done
 
 A task is done only when ALL hold:
+
 - [ ] Acceptance criteria of the issue met
-- [ ] Tests added/updated and `make test` green (TST rules)
-- [ ] `make lint` and `make format` clean
+- [ ] Tests added/updated and `task test` green (TST rules)
+- [ ] `task lint` and `task format` clean
 - [ ] Docs updated per doc-update matrix (DOC-030)
 - [ ] Maintained `docs/development-handoff.md` updated when active state changed (DOC-012)
 - [ ] Self-review against `.ai/review-checklist.md` done
