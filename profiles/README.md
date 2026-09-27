@@ -5,7 +5,7 @@ title: Makefile Profiles — Reference Implementations
 
 # profiles/ — Makefile Reference Implementations
 
-The root [Makefile](../Makefile) ships as no-op placeholders. A **profile** is a
+The root [Taskfile.yml](../Taskfile.yml) ships as no-op placeholders. A **profile** is a
 reference implementation for a concrete stack: copy the profile's Makefile to the repo
 root, adjust paths, delete the placeholders — hooks, pre-commit, and CI start working
 unchanged.
@@ -19,7 +19,7 @@ reference implementations only; it is repository-owned and a descendant may dele
 ## Available profiles
 
 | Profile | Stack | Source |
-|---------|-------|--------|
+| -- | -- | -- |
 | [terraform-gcp/](terraform-gcp/) | Terraform (GCP foundations, layered), Python tooling via uv, OPA policies, Excel SSoT generator | adapted 2026-07-02 from a production foundations project |
 | [typescript-node/](typescript-node/) | Node.js + pnpm + Prettier + ESLint + tsc + Vitest | authored 2026-07-02 |
 | [python-uv/](python-uv/) | Python + uv + Ruff + mypy + pytest | authored 2026-07-02 |

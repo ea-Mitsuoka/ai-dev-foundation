@@ -131,6 +131,9 @@ class FoundationTaskTargetsTest(unittest.TestCase):
         self.assertIn("python3 -m trace --count --missing --summary", self.taskfile)
         self.assertIn("--coverdir coverage", self.taskfile)
 
+    def test_the_makefile_it_replaced_is_gone(self):
+        self.assertFalse((REPOSITORY_ROOT / "Makefile").exists())
+
 
 class TaskTargetContractTest(unittest.TestCase):
     """The inherited contract carries the ADR-0026 rules every Taskfile must follow."""
