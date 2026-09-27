@@ -51,6 +51,6 @@ broaden the search under ADR-0012 when relevance is uncertain.
 | [0023](0023-integrate-test-first-slices-and-inline-domain-terms.md) | Integrate test-first slices and inline domain-term capture | testing policy, requirements, glossary, AI implementation | accepted | 2026-09-13 |
 | [0024](0024-keep-inherited-documents-free-of-links-into-optional-repository-owned-paths.md) | Keep inherited documents free of links into optional repository-owned paths | template inheritance, documentation, make targets | accepted | 2026-09-23 |
 | [0025](0025-declare-the-direct-parent-with-an-adoption-marker-until-activation.md) | Declare the direct parent with an adoption marker until activation | template inheritance, repository adoption, Template Sync | accepted | 2026-09-24 |
-| [0026](0026-replace-the-canonical-make-interface-with-go-task.md) | Replace the canonical make interface with go-task | canonical commands, make targets, template inheritance, CI tooling | proposed | 2026-09-27 |
+| [0026](0026-replace-the-canonical-make-interface-with-go-task.md) | Replace the canonical make interface with go-task | canonical commands, make targets, template inheritance, CI tooling | accepted | 2026-09-27 |
 
 <!-- Append new ADRs to this table (newest last). -->

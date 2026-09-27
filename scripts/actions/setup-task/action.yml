@@ -1,0 +1,11 @@
+name: Set up go-task
+description: Install the pinned go-task release, verify its SHA-256, and add it to PATH (ADR-0026)
+runs:
+  using: composite
+  steps:
+    - name: Install pinned go-task
+      shell: bash
+      run: |
+        install_directory="${RUNNER_TEMP}/go-task/bin"
+        bash "${GITHUB_ACTION_PATH}/install.sh" "${install_directory}"
+        echo "${install_directory}" >> "${GITHUB_PATH}"

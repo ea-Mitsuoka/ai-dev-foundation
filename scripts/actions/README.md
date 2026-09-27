@@ -39,3 +39,7 @@ through ordinary reviewed Template Sync PRs. Caller-boundary changes remain manu
 `release-please` accepts `release-type` from the protected caller so each downstream
 repository retains its release strategy. `ai-review` accepts the API key and pull
 request number explicitly; local actions MUST NOT read additional secrets implicitly.
+
+`setup-task` takes no inputs and reads no secrets. Its `install.sh` holds the single
+go-task version and SHA-256 pin (ADR-0026); a dev container runs the same script with a
+target directory, for example `bash scripts/actions/setup-task/install.sh ~/.local/bin`.
