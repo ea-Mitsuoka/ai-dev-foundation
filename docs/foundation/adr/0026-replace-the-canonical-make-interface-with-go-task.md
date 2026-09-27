@@ -1,7 +1,7 @@
 ---
 id: adr-0026
 title: ADR-0026 — Replace the canonical make interface with go-task
-status: proposed
+status: accepted
 updated: 2026-09-27
 ---
 
@@ -9,9 +9,9 @@ updated: 2026-09-27
 
 | Field | Value |
 | -- | -- |
-| Status | proposed |
+| Status | accepted |
 | Date | 2026-09-27 |
-| Deciders | repository owner |
+| Deciders | repository owner (approved 2026-09-27) |
 | Author | Claude Opus 5.5 (AI agent) |
 | Supersedes / Superseded by | Amends ADR-0024 (the contract file moves) and LOG-0002 (the runner changes); supersedes none |
 

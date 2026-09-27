@@ -52,6 +52,15 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - run: make doctor
 
+  setup-task:
+    # ADR-0026 expand phase: prove the pinned go-task installer (download + SHA-256) on a
+    # GitHub-hosted runner until the canonical jobs above run `task` themselves.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: ./scripts/actions/setup-task
+      - run: task --version
+
   link-check:
     # Broken relative links in docs are a real defect (docs are the product here).
     # Offline mode: verify local file links resolve; external URLs are not fetched.
