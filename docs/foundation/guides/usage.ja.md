@@ -13,14 +13,14 @@ updated: 2026-08-30
 してください。手順が変わります。
 
 | シナリオ | やりたいこと | 使うもの |
-|----------|--------------|----------|
-| A | この基盤の上で**新規プロジェクトを作る** | GitHub の **「Use this template」**（`git clone` ではない）|
+| -- | -- | -- |
+| A | この基盤の上で**新規プロジェクトを作る** | GitHub の **「Use this template」**（`git clone` ではない） |
 | B | **この基盤リポジトリ自体**を別マシンで開発継続する | `git clone` |
 
 `git clone` が正解なのはシナリオBだけです。シナリオAでcloneすると、新規プロジェクトにこの基盤の
 履歴とプレースホルダが混入します。テンプレート機能を使ってください。
 
----
+______________________________________________________________________
 
 ## シナリオA — テンプレートから新規プロジェクトを作る
 
@@ -32,7 +32,7 @@ updated: 2026-08-30
 テンプレートを選びます。
 
 | 現在のリポジトリの役割 | 直接の親 |
-|--------------------------|----------|
+| -- | -- |
 | 適用可能な保守中の特化テンプレートがない一般プロジェクト | `ea-Mitsuoka/ai-dev-foundation` |
 | Terraformで管理するGoogle Cloud基盤が主要成果物で、Terraform family overlayと`iac-scan`が必要 | `ea-Mitsuoka/terraform-gcp-template` |
 | Next.js SaaS applicationに保守中のNext.js familyとSaaS template契約が必要 | `ea-Mitsuoka/nextjs-saas-template` |
@@ -48,12 +48,14 @@ TerraformやGoogle Cloudを付随的に使うだけでは`terraform-gcp-template
 Web: テンプレートリポジトリを開く → **Use this template** → **Create a new repository**。
 
 CLI（同等）:
+
 ```bash
 gh repo create <あなたのアカウント>/<新プロジェクト> \
   --template <選んだowner>/<選んだparent> \
   --private --clone
 cd <新プロジェクト>
 ```
+
 これで**クリーンな履歴**の新リポジトリがあなたのアカウント配下にできます。
 
 作成時点の親の40文字commitを記録してください。後から、生成元ではない新しいbranch先端へ
@@ -78,7 +80,7 @@ cd <新プロジェクト>
 6. 定期PR作成を有効にする前にローカル検証します。
 
 ```bash
-make doctor
+task doctor
 python3 scripts/template_inheritance.py validate --root .
 python3 scripts/template_inheritance.py plan \
   --root . --parent-root ../<選択した親のworktree>
@@ -118,9 +120,11 @@ hopを飛ばしたりauto-mergeしたりしないでください。
 ### 4. テンプレートのプレースホルダを置換
 
 カスタマイズ対象はすべて `{{...}}` トークンです。全部洗い出す:
+
 ```bash
 grep -rn "{{" . --exclude-dir=.git
 ```
+
 最低限置換するもの: `.ai/mission.md` の `{{...}}`、`.github/CODEOWNERS`・
 `.github/ISSUE_TEMPLATE/config.yml`・`.github/workflows/template-sync.yml` の `{{ORG}}`、
 Pythonプロファイルを使うなら `{{PACKAGE}}`。
@@ -135,22 +139,26 @@ agent profileとproject overlayを保護対象にしてください。
 
 `.github/CODEOWNERS` は既定で**チーム記法**（`@{{ORG}}/maintainers`）です。チームは
 **GitHub Organization にしか存在しません**。**個人アカウント**ではユーザー名に置換してください:
+
 ```
 *   @your-username
 ```
+
 個人リポジトリにチーム記法を残すと、CODEOWNERS が**黙って無効化**されます
 この判定は互換ラッパーの対象外なので、ガバナンス適用前に修正してください。
 
-### 6. Makefile プロファイルを選ぶ
+### 6. Taskfile プロファイルを選ぶ
 
 最も近いリファレンス実装をルートにコピーしてスタックに合わせます:
+
 ```bash
-cp profiles/python-uv/Makefile ./Makefile      # または typescript-node / terraform-gcp
+cp profiles/python-uv/Taskfile.yml ./Taskfile.yml   # または typescript-node / terraform-gcp
 ```
-正準ターゲット契約は [.ai/contracts/foundation/make-targets.md](../../../.ai/contracts/foundation/make-targets.md) を参照。
+
+正準ターゲット契約は [.ai/contracts/foundation/task-targets.md](../../../.ai/contracts/foundation/task-targets.md) を参照。
 `profiles/` は利用先が所有する参考実装で、存在しないこともあります。
 インスタンス化後は、必須ターゲットにテンプレートの `not wired yet` 実装が残っていると
-`make doctor` が失敗します。対象外のターゲットは、たとえば
+`task doctor` が失敗します。対象外のターゲットは、たとえば
 `[project] build: not applicable — no deployable artifact` のように、利用先が所有する
 明示的な対象外結果へ置き換えてください。テンプレートのプレースホルダーは残しません。
 
@@ -200,29 +208,31 @@ repository overrideで選択できます。setup互換ラッパーは`gh`を直�
 ### 8. ローカルゲート導入 → エージェントに向ける
 
 ```bash
-make setup                             # 依存導入 + pre-commit フック
+task setup                             # 依存導入 + pre-commit フック
 ```
+
 Claude Codeは薄い`CLAUDE.md`アダプターを自動で読みます。他のエージェントには`AGENTS.md`を
 読ませてください。アダプターは明示的なagent profileを検証し、記載された基盤・テンプレート・
 プロジェクト入力を順番にすべて読み込みます。あとはissueを割り当てるだけです。
 
 テンプレートには参照用の例モジュール（`src/modules/catalog/` ＋ `tests/modules/catalog/`）が
 同梱されています。形を真似る（COD-050）か、実コードを書き始めるときに両方削除してください。
-いつでも `make doctor` でテンプレートの自己チェック（frontmatter 整合性 + guard フックのテスト）が
+いつでも `task doctor` でテンプレートの自己チェック（frontmatter 整合性 + guard フックのテスト）が
 できます。
 
----
+______________________________________________________________________
 
 ## シナリオB — 基盤リポジトリ自体を別マシンにclone
 
 ```bash
 git clone https://github.com/ea-Mitsuoka/ai-dev-foundation.git
 cd ai-dev-foundation
-# 素のテンプレートのルート Makefile は no-op なので、ここでは `make setup` は何もしません。
+# 素のテンプレートのルート Taskfile.yml は no-op なので、ここでは `task setup` は何もしません。
 # git フックを直接入れます（pre-commit が必要 — 前提ツール参照）:
 pre-commit install --hook-type pre-commit --hook-type pre-push
-make doctor                            # テンプレートが壊れていないか検証
+task doctor                            # テンプレートが壊れていないか検証
 ```
+
 これは文字通り「cloneするだけ」ですが、各マシンで下記の**前提ツール**と**認証**は一度必要です。
 
 ### 保守対象fleetを監査
@@ -231,46 +241,51 @@ Foundation保守者は、明示的にremote refを更新した兄弟worktreeか�
 検証できます。
 
 ```bash
-make fleet-audit FLEET_WORKSPACE_ROOT=/path/to/worktrees
+task fleet-audit FLEET_WORKSPACE_ROOT=/path/to/worktrees
 ```
 
 このコマンドはローカル、read-only、credential-freeであり、承認作業を作りません。正準fleet設定は
-`active`、`paused`、`retired`を記録します。子のMakefileはこのtargetを継承しないため、
+`active`、`paused`、`retired`を記録します。子のTaskfileはこのtargetを継承しないため、
 `ai-dev-foundation` worktreeから実行してください。worktree要件と結果の意味は
 [固定fleetの監査](../../../.github/inheritance/README.md#audit-the-fixed-fleet)を参照してください。
 ADR-0016により、private Template Syncを有効化した後もfleetの定期監査は無効のままです。
 
----
+______________________________________________________________________
 
 ## マシンごとの前提ツール（両シナリオ共通）
 
 新しいマシンで一度だけ導入:
 
 | ツール | 用途 | 備考 |
-|--------|------|------|
-| `git`, `make` | 全般 | — |
-| `gh`（GitHub CLI）| ガバナンス`plan`/`audit`/`apply`・互換setup・認証 | `gh auth login` |
-| `pre-commit` | ローカルコミットゲート | `make setup`（プロファイル導入後）または `pre-commit install` |
+| -- | -- | -- |
+| `git` | 全般 | — |
+| `task`（go-task） | すべての正準ターゲット（ADR-0026） | `brew install go-task`、または CI と同じ固定版を入れる `bash scripts/actions/setup-task/install.sh ~/.local/bin` |
+| `gh`（GitHub CLI） | ガバナンス`plan`/`audit`/`apply`・互換setup・認証 | `gh auth login` |
+| `pre-commit` | ローカルコミットゲート | `task setup`（プロファイル導入後）または `pre-commit install` |
 | スタックのツールチェーン | build/test | uv(python) / pnpm+node(ts) / terraform(iac) |
-| `gitleaks`, `trivy`, `syft` | ローカルの `make security-scan` / `sbom` | ローカルは任意。**CIは常時強制** |
+| `gitleaks`, `trivy`, `syft` | ローカルの `task security-scan` / `sbom` | ローカルは任意。**CIは常時強制** |
 
 スキャナはローカル任意です。GitHub Actions が全PRで実行するので、未導入でも「ローカルで結果が
 見えない」だけです。
 
----
+______________________________________________________________________
 
 ## 落とし穴（ぶつかる前に読む）
 
 ### push には `workflow` OAuth スコープが必要
+
 `.github/workflows/` 配下を含む push はトークンの `workflow` スコープが必要です。
 *"refusing to allow an OAuth App to create or update workflow ... without workflow scope"*
 と拒否されたら:
+
 ```bash
 gh auth refresh -h github.com -s workflow
 ```
+
 これは**アカウント／マシンごと**の設定です。新環境ごとに一度実施する想定でいてください。
 
 ### ソロ開発 × ブランチ保護 ＝ 自分のPRをマージできない
+
 `.github/governance/repository.json`の`required_approvals`をリポジトリ体制に合わせます。
 第二のレビュアーなしで1件必須にすると自己マージできません。どちらか選択:
 
@@ -284,11 +299,12 @@ gh auth refresh -h github.com -s workflow
 設定したapproval件数が適用されます。
 
 ### 改行コード
-`.gitattributes` がリポジトリ全体を LF 強制するので、Windows チェックアウトでもシェルフックと
-Makefile は壊れません。グローバル `core.autocrlf=true` でこれと戦わないこと（`.gitattributes` が
+
+`.gitattributes` がリポジトリ全体を LF 強制するので、Windows チェックアウトでもシェルフックは
+壊れません。グローバル `core.autocrlf=true` でこれと戦わないこと（`.gitattributes` が
 対象ファイルでは勝ちますが、Git既定は素直にしておく）。
 
----
+______________________________________________________________________
 
 ## 質問への回答
 
@@ -297,8 +313,8 @@ Makefile は壊れません。グローバル `core.autocrlf=true` でこれと�
 テンプレートリポジトリにそのアカウントがアクセスできれば、どのアカウントからでも生成できます。
 
 | テンプレートの公開設定 | 「Use this template」できるアカウント |
-|------------------------|----------------------------------------|
-| public | 誰でも（あなたの別アカウント含む）|
+| -- | -- |
+| public | 誰でも（あなたの別アカウント含む） |
 | private | 読み取り権限を持つアカウント（コラボレーター）／同じ Organization のメンバーのみ |
 
 - 生成先のアカウント／Org はテンプレートのドロップダウンで選べます（テンプレート所有者と別でOK）。
@@ -314,16 +330,17 @@ Claude Code は起動時にディレクトリツリーを遡って `CLAUDE.md` �
 グローバル指示を効かせられます（2026-07 時点の公式仕様で確認）:
 
 | スコープ | 場所 | 適用範囲 |
-|----------|------|----------|
-| 組織管理ポリシー | Linux/WSL: `/etc/claude-code/CLAUDE.md` | マシン上の全セッション・全リポジトリ（個人設定で除外不可）|
+| -- | -- | -- |
+| 組織管理ポリシー | Linux/WSL: `/etc/claude-code/CLAUDE.md` | マシン上の全セッション・全リポジトリ（個人設定で除外不可） |
 | ユーザー | `~/.claude/CLAUDE.md` | あなたの全プロジェクト |
-| **束ねる親ディレクトリ** | 例 `~/projects/CLAUDE.md` | **その配下の全リポジトリ**（cwd から親を遡って読む）|
-| プロジェクト | `<repo>/CLAUDE.md` ＋ `.ai/` | そのリポジトリのみ（この基盤が提供）|
+| **束ねる親ディレクトリ** | 例 `~/projects/CLAUDE.md` | **その配下の全リポジトリ**（cwd から親を遡って読む） |
+| プロジェクト | `<repo>/CLAUDE.md` ＋ `.ai/` | そのリポジトリのみ（この基盤が提供） |
 
 読み込み順は root 側 → cwd 側で、**cwd に近いものが後に読まれ優先**されやすい。すべて連結して
 コンテキストに入ります（上書きではない）。
 
 **推奨する構成:**
+
 - 全リポ共通の「ハウスルール」→ `~/projects/CLAUDE.md`（例: 常に日本語で応答、あなたの名前・役割、
   優先ライブラリ、コミット文体）。**200行以内**に保つ。
 - 真に全環境共通 → `~/.claude/CLAUDE.md`。
@@ -331,6 +348,7 @@ Claude Code は起動時にディレクトリツリーを遡って `CLAUDE.md` �
   ChatGPT/Gemini でも全ルールが読める）。
 
 **重要な注意:**
+
 - これは **Claude Code 固有**の仕組みです。ChatGPT/Gemini は親/グローバル `CLAUDE.md` を自動では
   読みません。ベンダー中立性のため、**ハードなガードレールは各リポの `.ai/` と PreToolUse フック**
   （この基盤の `guard-bash.sh` がまさにそれ）に置き、グローバル層は「競合しない補助的な好み」に
@@ -342,12 +360,12 @@ Claude Code は起動時にディレクトリツリーを遡って `CLAUDE.md` �
 複数リポで共有したいルール断片は `.claude/rules/` にシンボリックリンクを張る方法も公式サポート
 されています（例: `ln -s ~/shared-claude-rules .claude/rules/shared`）。
 
----
+______________________________________________________________________
 
 ## クイックリファレンス:「別アカウントで clone だけで足りる？」
 
 - **基盤を開発する**（シナリオB）: はい。`git clone`後にpre-commit hookを直接導入し、
-  `make doctor`を実行します。workflow変更をpushするときは、そのマシンで`workflow` OAuth scopeも
+  `task doctor`を実行します。workflow変更をpushするときは、そのマシンで`workflow` OAuth scopeも
   更新します。
 - **新規プロジェクトを作る**（シナリオA）: いいえ。「Use this template」→ 上の初期化手順。
   cloneでは新規プロジェクトにこの基盤の履歴とプレースホルダが混入します。
