@@ -16,7 +16,7 @@ Measurements use UTF-8 bytes and whitespace-delimited words because they are sta
 across model providers. They are regression proxies, not exact token counts.
 
 | Measurement | Included | Excluded |
-|-------------|----------|----------|
+| -- | -- | -- |
 | Baseline | `AGENTS.md`, `CLAUDE.md`, `.ai/README.md`, the `.ai/guardrails.md` adapter, its canonical foundation guardrails, the agent profile, and every ordered profile input | Active handoff and runtime-owned instructions, including `.claude/README.md` |
 | Declared task route | Baseline, selected skill, every file in its `reads` declaration | Task-specific sources found through bounded discovery |
 | Conditional authority | One authority selected by an explicit trigger contract | Baseline and unrelated declared task routes |
@@ -30,7 +30,7 @@ relevant source. A budget cannot justify omitting one.
 did not record that dimension for the stated point.
 
 | State | Baseline bytes | Baseline words | `requirements` bytes | `requirements` words |
-|-------|---------------:|---------------:|---------------------:|---------------------:|
+| -- | -: | -: | -: | -: |
 | Before ADR-0012 route implementation | 18,565 | 2,625 | — | — |
 | After PR #88 | 17,561 | 2,472 | — | — |
 | Before requirements skill/template separation | — | — | 44,231 | 6,245 |
@@ -46,7 +46,7 @@ ADR-0013 also changed the declared `documentation` route and introduced a separa
 measured conditional authority:
 
 | State | `documentation` bytes | `documentation` words | Conditional bytes | Conditional words |
-|-------|----------------------:|----------------------:|------------------:|------------------:|
+| -- | -: | -: | -: | -: |
 | Before conditional routing | 33,799 | 4,640 | — | — |
 | After conditional routing | 31,273 | 4,257 | 4,368 | 572 |
 
@@ -61,13 +61,13 @@ indexes and search instead of declared as directory-wide reads.
 ## Enforced ceilings
 
 | Metric | Ceiling |
-|--------|--------:|
+| -- | -: |
 | Baseline bytes | 20,000 |
 | Baseline words | 2,800 |
 | Any declared task-route bytes | 46,000 |
 | Any declared task-route words | 6,500 |
 
-`make doctor` rejects a directory, glob, missing file, traversal path, redundant
+`task doctor` rejects a directory, glob, missing file, traversal path, redundant
 baseline read, or missing mandatory authority in any skill route. When an agent profile
 exists, it also validates schema version 1, `strengthen-only`, exact input order, bounded
 file paths, and duplicates, then includes the profile and every input in baseline
@@ -83,7 +83,7 @@ The validator also rejects a missing conditional authority, routing reference, o
 required rule marker. It reports each conditional authority separately and does not add
 that measurement to a declared route unless the skill lists the file as unconditional.
 
-At 90% of either ceiling, `make doctor` emits a warning before the hard limit becomes a
+At 90% of either ceiling, `task doctor` emits a warning before the hard limit becomes a
 failure. It also rejects an incomplete or stale foundation ADR/guide index because
 bounded discovery depends on those indexes. A project-owned
 `docs/development-handoff.md` remains outside the hard context budget, but receives a

@@ -13,7 +13,7 @@ Commits by release-please (`.github/workflows/release.yml`).
 ## REL-001: Version derivation
 
 | Commit type since last release | Bump |
-|--------------------------------|------|
+| -- | -- |
 | any `!` / `BREAKING CHANGE:` | MAJOR |
 | any `feat` | MINOR |
 | only `fix`/`perf`/others | PATCH |
@@ -36,8 +36,8 @@ merge the Release PR — release approval is a human decision (mission.md).
 ## REL-020: Pre-release gates (all must pass)
 
 | Gate | Tool | Blocking |
-|------|------|----------|
-| Full test suite | `make test` | yes |
+| -- | -- | -- |
+| Full test suite | `task test` | yes |
 | SAST | CodeQL latest run green | yes |
 | Dependency vulnerabilities | Trivy (no CRITICAL/HIGH unfixed) | yes |
 | Secret scan | gitleaks | yes |
