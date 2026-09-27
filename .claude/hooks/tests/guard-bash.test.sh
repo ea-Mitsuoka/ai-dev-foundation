@@ -5,7 +5,7 @@
 # (see LOG-0006) — this suite pins both. Exercises the jq-absent fallback path (raw hook
 # JSON is grepped) since jq is not guaranteed in every environment.
 #
-# Run: bash .claude/hooks/tests/guard-bash.test.sh   (also: make doctor)
+# Run: bash .claude/hooks/tests/guard-bash.test.sh   (also: task doctor)
 
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"

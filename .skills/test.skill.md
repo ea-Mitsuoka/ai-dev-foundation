@@ -17,7 +17,7 @@ specifications, and never flake.
 - Target: which module/behavior, and why (coverage gap, upcoming refactor, flaky suite).
 - Existing patterns: read 2–3 neighboring test files first and imitate their style,
   fixtures, and naming (COD-050).
-- `make coverage` output for the target area.
+- `task coverage` output for the target area.
 
 ## Process
 

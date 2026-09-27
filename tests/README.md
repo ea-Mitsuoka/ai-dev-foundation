@@ -16,4 +16,4 @@ tests/
   e2e/               # critical user flows through the real stack
 ```
 
-Run via canonical commands only: `make test`, `make test-unit`, `make coverage`.
+Run via canonical commands only: `task test`, `task test-unit`, `task coverage`.
