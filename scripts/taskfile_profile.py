@@ -38,8 +38,7 @@ def unresolved_targets(content):
         target
         for target in REQUIRED_TARGETS
         if any(
-            command.startswith("echo ")
-            and f"[template] {target}: not wired yet" in command
+            command.startswith("echo ") and f"[template] {target}: not wired yet" in command
             for command in commands
         )
     ]
@@ -64,9 +63,7 @@ def validate_taskfile(root, *, allow_template_placeholders=False):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(
-        description="validate required canonical task implementations"
-    )
+    parser = argparse.ArgumentParser(description="validate required canonical task implementations")
     parser.add_argument("--root", default=".", help="repository root")
     parser.add_argument(
         "--allow-template-placeholders",
