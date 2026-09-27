@@ -105,6 +105,33 @@ class TaskfileProfileTest(unittest.TestCase):
         self.assertIn("setup", result.stderr)
 
 
+class FoundationTaskTargetsTest(unittest.TestCase):
+    """The Foundation root Taskfile runs its own regression suites (LOG-0039)."""
+
+    def setUp(self):
+        readme = (REPOSITORY_ROOT / "README.md").read_text(encoding="utf-8")
+        if FOUNDATION_README_MARKER not in readme:
+            self.skipTest("Foundation-owned root tasks are not inherited")
+        self.taskfile = (REPOSITORY_ROOT / "Taskfile.yml").read_text(encoding="utf-8")
+
+    def test_foundation_test_targets_execute_regression_suites(self):
+        self.assertIn("      - task: test-unit\n      - task: test-integration\n", self.taskfile)
+        self.assertIn("bash .claude/hooks/tests/guard-bash.test.sh", self.taskfile)
+        self.assertIn(
+            "python3 -m unittest discover -s scripts/tests -p 'test_*.py'",
+            self.taskfile,
+        )
+        self.assertEqual(
+            ["build", "format", "lint", "setup"],
+            sorted(taskfile_profile.unresolved_targets(self.taskfile)),
+        )
+
+    def test_foundation_coverage_target_emits_a_local_report(self):
+        self.assertIn("desc: Test with coverage report", self.taskfile)
+        self.assertIn("python3 -m trace --count --missing --summary", self.taskfile)
+        self.assertIn("--coverdir coverage", self.taskfile)
+
+
 class TaskTargetContractTest(unittest.TestCase):
     """The inherited contract carries the ADR-0026 rules every Taskfile must follow."""
 

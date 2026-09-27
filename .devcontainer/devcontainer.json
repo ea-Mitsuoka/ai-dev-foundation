@@ -17,8 +17,10 @@
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
 
-  // Install Claude Code in the container (guide: do not install on the host).
-  "postCreateCommand": "npm install -g @anthropic-ai/claude-code && make doctor",
+  // Install Claude Code in the container (guide: do not install on the host), then the
+  // pinned go-task release the canonical targets run on (ADR-0026).
+  "postCreateCommand": "npm install -g @anthropic-ai/claude-code && bash scripts/actions/setup-task/install.sh /home/vscode/.local/bin && /home/vscode/.local/bin/task doctor",
+  "remoteEnv": { "PATH": "${containerEnv:PATH}:/home/vscode/.local/bin" },
 
   // Run as the unprivileged default user; do not add the host SSH agent or cloud
   // credential mounts here — keeping them out of the container is the point.

@@ -1,5 +1,5 @@
-# CI — Layer 3 (authoritative) quality gate. Calls only canonical `make` targets
-# (CLAUDE.md §11) so this file never changes when the stack changes.
+# CI — Layer 3 (authoritative) quality gate. Calls only canonical `task` targets
+# (ADR-0026) so this file never changes when the stack changes.
 name: CI
 
 on:
@@ -20,15 +20,17 @@ jobs:
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       # TEMPLATE: add your runtime setup action here (setup-node / setup-python / setup-go)
-      - run: make setup
-      - run: make lint
+      - uses: ./scripts/actions/setup-task
+      - run: task setup
+      - run: task lint
 
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - run: make setup
-      - run: make coverage
+      - uses: ./scripts/actions/setup-task
+      - run: task setup
+      - run: task coverage
       - name: Upload coverage artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
@@ -40,26 +42,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - run: make setup
-      - run: make build
+      - uses: ./scripts/actions/setup-task
+      - run: task setup
+      - run: task build
 
   doctor:
     # Foundation self-check: metadata invariants (YAML frontmatter intact, no collapsed
     # frontmatter) + guard-hook block/allow tests. Catches the doc/rule regressions that
-    # the no-op template Makefile can't. Dependency-free (pure bash).
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - run: make doctor
-
-  setup-task:
-    # ADR-0026 expand phase: prove the pinned go-task installer (download + SHA-256) on a
-    # GitHub-hosted runner until the canonical jobs above run `task` themselves.
+    # the no-op template tasks can't. Dependency-free (pure bash) apart from go-task.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: ./scripts/actions/setup-task
-      - run: task --version
+      - run: task doctor
 
   link-check:
     # Broken relative links in docs are a real defect (docs are the product here).
