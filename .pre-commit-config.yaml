@@ -1,6 +1,6 @@
 # Layer 2 of defense in depth (Layer 1: .claude/ hooks, Layer 3: GitHub Actions).
 # Applies to every committer — human or AI, any vendor. Install: `pre-commit install
-# --hook-type pre-commit --hook-type pre-push` (part of `make setup`).
+# --hook-type pre-commit --hook-type pre-push` (part of the canonical `setup` target).
 # Bypassing with --no-verify violates GR-012.
 
 repos:
@@ -35,16 +35,18 @@ repos:
           - mdformat-frontmatter         # keep YAML frontmatter (--- ... ---) intact
           - mdformat-gfm                 # GFM tables, task lists, autolinks (repo is table-heavy)
 
+  # canonical-target.sh runs `task`, or `make` in a repository without a root Taskfile.yml
+  # (ADR-0026).
   - repo: local
     hooks:
       - id: lint
-        name: lint (make lint)          # COD-001
-        entry: make lint
+        name: lint (canonical lint target)       # COD-001
+        entry: bash scripts/canonical-target.sh lint
         language: system
         pass_filenames: false
       - id: unit-tests
-        name: unit tests (make test-unit)  # GR-021 / TST-030
-        entry: make test-unit
+        name: unit tests (canonical test-unit target)  # GR-021 / TST-030
+        entry: bash scripts/canonical-target.sh test-unit
         language: system
         pass_filenames: false
         stages: [pre-push]              # fast suite on push; full suite runs in CI
