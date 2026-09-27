@@ -12,7 +12,7 @@ This guide covers using the foundation from a different machine or a different G
 account. **First decide which of two scenarios you are in — the steps differ.**
 
 | Scenario | You want to... | Use |
-|----------|----------------|-----|
+| -- | -- | -- |
 | A | Start a **new project** built on this foundation | GitHub **"Use this template"** (not `git clone`) |
 | B | Continue developing **this foundation itself** on another machine | `git clone` |
 | C | Bring an **existing repository** with its own history into the fleet | `adopt-child` in two phases around one Template Sync ([below](#scenario-c--adopt-the-foundation-into-an-existing-repository)) |
@@ -20,7 +20,7 @@ account. **First decide which of two scenarios you are in — the steps differ.*
 `git clone` alone is only the right answer for Scenario B. For Scenario A, cloning would
 drag this repo's history and identity into your new project; use the template flow.
 
----
+______________________________________________________________________
 
 ## Scenario A — start a new project from the template
 
@@ -33,7 +33,7 @@ Use the closest maintained template whose exported contract applies to the repos
 **primary deliverable**:
 
 | Current repository role | Direct parent |
-|-------------------------|---------------|
+| -- | -- |
 | General project with no applicable maintained specialization | `ea-Mitsuoka/ai-dev-foundation` |
 | Terraform-managed Google Cloud infrastructure is the primary deliverable and the Terraform family overlay plus `iac-scan` are required | `ea-Mitsuoka/terraform-gcp-template` |
 | A Next.js SaaS application needs the maintained Next.js family and SaaS template contract | `ea-Mitsuoka/nextjs-saas-template` |
@@ -50,12 +50,14 @@ direct-parent provenance and family overlays require every hop.
 Web: open the template repo → **Use this template** → **Create a new repository**.
 
 CLI (equivalent):
+
 ```bash
 gh repo create <your-account>/<new-project> \
   --template <selected-owner>/<selected-parent> \
   --private --clone
 cd <new-project>
 ```
+
 This gives you a **fresh repo with clean history** under your account.
 
 Record the selected parent's exact 40-character commit at creation. Do not replace that
@@ -80,7 +82,7 @@ Complete these items in one reviewed initialization PR:
 6. Validate locally before enabling scheduled PR creation:
 
 ```bash
-make doctor
+task doctor
 python3 scripts/template_inheritance.py validate --root .
 python3 scripts/template_inheritance.py plan \
   --root . --parent-root ../<selected-parent-worktree>
@@ -124,9 +126,11 @@ template before synchronizing its direct children; never skip a hop or auto-merg
 ### 4. Replace template placeholders
 
 Every customizable value is a `{{...}}` token. Find them all:
+
 ```bash
 grep -rn "{{" . --exclude-dir=.git
 ```
+
 Replace at minimum the `{{...}}` values in `.ai/mission.md`; `{{ORG}}` in
 `.github/CODEOWNERS`, `.github/ISSUE_TEMPLATE/config.yml`, and
 `.github/workflows/template-sync.yml`; and `{{PACKAGE}}` if you use the Python profile.
@@ -142,25 +146,28 @@ and project overlay protected when you add a child inheritance manifest.
 `.github/CODEOWNERS` ships with **team** references (`@{{ORG}}/maintainers`). Teams only
 exist under **GitHub Organizations**. On a **personal account**, replace them with your
 username:
+
 ```
 *   @your-username
 ```
+
 Leaving team syntax on a personal repo makes CODEOWNERS silently ineffective —
 fix this file before applying governance because account-type inference is outside the
 compatibility wrapper.
 
-### 6. Pick a Makefile profile
+### 6. Pick a Taskfile profile
 
 Copy the closest reference implementation to the repo root and wire it to your stack:
+
 ```bash
-cp profiles/python-uv/Makefile ./Makefile      # or typescript-node / terraform-gcp
+cp profiles/python-uv/Taskfile.yml ./Taskfile.yml   # or typescript-node / terraform-gcp
 ```
-See [.ai/contracts/foundation/make-targets.md](../../../.ai/contracts/foundation/make-targets.md) for the canonical target contract;
+
+See [.ai/contracts/foundation/task-targets.md](../../../.ai/contracts/foundation/task-targets.md) for the canonical target contract;
 `profiles/` holds repository-owned reference implementations and may be absent.
-After instantiation, `make doctor` rejects the template `not wired yet` implementation
+After instantiation, `task doctor` rejects the template `not wired yet` implementation
 for required targets. If a target does not apply, replace it with an explicit
-repository-owned result such as `[project] build: not applicable — no deployable
-artifact`; do not retain the template placeholder.
+repository-owned result such as `[project] build: not applicable — no deployable artifact`; do not retain the template placeholder.
 
 ### 7. Inspect GitHub governance
 
@@ -210,29 +217,31 @@ as shown above and use this guide as the onboarding checklist.
 ### 8. Install local gates and point your agent at it
 
 ```bash
-make setup                             # installs deps + pre-commit hooks
+task setup                             # installs deps + pre-commit hooks
 ```
+
 Open the repo with Claude Code (it reads the thin `CLAUDE.md` adapter automatically) or
 tell any other agent to read `AGENTS.md`. The adapter validates the explicit agent
 profile and loads every listed foundation, template, and project input in order. Assign
 it an issue and go.
 
 The template ships a worked example module (`src/modules/catalog/` + `tests/modules/catalog/`)
-— imitate its shape (COD-050) or delete both when you start real code. Run `make doctor`
+— imitate its shape (COD-050) or delete both when you start real code. Run `task doctor`
 anytime to self-check the template (frontmatter integrity + guard-hook tests).
 
----
+______________________________________________________________________
 
 ## Scenario B — clone the foundation itself onto another machine
 
 ```bash
 git clone https://github.com/ea-Mitsuoka/ai-dev-foundation.git
 cd ai-dev-foundation
-# The bare template's root Makefile is a no-op, so `make setup` does nothing here.
+# The bare template's root Taskfile.yml is a no-op, so `task setup` does nothing here.
 # Install the git hooks directly (needs pre-commit — see prerequisites):
 pre-commit install --hook-type pre-commit --hook-type pre-push
-make doctor                            # verify the template is intact
+task doctor                            # verify the template is intact
 ```
+
 That is genuinely "just clone" — but each new machine still needs the one-time
 **prerequisites** and **auth** below.
 
@@ -242,17 +251,17 @@ Foundation maintainers can verify every configured active direct-parent relation
 from explicitly refreshed sibling worktrees:
 
 ```bash
-make fleet-audit FLEET_WORKSPACE_ROOT=/path/to/worktrees
+task fleet-audit FLEET_WORKSPACE_ROOT=/path/to/worktrees
 ```
 
 The command is local, read-only, credential-free, and does not create approval work.
 The canonical fleet file records `active`, `paused`, and `retired` relationships. Run it
-from the `ai-dev-foundation` worktree; descendant Makefiles do not inherit this target.
+from the `ai-dev-foundation` worktree; descendant Taskfiles do not inherit this target.
 See [Audit the fixed fleet](../../../.github/inheritance/README.md#audit-the-fixed-fleet)
 for workspace requirements and result semantics. A scheduled private fleet audit remains
 disabled under ADR-0016 even after private Template Sync is enabled.
 
----
+______________________________________________________________________
 
 ## Scenario C — adopt the foundation into an existing repository
 
@@ -278,7 +287,7 @@ python3 scripts/template_inheritance.py adopt-child \
 The read-only plan classifies every path under the parent's inherited roots:
 
 | Field | Meaning |
-|-------|---------|
+| -- | -- |
 | `identical` | The repository already has the parent's exact file |
 | `pending` | Inherited file the repository does not have yet; the sync brings it |
 | `collision` `differs` | Same path, different content |
@@ -358,37 +367,42 @@ parent ships. List those ports in PR 3.
 Rerunning either phase afterwards reports `already_prepared` or `already_adopted` and
 changes nothing.
 
----
+______________________________________________________________________
 
 ## Per-machine prerequisites (both scenarios)
 
 Install once on each new machine:
 
 | Tool | Needed for | Notes |
-|------|-----------|-------|
-| `git`, `make` | everything | — |
+| -- | -- | -- |
+| `git` | everything | — |
+| `task` (go-task) | every canonical target (ADR-0026) | `brew install go-task`, or `bash scripts/actions/setup-task/install.sh ~/.local/bin` for the release CI pins |
 | `gh` (GitHub CLI) | Governance `plan`/`audit`/`apply`, compatibility setup, auth | `gh auth login` |
-| `pre-commit` | local commit gates | `make setup` (once a profile is wired) or `pre-commit install` |
+| `pre-commit` | local commit gates | `task setup` (once a profile is wired) or `pre-commit install` |
 | Stack toolchain | build/test | uv (python), pnpm+node (ts), terraform (iac) — per your profile |
-| `gitleaks`, `trivy`, `syft` | local `make security-scan` / `sbom` | optional locally; **CI enforces them regardless** |
+| `gitleaks`, `trivy`, `syft` | local `task security-scan` / `sbom` | optional locally; **CI enforces them regardless** |
 
 The scanners are optional on your laptop — the GitHub Actions workflows run them on every
 PR, so a missing local tool only means you don't see findings until CI.
 
----
+______________________________________________________________________
 
 ## Gotchas (read before you hit them)
 
 ### `workflow` OAuth scope is required to push
+
 Pushing any change under `.github/workflows/` needs the token's `workflow` scope. If
 `git push` is rejected with *"refusing to allow an OAuth App to create or update
 workflow ... without workflow scope"*:
+
 ```bash
 gh auth refresh -h github.com -s workflow
 ```
+
 This is a **per-account / per-machine** setting — expect to do it once on each new setup.
 
 ### Solo developer + branch protection = you can't merge your own PRs
+
 Set `required_approvals` in `.github/governance/repository.json` to match the repository.
 Requiring one approval on a repo with no second reviewer prevents self-merge. Choose one:
 
@@ -403,22 +417,24 @@ Requiring one approval on a repo with no second reviewer prevents self-merge. Ch
 approval count applies equally through the direct CLI and compatibility entry point.
 
 ### Line endings
-`.gitattributes` enforces LF repo-wide, so shell hooks and Makefiles stay valid on
+
+`.gitattributes` enforces LF repo-wide, so shell hooks stay valid on
 Windows. Don't override with a global `core.autocrlf=true` that fights it — the
 `.gitattributes` wins for matched files, but keep your Git default sane.
 
 ### Placeholders that break automation if left unreplaced
+
 `{{ORG}}` in `template-sync.yml` and `CODEOWNERS`, and the issue-config URLs, are the
 ones that cause silent failures (ineffective CODEOWNERS, a sync job that can't find its
 source). The template-sync job is gated off by default (`TEMPLATE_SYNC_ENABLED`), so it
 stays inert until you deliberately enable it.
 
----
+______________________________________________________________________
 
 ## Quick answer: "is `git clone` enough on a different account?"
 
 - **To develop this foundation** (Scenario B): yes — `git clone`, install the
-  pre-commit hooks directly, run `make doctor`, and refresh the `workflow` OAuth scope
+  pre-commit hooks directly, run `task doctor`, and refresh the `workflow` OAuth scope
   on that machine when you need to push workflow changes.
 - **To start a new project** (Scenario A): no — use "Use this template", then the
   initialization steps above. Cloning would give the new project this repo's history and

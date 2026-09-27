@@ -21,7 +21,7 @@ class ParentSelectionGuideTest(unittest.TestCase):
             "lock.json",
             "agent-profile.json",
             "TEMPLATE_SYNC_ENABLED",
-            "make doctor",
+            "task doctor",
         ):
             with self.subTest(contract=contract):
                 self.assertIn(contract, content)
