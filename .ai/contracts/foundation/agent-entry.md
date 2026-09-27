@@ -33,20 +33,21 @@ Profile order: foundation, owner-qualified templates oldest-to-parent, then proj
   SemVer, and merges use squash. In a leaf repository — one that publishes no contract
   root of its own — write the PR body in Japanese (ADR-0020). Self-review with
   `.ai/review-checklist.md`.
-- After every edit run `make format` and `make lint`; use only canonical `make` targets.
+- After every edit run `task format` and `task lint`; use only canonical targets.
 - Preserve unrelated changes and checks. Never push to protected main, bypass checks,
   fabricate results, or perform destructive work without specific approval.
 
 ## Canonical commands
 
 ```text
-make setup   make format   make lint   make test   make test-unit
-make test-integration   make coverage   make build   make run
-make security-scan   make sbom   make clean   make doctor
+task setup   task format   task lint   task test   task test-unit
+task test-integration   task coverage   task build   task run
+task security-scan   task sbom   task clean   task doctor
 ```
 
-Binding semantics live in `.ai/contracts/foundation/make-targets.md`; documented no-ops may
-remain until wired.
+A repository without a root `Taskfile.yml` runs the same targets with `make` until it
+migrates (ADR-0026). Binding semantics live in `.ai/contracts/foundation/task-targets.md`;
+documented no-ops may remain until wired.
 
 ## Runtime integration
 

@@ -123,7 +123,7 @@ class ContextBudgetTest(unittest.TestCase):
                 ".claude/README.md",
                 "Claude Code reads",
                 "WF-090",
-                "make doctor",
+                "task doctor",
             }.issubset(
                 context_budget.BASELINE_CONTRACT_MARKERS[
                     ".ai/contracts/foundation/agent-entry.md"
