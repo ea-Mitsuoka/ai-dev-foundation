@@ -1,0 +1,102 @@
+# Canonical command interface (ADR-0026; contract: .ai/contracts/foundation/task-targets.md).
+# Every agent, hook, and CI job calls ONLY these tasks, so automation stays stable across
+# stacks. TEMPLATE: replace each no-op with your project's real commands and delete the
+# placeholder echo, or start from a reference implementation in profiles/. Optional
+# FILE=<path> narrows format/lint to one file: task format FILE=src/app.py
+version: "3"
+
+vars:
+  FLEET_WORKSPACE_ROOT: '{{.FLEET_WORKSPACE_ROOT | default ".."}}'
+
+tasks:
+  default:
+    desc: List available tasks
+    silent: true
+    cmds:
+      - task --list
+
+  setup:
+    desc: Install toolchain and dependencies
+    cmds:
+      - 'echo "[template] setup: not wired yet — add your install commands here"'
+
+  format:
+    desc: Auto-format code (all, or FILE=<path>)
+    cmds:
+      - 'echo "[template] format: not wired yet (e.g. ruff format / prettier --write / gofmt)"'
+
+  lint:
+    desc: Lint code, zero warnings allowed — COD-001 (all, or FILE=<path>)
+    cmds:
+      - 'echo "[template] lint: not wired yet (e.g. ruff check / eslint / golangci-lint)"'
+
+  test:
+    desc: Full test suite (unit + integration) — TST-001
+    cmds:
+      - task: test-unit
+      - task: test-integration
+      - bash .claude/hooks/tests/guard-bash.test.sh
+
+  test-unit:
+    desc: Fast unit suite only, used by pre-push — TST-001
+    cmds:
+      - python3 -m unittest discover -s scripts/tests -p 'test_*.py'
+
+  test-integration:
+    desc: Integration suite (may use containers)
+    cmds:
+      - 'echo "[foundation] test-integration: not applicable — no external integration surface"'
+
+  coverage:
+    desc: Test with coverage report — TST-003 ratchet
+    cmds:
+      - rm -rf coverage
+      - >-
+        python3 -m trace --count --missing --summary
+        --ignore-dir '/usr:/opt:/Library' --coverdir coverage
+        --module unittest discover -s scripts/tests -p 'test_*.py'
+      - bash .claude/hooks/tests/guard-bash.test.sh
+
+  build:
+    desc: Produce deployable artifact
+    cmds:
+      - 'echo "[template] build: not wired yet"'
+
+  run:
+    desc: Run the application locally
+    cmds:
+      - 'echo "[template] run: not wired yet"'
+
+  security-scan:
+    desc: Local security sweep (secrets + deps + config)
+    cmds:
+      - |
+        if command -v gitleaks >/dev/null 2>&1; then gitleaks detect --no-banner; else echo "[template] gitleaks not installed — CI still enforces SEC-002"; fi
+      - |
+        if command -v trivy >/dev/null 2>&1; then trivy fs --scanners vuln,misconfig,secret --exit-code 1 .; else echo "[template] trivy not installed — CI still enforces SEC-030"; fi
+
+  sbom:
+    desc: Generate SBOM (SPDX + CycloneDX) into ./dist — REL-020
+    cmds:
+      - mkdir -p dist
+      - |
+        if command -v syft >/dev/null 2>&1; then syft . -o spdx-json=dist/sbom.spdx.json -o cyclonedx-json=dist/sbom.cdx.json && echo "SBOM written to dist/"; else echo "[template] syft not installed — release workflow generates the authoritative SBOM"; fi
+
+  clean:
+    desc: Remove build artifacts
+    cmds:
+      - rm -rf dist coverage
+
+  doctor:
+    desc: "Self-check the template: metadata invariants + guard-hook tests (foundation-level, stack-independent)"
+    cmds:
+      - bash scripts/template-check.sh
+      - bash .claude/hooks/tests/guard-bash.test.sh
+
+  fleet-audit:
+    desc: Audit every configured local inheritance relationship without writes (FLEET_WORKSPACE_ROOT=<dir>)
+    cmds:
+      - >-
+        python3 scripts/template_inheritance.py fleet-audit
+        --config docs/foundation/inheritance-fleet.json
+        --workspace-root "{{.FLEET_WORKSPACE_ROOT}}"

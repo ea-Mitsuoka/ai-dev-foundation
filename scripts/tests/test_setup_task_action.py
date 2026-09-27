@@ -151,8 +151,15 @@ class SetupTaskActionTest(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertIn("uses: ./scripts/actions/setup-task", workflow)
-        self.assertIn("task --version", workflow)
+        for job in ("lint", "test", "build", "doctor"):
+            with self.subTest(job=job):
+                steps = workflow.split(f"\n  {job}:\n", 1)[1].split("\n\n", 1)[0]
+                self.assertIn("uses: ./scripts/actions/setup-task", steps)
+                self.assertLess(
+                    steps.index("uses: ./scripts/actions/setup-task"),
+                    steps.index("run: task "),
+                )
+        self.assertNotIn("run: make ", workflow)
 
 
 if __name__ == "__main__":

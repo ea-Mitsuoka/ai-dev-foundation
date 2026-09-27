@@ -12,15 +12,15 @@ direct, decide, and review.
 ## What this template provides
 
 | Layer | Location | Purpose |
-|-------|----------|---------|
+| -- | -- | -- |
 | Rules (single source of truth) | [`.ai/`](.ai/) | Guardrails, security, architecture, coding, testing, release, docs, review — every rule has a stable ID (GR-010, SEC-020, ...) |
 | Agent entry | [`CLAUDE.md`](CLAUDE.md), [`AGENTS.md`](AGENTS.md), [agent profile](.github/inheritance/agent-profile.json) | Thin runtime adapters load the ordered foundation, template, and project instructions |
 | Task playbooks | [`.skills/`](.skills/) | 10 vendor-neutral skills: requirements, feature, bugfix, refactor, architecture, test, security, documentation, review, release — also exposed as native Claude Code skills under `.claude/skills/` |
 | Enforcement L1 | [`.claude/`](.claude/) | Claude Code hooks (command guard + auto format/lint), a read-only command allow-list, native skill wrappers, and a read-only `code-reviewer` subagent |
 | Enforcement L2 | [`.pre-commit-config.yaml`](.pre-commit-config.yaml) | Any committer: secret scan, branch guard, lint, unit tests |
 | Enforcement L3 | [`.github/workflows/`](.github/workflows/) | CI, CodeQL, secrets/deps/license scan, container, IaC, DAST, Scorecard, release+SBOM |
-| Stable command interface | [`Makefile`](Makefile) | `make test` etc. — the only entry points automation uses |
-| Stack profiles | [`profiles/`](profiles/) | Reference Makefile implementations per stack + the canonical target contract |
+| Stable command interface | [`Taskfile.yml`](Taskfile.yml) | `task test` etc. (go-task, ADR-0026) — the only entry points automation uses |
+| Stack profiles | [`profiles/`](profiles/) | Reference implementations of the canonical targets per stack |
 | Decisions | [`docs/foundation/adr/`](docs/foundation/adr/) | Synchronized foundation ADRs + decision log |
 | Knowledge | [`docs/`](docs/) | Architecture, domain, API, deployment, operations, runbook, troubleshooting, roadmap, glossary |
 | GitHub scaffolding | [`.github/`](.github/) | Issue forms, PR template, CODEOWNERS, labels-as-code, and Dependabot security settings; version updates use `renovate.json` exclusively |
@@ -35,17 +35,17 @@ direct, decide, and review.
    identity and stack. In the [agent profile](.github/inheritance/agent-profile.json),
    keep the foundation input and change the final project input's `repository` value to
    the new `OWNER/REPOSITORY`.
-3. **Wire the Makefile**: copy the closest [`profiles/`](profiles/) Makefile to the
-   root (or implement `setup/format/lint/test/build` yourself) — everything else
-   (hooks, CI) starts working automatically.
-4. **Inspect GitHub governance**: run `python3 scripts/github_governance.py plan --root .
-   --repo OWNER/REPOSITORY` after `gh auth login`. It reports policy drift without
+3. **Wire the Taskfile**: install go-task (`brew install go-task`, or
+   `bash scripts/actions/setup-task/install.sh ~/.local/bin` for the pinned release), then
+   start from the closest [`profiles/`](profiles/) reference implementation (or implement
+   `setup/format/lint/test/build` yourself) — everything else (hooks, CI) starts working
+   automatically.
+4. **Inspect GitHub governance**: run `python3 scripts/github_governance.py plan --root . --repo OWNER/REPOSITORY` after `gh auth login`. It reports policy drift without
    changing settings. Use `audit` for a CI-suitable nonzero drift result. After reviewing
    the plan, run `apply` with an exact `--confirm-repo OWNER/REPOSITORY`. The existing
    [`scripts/setup-github.sh`](scripts/setup-github.sh) is a compatibility wrapper for
    the same policy-driven `plan` and explicitly confirmed `apply` paths.
-5. **Install local gates**: `make setup && pre-commit install --hook-type pre-commit
-   --hook-type pre-push`.
+5. **Install local gates**: `task setup && pre-commit install --hook-type pre-commit --hook-type pre-push`.
 6. **Point your agent at it**: open the repo with Claude Code (reads the thin
    `CLAUDE.md` adapter automatically) or tell any other agent to read `AGENTS.md`.
    The adapter loads the exact ordered files declared by the agent profile. Assign it
