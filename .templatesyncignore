@@ -9,6 +9,7 @@ profiles/**
 CLAUDE.md
 README.md
 Makefile
+Taskfile.yml
 .env.example
 .ai/mission.md
 .ai/decision-log.md

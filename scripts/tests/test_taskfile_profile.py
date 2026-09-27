@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 import subprocess
@@ -139,6 +140,19 @@ class TaskTargetContractTest(unittest.TestCase):
         self.assertIn("without a root `Taskfile.yml`", self.contract)
         self.assertIn("`scripts/canonical-target.sh`", self.contract)
         self.assertIn("`scripts/taskfile_profile.py`", self.contract)
+
+
+class TaskfileOwnershipExportTest(unittest.TestCase):
+    """A descendant bootstrapped or adopted from the export owns its root Taskfile."""
+
+    def test_export_protects_the_root_taskfile(self):
+        export = json.loads(
+            (REPOSITORY_ROOT / ".ai" / "contracts" / "foundation" / "inheritance-export.json")
+            .read_text(encoding="utf-8")
+        )
+
+        self.assertIn("Taskfile.yml", export["protected_paths"])
+        self.assertNotIn("Taskfile.yml", export["inherited_paths"])
 
 
 class DoctorProfileSelectionTest(unittest.TestCase):
