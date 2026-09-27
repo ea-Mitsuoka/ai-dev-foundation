@@ -7,7 +7,7 @@ read_when: [feature, bugfix, refactor, test, review]
 
 # Testing Policy
 
-Canonical commands: `make test` (all), `make test-unit` (fast suite), `make coverage`.
+Canonical commands: `task test` (all), `task test-unit` (fast suite), `task coverage`.
 
 ## TST-001: Test pyramid
 
@@ -80,9 +80,9 @@ existing code is a separate `refactor` change (COD-021, MNT-003).
 
 ## TST-030: AI agent test protocol
 
-1. Run `make test-unit` before starting work to confirm a green baseline. If the
+1. Run `task test-unit` before starting work to confirm a green baseline. If the
    baseline is red, report it; do not build on a broken baseline.
-2. Run affected tests after every meaningful change; run `make test` before opening a PR.
+2. Run affected tests after every meaningful change; run `task test` before opening a PR.
 3. Report results verbatim — full failure output, never a summary of what you expected
    (GR-042).
 4. When tests fail, fix the code, not the test — unless the test itself is proven wrong,

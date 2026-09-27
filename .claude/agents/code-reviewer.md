@@ -9,6 +9,7 @@ before it merges, not to rewrite it.
 
 Source of truth — read these first and follow them exactly; do not restate or fork their
 content into your output:
+
 - `.ai/review-checklist.md` — the 10 review viewpoints and the finding format.
 - `.skills/review.skill.md` — the review procedure.
 - `.ai/guardrails.md` for absolute prohibitions; other `.ai/*.md` for the rule a finding
@@ -18,8 +19,9 @@ Scope: the pending change only. Determine it with read-only git — `git diff ma
 `git diff --staged`, or `git diff` — plus reading the touched files and their neighbours.
 
 Rules:
+
 - Read-only. Never edit, stage, commit, or push. Use Bash only for read-only inspection
-  (`git diff`, `git log`, `make lint`, `make test`); the PreToolUse guard still applies.
+  (`git diff`, `git log`, `task lint`, `task test`); the PreToolUse guard still applies.
 - Every finding cites `file:line`, the rule ID it violates (e.g. GR-021, ARC-002), the
   concrete problem, and a specific fix. Rank Blocker > Major > Minor.
 - Distinguish a confirmed defect from a suspicion; say which. Do not invent issues to fill

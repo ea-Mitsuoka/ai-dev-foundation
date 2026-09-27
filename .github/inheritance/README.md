@@ -97,16 +97,16 @@ python3 scripts/template_inheritance.py validate --root .
 
 Exit `0` prints deterministic JSON; exit `2` reports invalid input on stderr. The command
 performs no network request, file write, deletion, Git operation, or GitHub API call.
-`make doctor` runs this validation automatically when the repository contains a child
+`task doctor` runs this validation automatically when the repository contains a child
 manifest; the foundation root has no manifest and skips only this child-specific check.
-It also rejects the exact template `not wired yet` implementation for required Make
+It also rejects the exact template `not wired yet` implementation for required canonical
 targets outside the canonical Foundation repository. A target that does not apply must
 use an explicit repository-owned `not applicable` implementation; silent template
 no-ops are not valid downstream checks.
 
 `scripts/template-check.sh` runs the complete Foundation regression suite by default.
 A descendant that owns a reviewed `scripts/foundation_test_runner.py` may set
-`FOUNDATION_TEST_SUITE=fast` or `slow` from its protected Makefile or workflow. The
+`FOUNDATION_TEST_SUITE=fast` or `slow` from its protected Taskfile.yml or workflow. The
 inherited selector accepts only `all`, `fast`, or `slow`, requires the local runner for
 a non-default value, and never evaluates a command supplied through the environment.
 The descendant must execute every excluded slow test through another required check; a
@@ -132,7 +132,7 @@ No run force-pushes, closes, or merges an existing PR. Parent changes that arriv
 one PR is open are collected by the next daily or manual run after it merges.
 
 | Step | Required evidence |
-|------|-------------------|
+| -- | -- |
 | 1. Update a direct child | Template Sync PR names the direct parent and the exact 40-character source commit |
 | 2. Review inherited files | Accepted lock-to-source range reviewed; no protected path changed by transport |
 | 3. Finalize the same PR | `finalize-sync --apply` materializes supported manual ports and advances the lock only after complete convergence |
@@ -199,7 +199,7 @@ Plan verifies that the lock is on that ref's first-parent history and selects on
 commit immediately after it. The report classifies that commit's paths:
 
 | Field | Meaning |
-|-------|---------|
+| -- | -- |
 | `add` | Inherited parent file is absent in the child |
 | `modify` | Inherited content or executable mode differs |
 | `candidate_delete` | Parent removed an inherited file; no deletion is performed |
@@ -276,7 +276,7 @@ python3 scripts/template_inheritance.py adopt-child \
 ```
 
 | Field | Meaning |
-|-------|---------|
+| -- | -- |
 | `classification.identical` | Child file equals the parent blob |
 | `classification.pending` | Inherited path absent in the child; the sync brings it |
 | `classification.collision` | `differs` (same path, other content) or `child_only` (child file inside an inherited root) |
@@ -340,7 +340,7 @@ argument and is labeled `repository_source: explicit-argument`; the command vali
 its `OWNER/REPOSITORY` shape but does not call GitHub to verify it.
 
 | Category | Meaning |
-|----------|---------|
+| -- | -- |
 | `synchronized` | Inherited child content equals the selected candidate or current parent target |
 | `pending_sync` | Inherited content is missing or differs and can synchronize through the reviewed parent PR |
 | `pending_manual_port` | Inherited content differs but the transitional transport intentionally excludes it; each item reports the manual-port reason |
@@ -401,10 +401,10 @@ Place the configured repositories as sibling Git worktrees under one directory, 
 their remote refs explicitly, then run from the `ai-dev-foundation` worktree:
 
 ```bash
-make fleet-audit FLEET_WORKSPACE_ROOT=/path/to/worktrees
+task fleet-audit FLEET_WORKSPACE_ROOT=/path/to/worktrees
 ```
 
-Descendant Makefiles are protected repository-owned files and do not receive this target.
+Descendant Taskfiles are protected repository-owned files and do not receive this target.
 Use the Foundation worktree as the fleet-wide audit entry point.
 
 The target audits every active relationship exactly once and labels repository identity
@@ -432,7 +432,7 @@ The read-only command evaluates every changed path against each active direct ch
 manifest and `.templatesyncignore`. It does not evaluate paused or retired children.
 
 | Impact | Required handling |
-|--------|-------------------|
+| -- | -- |
 | `foundation-only` | The path is repository-owned in the child; no propagation action |
 | `schedule-only` | Reviewed Template Sync can carry the inherited path |
 | `manual-boundary` | A workflow or legacy transport exclusion requires an authenticated reviewed port |

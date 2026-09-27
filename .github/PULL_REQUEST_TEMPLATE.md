@@ -1,4 +1,5 @@
 <!-- Title must be a Conventional Commit: type(scope): summary — it becomes the squash commit. -->
+
 <!-- Language (ADR-0020): in a leaf repository — one that uses a template and is not itself a
      template — write this body in Japanese; keep the headings below unchanged. The foundation
      and template repositories stay English.
@@ -26,14 +27,14 @@ Refs: #
 
 <!-- What is covered, at which pyramid level. For bug fixes: link the failing-first regression test commit. -->
 
-- How verified: <!-- paste the essential `make test` result -->
+- How verified: <!-- paste the essential `task test` result -->
 - Not verified (be honest — GR-042): <!-- e.g. "not tested on Windows" / "none" -->
 
 ## Dependencies (GR-023 / COD-040) — delete section if none added/upgraded-major
 
 | Package | Purpose | Alternatives considered | License | Maintenance signal |
-|---------|---------|------------------------|---------|--------------------|
-|         |         |                        |         |                    |
+| -- | -- | -- | -- | -- |
+|  |  |  |  |  |
 
 ## Documentation (DOC-030)
 
@@ -47,6 +48,6 @@ Refs: #
 
 ## Self-review checklist (WF-090)
 
-- [ ] `make format && make lint && make test` green — output reported above
+- [ ] `task format && task lint && task test` green — output reported above
 - [ ] Diff within size limits (GR-020) and contains no unrelated changes
 - [ ] No guardrail violated (`.ai/guardrails.md`)

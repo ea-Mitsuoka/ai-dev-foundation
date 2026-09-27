@@ -2,7 +2,7 @@
 id: development-handoff
 title: Development Handoff — {{PROJECT_NAME}}
 status: active
-updated: {{YYYY-MM-DD}}
+updated: {{YYYY-MM-DD: null}: null}
 ---
 
 <!--
@@ -24,7 +24,7 @@ the previous conversation. It reflects the state as of {{YYYY-MM-DD}}.
 ## Current state
 
 | Field | Current value |
-|-------|---------------|
+| -- | -- |
 | Lifecycle phase | {{intake / clarify / design / implement / self-review / PR / close}} |
 | Active issue | {{link or none}} |
 | Active pull request | {{link or none}} |
@@ -35,7 +35,7 @@ the previous conversation. It reflects the state as of {{YYYY-MM-DD}}.
 ## Material progress since the previous handoff
 
 | Result | Evidence |
-|--------|----------|
+| -- | -- |
 | {{outcome that affects the next agent}} | {{issue, PR, commit, test, or document link}} |
 
 <!-- Remove completed detail once it no longer affects the next action. Durable history
@@ -44,13 +44,13 @@ the previous conversation. It reflects the state as of {{YYYY-MM-DD}}.
 ## Work in progress
 
 | Item | Current state | Owner | Next action |
-|------|---------------|-------|-------------|
+| -- | -- | -- | -- |
 | {{linked issue or PR}} | {{objective status}} | {{owner}} | {{one concrete action}} |
 
 ## Blockers and decisions needed
 
 | Blocker or question | Impact | Decision owner | Required by |
-|---------------------|--------|----------------|-------------|
+| -- | -- | -- | -- |
 | {{or "None"}} | {{blocked work}} | {{person or role}} | {{absolute date or milestone}} |
 
 ## Ordered next actions
@@ -62,8 +62,8 @@ the previous conversation. It reflects the state as of {{YYYY-MM-DD}}.
 ## Verification status
 
 | Date | Baseline | Command or check | Result | Evidence |
-|------|----------|------------------|--------|----------|
-| {{YYYY-MM-DD}} | `{{ref}}` | `{{canonical make target or CI check}}` | {{pass / fail / not run}} | {{link or concise output}} |
+| -- | -- | -- | -- | -- |
+| {{YYYY-MM-DD}} | `{{ref}}` | `{{canonical task target or CI check}}` | {{pass / fail / not run}} | {{link or concise output}} |
 
 ## Required reading
 

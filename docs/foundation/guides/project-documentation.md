@@ -11,7 +11,7 @@ Binding rules live in [`.ai/`](../../../.ai/); inherited decisions live in the
 [`.ai/documentation.md`](../../../.ai/documentation.md).
 
 | Directory | Content | Primary reader task |
-|-----------|---------|---------------------|
+| -- | -- | -- |
 | [docs/foundation/adr/](../adr/) | Synchronized foundation Architecture Decision Records (**normative** when accepted) | "why does the inherited foundation work this way?" |
 | `docs/adr/` | Project Architecture Decision Records (**normative** when accepted) | "why is this project built this way?" |
 | [docs/foundation/](../) | Synchronized foundation-owned guidance and document templates | use inherited documentation support |
@@ -40,7 +40,7 @@ Use the singleton-and-collection rule from DOC-011 and
 [ADR-0009](../adr/0009-place-project-document-singletons-and-collections.md):
 
 | Question | Placement |
-|----------|-----------|
+| -- | -- |
 | Is this the one authoritative document for the whole project? | `docs/<category>.md` |
 | Can independently maintained documents repeat by initiative, component, audience, or operational subject? | `docs/<category>/<subject>.md` |
 | Are both scopes needed? | Keep both; the singleton links to the subject documents without copying their facts |
@@ -70,7 +70,7 @@ anticipation of future content.
 ## Keep direction, tasks, and handoff separate
 
 | Concern | Authoritative location | Content |
-|---------|------------------------|---------|
+| -- | -- | -- |
 | Project direction | `docs/roadmap.md` | `Now` / `Next` / `Later`, milestone outcomes, completion evidence |
 | Live task status and checklists | GitHub issues and milestones | owners, task-level progress, acceptance and completion checklists |
 | Resumable current snapshot | `docs/development-handoff.md` | active references, blockers, next actions, last verified baseline |
@@ -127,7 +127,7 @@ language and substantive content, then repair links relative to the archive loca
 Review an existing archive before replacing it. Multiple ancestors coexist because the
 owner-qualified paths do not collide.
 
-Run `make doctor` after changing the README or inheritance configuration. For
+Run `task doctor` after changing the README or inheritance configuration. For
 compatibility with existing repositories, a missing marker produces a migration warning.
 A present marker that names another repository is an error. The audit never moves,
 rewrites, or deletes files.

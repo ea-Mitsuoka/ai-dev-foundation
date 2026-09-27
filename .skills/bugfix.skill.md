@@ -8,10 +8,12 @@ reads: [.ai/workflow.md, .ai/testing.md]
 # Skill: Bug Fix
 
 ## Purpose
+
 Durable root-cause correction is the default: remove the defect at its owning boundary,
 prove the fix with a regression test that fails on the old code, and prevent recurrence.
 
 ## Inputs
+
 - Reproduction: exact steps/input → observed vs expected behavior. If not reproducible,
   reproduction **is** the first task — do not patch symptoms of a bug you cannot trigger.
 - The issue ID; the module(s) involved (`MODULE.md`).
@@ -19,6 +21,7 @@ prove the fix with a regression test that fails on the old code, and prevent rec
   mitigation exception below.
 
 ## Process
+
 1. Reproduce the bug locally; capture the exact failing observation.
 2. Write the regression test that encodes the *expected* behavior. Run it — it MUST
    fail, and fail for the right reason. Commit it first (`test(scope): reproduce #N`).
@@ -32,7 +35,7 @@ prove the fix with a regression test that fails on the old code, and prevent rec
    repeated execution idempotent: it reaches the same intended state without duplicate
    side effects. Test the relevant retry or repeated-execution path. If idempotence is not
    applicable, state why in the PR instead of adding speculative machinery (COD-051).
-6. Run the regression test (now green) + the module's full suite + `make test`.
+6. Run the regression test (now green) + the module's full suite + `task test`.
 7. Sweep for siblings: search for the same pattern elsewhere in the codebase; fix in
    the same PR only if identical and small, otherwise open issues.
 8. Update `docs/troubleshooting/` if users could hit this; runbook if ops action exists.
@@ -40,6 +43,7 @@ prove the fix with a regression test that fails on the old code, and prevent rec
    complete, and robustness/idempotence evidence or the reason it is not applicable.
 
 ## Decision criteria
+
 - **Symptom vs cause?** If your fix adds a null-check/try-catch without explaining why
   the value can be invalid, you are patching a symptom — keep digging.
 - **Temporary mitigation?** A symptom-level measure is allowed only when a human
@@ -55,6 +59,7 @@ prove the fix with a regression test that fails on the old code, and prevent rec
 - **Fix reveals a design flaw?** Fix the instance now; propose ADR for the design.
 
 ## Outputs
+
 - PR: regression test (committed failing-first) + smallest complete fix + doc updates.
 - Root-cause statement in the PR description.
 - Robustness/idempotence evidence, or an explicit non-applicability reason.
@@ -63,12 +68,13 @@ prove the fix with a regression test that fails on the old code, and prevent rec
   issue; the defect remains open until the durable correction lands.
 
 ## Checklist
+
 - [ ] Regression test demonstrably failed before the fix (show the failing run)
 - [ ] Root cause stated in one sentence in the PR
 - [ ] Smallest complete correction applied; no mixed refactoring (COD-021)
 - [ ] Retry, repeated execution, and partial failure evaluated; idempotence tested or a
-      non-applicability reason reported
+  non-applicability reason reported
 - [ ] Sibling occurrences searched; results reported
 - [ ] Temporary mitigation, if any, has explicit human direction, residual-risk and
-      rollback/removal notes, and a linked permanent-fix issue
+  rollback/removal notes, and a linked permanent-fix issue
 - [ ] Full test suite green; troubleshooting docs updated if user-visible
