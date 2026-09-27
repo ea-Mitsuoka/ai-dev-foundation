@@ -1,0 +1,189 @@
+# Profile: Terraform (GCP foundations, layered) + Python tooling via uv + OPA.
+# Reference implementation of the canonical task contract
+# (.ai/contracts/foundation/task-targets.md). Copy to the repository root as Taskfile.yml
+# and adjust paths. Canonical tasks first (hooks/CI depend on their exact semantics);
+# project-specific extensions below.
+# Adapted 2026-07-02 from a production foundations Makefile; deliberate changes from the
+# original: lint is check-only, no catch-all task, DESTROY_ARGS replaces extra goals,
+# tflint --init moved to setup, test-mode logic deduplicated.
+version: "3"
+
+vars:
+  FILE: '{{.FILE | default ""}}'
+  # Sourced before deploy-family commands in the same shell: activates test mode (random
+  # prefix, skip management projects) when .test_mode_env exists.
+  TEST_MODE: >-
+    if [ -f .test_mode_env ]; then echo "🧪 Test Mode Active: skipping management projects
+    (logsink/monitoring)."; . ./.test_mode_env; export SKIP_MANAGEMENT_PROJECTS=true; fi
+
+tasks:
+  default:
+    desc: List available tasks
+    silent: true
+    cmds:
+      - task --list
+
+  # ---------------------------------------------------------------------------
+  # Canonical interface (task-targets.md) — do not change semantics.
+  # ---------------------------------------------------------------------------
+
+  setup:
+    desc: "Install toolchain: python deps, tflint plugins, git hooks (idempotent)"
+    cmds:
+      - uv sync
+      - tflint --init --config "{{.ROOT_DIR}}/.tflint.hcl"
+      - pre-commit install --hook-type pre-commit --hook-type pre-push
+
+  format:
+    desc: Auto-format terraform + python (all, or FILE=<path>)
+    cmds:
+      - cmd: cd terraform && terraform fmt -recursive
+        if: '[ -z "{{.FILE}}" ]'
+      - cmd: uv run ruff format terraform/scripts tests
+        if: '[ -z "{{.FILE}}" ]'
+      - cmd: terraform fmt "{{.FILE}}"
+        if: '{{if or (hasSuffix ".tf" .FILE) (hasSuffix ".tfvars" .FILE)}}true{{else}}false{{end}}'
+      - cmd: uv run ruff format "{{.FILE}}"
+        if: '{{if hasSuffix ".py" .FILE}}true{{else}}false{{end}}'
+
+  lint:
+    desc: Check-only, zero warnings (COD-001). Fixing is the format task's job.
+    cmds:
+      - cd terraform && terraform fmt -recursive -check
+      - tflint --recursive --config "{{.ROOT_DIR}}/.tflint.hcl" --chdir terraform
+      - find terraform/scripts -name "*.sh" -exec shellcheck -s bash {} +
+      - uv run ruff check terraform/scripts tests
+      - opa check policies/*.rego
+
+  test:
+    desc: Full suite
+    cmds:
+      - task: test-unit
+      - task: test-integration
+
+  test-unit:
+    desc: Fast python suite — pre-push gate
+    cmds:
+      - uv run pytest tests/
+
+  test-integration:
+    desc: terraform test for every module, then every non-module test dir
+    vars:
+      MODULE_DIRS:
+        sh: find terraform/modules -mindepth 1 -maxdepth 1 -type d
+      TEST_DIRS:
+        sh: find terraform -name '*.tftest.hcl' -not -path 'terraform/modules/*' -exec dirname {} \; | sort -u
+    cmds:
+      - for: { var: MODULE_DIRS }
+        cmd: cd "{{.ITEM}}" && rm -rf .terraform .terraform.lock.hcl && terraform init -backend=false >/dev/null && terraform test
+      - for: { var: TEST_DIRS }
+        cmd: cd "{{.ITEM}}" && rm -rf .terraform .terraform.lock.hcl && terraform init -backend=false >/dev/null && terraform test
+
+  coverage:
+    desc: Python tests with coverage report (TST-003 ratchet)
+    cmds:
+      - uv run pytest tests/ --cov --cov-report=term-missing --cov-report=xml
+
+  build:
+    desc: IaC "build" = credential-free validate of every terraform config
+    vars:
+      CONFIG_DIRS:
+        sh: find terraform -name '*.tf' -not -path '*/.terraform/*' -exec dirname {} \; | sort -u
+    cmds:
+      - for: { var: CONFIG_DIRS }
+        cmd: cd "{{.ITEM}}" && terraform init -backend=false >/dev/null && terraform validate
+
+  run:
+    desc: For IaC, "run" shows the execution plan
+    cmds:
+      - task: plan
+
+  security-scan:
+    desc: "Local sweep: secrets + IaC misconfig + policy syntax"
+    cmds:
+      - |
+        if command -v gitleaks >/dev/null 2>&1; then gitleaks detect --no-banner; else echo "gitleaks not installed — CI still enforces SEC-002"; fi
+      - |
+        if command -v trivy >/dev/null 2>&1; then trivy config --exit-code 1 terraform; else echo "trivy not installed — CI still enforces SEC-030"; fi
+      - opa check policies/*.rego
+
+  sbom:
+    desc: SBOM (SPDX + CycloneDX) into dist/ — REL-020
+    cmds:
+      - mkdir -p dist
+      - |
+        if command -v syft >/dev/null 2>&1; then syft . -o spdx-json=dist/sbom.spdx.json -o cyclonedx-json=dist/sbom.cdx.json && echo "SBOM written to dist/"; else echo "syft not installed — release workflow generates the authoritative SBOM"; fi
+
+  clean:
+    desc: Remove caches/artifacts inside the workspace only (GR-031)
+    cmds:
+      - find terraform -type d -name ".terraform" -exec rm -rf {} +
+      - find terraform -type f -name ".terraform.lock.hcl" -exec rm -f {} +
+      - find . -type d -name "__pycache__" -exec rm -rf {} +
+      - rm -rf dist
+
+  doctor:
+    desc: "Foundation self-check: metadata invariants + guard-hook tests"
+    cmds:
+      - bash scripts/template-check.sh
+      - bash .claude/hooks/tests/guard-bash.test.sh
+
+  # ---------------------------------------------------------------------------
+  # Project extensions — GCP foundations workflow (Excel SSoT → generate → deploy)
+  # ---------------------------------------------------------------------------
+
+  check:
+    desc: "Pre-flight check: GCP permissions, billing, APIs"
+    cmds:
+      - bash terraform/scripts/preflight_check.sh
+
+  template:
+    desc: Generate a blank gcp-foundations.xlsx (SSoT input) with dropdowns
+    cmds:
+      - uv run terraform/scripts/generate_template.py
+
+  generate:
+    desc: Generate Terraform resources from gcp-foundations.xlsx, then format
+    cmds:
+      - uv run terraform/scripts/generate_resources.py
+      - cd terraform && terraform fmt -recursive
+
+  opa:
+    desc: Policy syntax check only (also part of lint)
+    cmds:
+      - opa check policies/*.rego
+
+  plan:
+    desc: Global deployment in plan-only mode
+    cmds:
+      - '{{.TEST_MODE}}; bash terraform/scripts/deploy_all.sh --plan-only'
+
+  deploy:
+    desc: "Apply global deployment (agents: verify plan + human go-ahead first)"
+    cmds:
+      - '{{.TEST_MODE}}; bash terraform/scripts/deploy_all.sh'
+
+  destroy:
+    desc: 'DANGEROUS (GR-031): requires allow_resource_destruction=true in common.tfvars AND explicit human approval. Options: DESTROY_ARGS="--from-layer=3"'
+    cmds:
+      - '{{.TEST_MODE}}; bash terraform/scripts/destroy_all.sh {{.DESTROY_ARGS}}'
+
+  delivery:
+    desc: (構築ベンダー専用) Build delivery archive (zip) under delivery/ — original .git untouched
+    cmds:
+      - bash terraform/scripts/handover-wrap.sh
+
+  delivery-doc:
+    desc: Generate only the delivery document (構築設定明細書) under delivery/
+    cmds:
+      - uv run terraform/scripts/generate_delivery.py
+
+  test-mode:
+    desc: Toggle test mode (random prefix & skip management projects)
+    cmds:
+      - uv run python terraform/scripts/toggle_test_mode.py
+
+  prune:
+    desc: Remove orphan 4_projects/ directories not defined in the SSoT (Excel)
+    cmds:
+      - uv run terraform/scripts/prune_orphans.py
