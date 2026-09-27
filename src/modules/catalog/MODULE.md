@@ -10,13 +10,13 @@ Purpose: a **worked example** of a bounded context following this foundation's r
 Clean Architecture layers, DDD tactical patterns, and the testing conventions. It manages
 a product catalog: creating products and listing them for sale. It does **not** own
 pricing strategy, inventory, or orders. This module is reference code to imitate
-(COD-050); it is not wired into the no-op template Makefile. Delete it (and
+(COD-050); it is not wired into the no-op template Taskfile. Delete it (and
 `tests/modules/catalog/`) when starting a real project.
 
 ## Public API (the contract — everything else is private)
 
 | Entry point | Layer | Description |
-|-------------|-------|-------------|
+| -- | -- | -- |
 | `AddProduct.handle(AddProductCommand) -> ProductId` | application | Create a product and list it for sale |
 | `add_product_handler(use_case, payload) -> Response` | interface | Inbound edge: validate + translate errors |
 | `ProductRepository` | application | Port other modules/adapters implement |
@@ -24,7 +24,7 @@ pricing strategy, inventory, or orders. This module is reference code to imitate
 ## Events
 
 | Direction | Event | Schema | Notes |
-|-----------|-------|--------|-------|
+| -- | -- | -- | -- |
 | — | — | — | none yet; a real module would publish `ProductListed` |
 
 ## Owned data
@@ -42,7 +42,7 @@ directly — they go through the public API above.
 ## Dependencies
 
 | Uses module | Via | Why |
-|-------------|-----|-----|
+| -- | -- | -- |
 | — | — | none; the domain imports only the standard library (ARC-002) |
 
 ## Layout
@@ -56,4 +56,4 @@ interface/http_handler.py                  # framework-free inbound example
 ```
 
 Tests mirror this at `tests/modules/catalog/unit/test_catalog.py`. Run them with the
-python-uv profile (`make test`) or, ad hoc, `PYTHONPATH=. pytest tests/modules/catalog`.
+python-uv profile (`task test`) or, ad hoc, `PYTHONPATH=. pytest tests/modules/catalog`.

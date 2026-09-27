@@ -1,0 +1,98 @@
+# Profile: TypeScript / Node.js — pnpm + Prettier + ESLint + tsc + Vitest.
+# Reference implementation of the canonical task contract
+# (.ai/contracts/foundation/task-targets.md). Copy to the repository root as Taskfile.yml,
+# ensure package.json defines "build" and "dev" scripts, and adjust the test path filters
+# to your layout (this one assumes the tests/ mirror of src/).
+version: "3"
+
+vars:
+  FILE: '{{.FILE | default ""}}'
+
+tasks:
+  default:
+    desc: List available tasks
+    silent: true
+    cmds:
+      - task --list
+
+  # ---------------------------------------------------------------------------
+  # Canonical interface (task-targets.md) — do not change semantics.
+  # ---------------------------------------------------------------------------
+
+  setup:
+    desc: "Install toolchain: node deps (frozen lockfile) + git hooks"
+    cmds:
+      - corepack enable
+      - pnpm install --frozen-lockfile
+      - pre-commit install --hook-type pre-commit --hook-type pre-push
+
+  format:
+    desc: Auto-format (all, or FILE=<path>)
+    vars:
+      TARGET: '{{if .FILE}}{{.FILE}}{{else}}.{{end}}'
+    cmds:
+      - pnpm exec prettier --write "{{.TARGET}}"
+
+  lint:
+    desc: "Check-only, zero warnings (COD-001): prettier check + eslint + types"
+    cmds:
+      - pnpm exec prettier --check .
+      - pnpm exec eslint . --max-warnings 0
+      - pnpm exec tsc --noEmit
+
+  test:
+    desc: Full suite
+    cmds:
+      - pnpm exec vitest run
+
+  test-unit:
+    desc: Fast suite — pre-push gate (excludes integration/e2e dirs)
+    cmds:
+      - pnpm exec vitest run --exclude "**/integration/**" --exclude "**/e2e/**"
+
+  test-integration:
+    desc: Integration + e2e dirs only
+    cmds:
+      - pnpm exec vitest run --dir tests --exclude "**/unit/**"
+
+  coverage:
+    desc: Tests with coverage report (TST-003 ratchet)
+    cmds:
+      - pnpm exec vitest run --coverage
+
+  build:
+    desc: Produce deployable artifact (delegates to package.json "build")
+    cmds:
+      - pnpm run build
+
+  run:
+    desc: Run locally (delegates to package.json "dev")
+    cmds:
+      - pnpm run dev
+
+  security-scan:
+    desc: "Local sweep: secrets + dependency vulns"
+    cmds:
+      - |
+        if command -v gitleaks >/dev/null 2>&1; then gitleaks detect --no-banner; else echo "gitleaks not installed — CI still enforces SEC-002"; fi
+      - |
+        if command -v trivy >/dev/null 2>&1; then trivy fs --scanners vuln,secret --exit-code 1 .; else echo "trivy not installed — CI still enforces SEC-030"; fi
+      - pnpm audit --audit-level high
+
+  sbom:
+    desc: SBOM (SPDX + CycloneDX) into dist/ — REL-020
+    cmds:
+      - mkdir -p dist
+      - |
+        if command -v syft >/dev/null 2>&1; then syft . -o spdx-json=dist/sbom.spdx.json -o cyclonedx-json=dist/sbom.cdx.json && echo "SBOM written to dist/"; else echo "syft not installed — release workflow generates the authoritative SBOM"; fi
+
+  clean:
+    desc: Remove build artifacts and caches (workspace only — GR-031)
+    cmds:
+      - rm -rf dist coverage .eslintcache node_modules/.cache
+
+  doctor:
+    desc: "Foundation self-check: metadata invariants + guard-hook tests"
+    cmds:
+      - bash scripts/template-check.sh
+      - bash .claude/hooks/tests/guard-bash.test.sh

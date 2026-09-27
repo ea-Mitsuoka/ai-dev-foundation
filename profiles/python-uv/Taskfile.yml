@@ -1,0 +1,99 @@
+# Profile: Python — uv + Ruff (format & lint) + mypy + pytest.
+# Reference implementation of the canonical task contract
+# (.ai/contracts/foundation/task-targets.md). Copy to the repository root as Taskfile.yml
+# and set PACKAGE to your top-level package name; the test filters assume the tests/
+# mirror of src/ (unit/ and integration/ subdirs).
+version: "3"
+
+vars:
+  PACKAGE: app # TEMPLATE: your top-level package name
+  FILE: '{{.FILE | default ""}}'
+
+tasks:
+  default:
+    desc: List available tasks
+    silent: true
+    cmds:
+      - task --list
+
+  # ---------------------------------------------------------------------------
+  # Canonical interface (task-targets.md) — do not change semantics.
+  # ---------------------------------------------------------------------------
+
+  setup:
+    desc: "Install toolchain: python deps + git hooks (idempotent)"
+    cmds:
+      - uv sync
+      - pre-commit install --hook-type pre-commit --hook-type pre-push
+
+  format:
+    desc: Auto-format (all, or FILE=<path>)
+    vars:
+      TARGET: '{{if .FILE}}{{.FILE}}{{else}}.{{end}}'
+    cmds:
+      - uv run ruff format "{{.TARGET}}"
+      - uv run ruff check --fix-only "{{.TARGET}}"
+
+  lint:
+    desc: "Check-only, zero warnings (COD-001): format check + lint + types"
+    cmds:
+      - uv run ruff format --check .
+      - uv run ruff check .
+      - uv run mypy src
+
+  test:
+    desc: Full suite
+    cmds:
+      - uv run pytest tests
+
+  test-unit:
+    desc: Fast suite — pre-push gate (excludes integration/e2e dirs)
+    cmds:
+      - uv run pytest tests --ignore-glob="**/integration/**" --ignore=tests/e2e
+
+  test-integration:
+    desc: Integration dirs only (containers allowed)
+    cmds:
+      - uv run pytest tests --ignore-glob="**/unit/**" --ignore=tests/e2e
+
+  coverage:
+    desc: Tests with coverage report (TST-003 ratchet)
+    cmds:
+      - uv run pytest tests --cov=src --cov-report=term-missing --cov-report=xml
+
+  build:
+    desc: Build wheel + sdist into dist/
+    cmds:
+      - uv build
+
+  run:
+    desc: Run the application locally
+    cmds:
+      - uv run python -m {{.PACKAGE}}
+
+  security-scan:
+    desc: "Local sweep: secrets + dependency vulns (lockfile-aware)"
+    cmds:
+      - |
+        if command -v gitleaks >/dev/null 2>&1; then gitleaks detect --no-banner; else echo "gitleaks not installed — CI still enforces SEC-002"; fi
+      - |
+        if command -v trivy >/dev/null 2>&1; then trivy fs --scanners vuln,secret --exit-code 1 .; else echo "trivy not installed — CI still enforces SEC-030"; fi
+
+  sbom:
+    desc: SBOM (SPDX + CycloneDX) into dist/ — REL-020
+    cmds:
+      - mkdir -p dist
+      - |
+        if command -v syft >/dev/null 2>&1; then syft . -o spdx-json=dist/sbom.spdx.json -o cyclonedx-json=dist/sbom.cdx.json && echo "SBOM written to dist/"; else echo "syft not installed — release workflow generates the authoritative SBOM"; fi
+
+  clean:
+    desc: Remove build artifacts and caches (workspace only — GR-031)
+    cmds:
+      - rm -rf dist htmlcov .coverage coverage.xml .pytest_cache .ruff_cache .mypy_cache
+      - find . -type d -name "__pycache__" -exec rm -rf {} +
+
+  doctor:
+    desc: "Foundation self-check: metadata invariants + guard-hook tests"
+    cmds:
+      - bash scripts/template-check.sh
+      - bash .claude/hooks/tests/guard-bash.test.sh
