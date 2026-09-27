@@ -104,6 +104,43 @@ class TaskfileProfileTest(unittest.TestCase):
         self.assertIn("setup", result.stderr)
 
 
+class TaskTargetContractTest(unittest.TestCase):
+    """The inherited contract carries the ADR-0026 rules every Taskfile must follow."""
+
+    def setUp(self):
+        self.contract = " ".join(
+            (REPOSITORY_ROOT / ".ai" / "contracts" / "foundation" / "task-targets.md")
+            .read_text(encoding="utf-8")
+            .split()
+        )
+
+    def test_every_canonical_target_keeps_a_binding_row(self):
+        for target in (
+            "setup", "format", "lint", "test", "test-unit", "test-integration",
+            "coverage", "build", "run", "security-scan", "sbom", "clean", "doctor",
+        ):
+            with self.subTest(target=target):
+                self.assertIn(f"| `{target}` |", self.contract)
+
+    def test_task_specific_rules_are_stated(self):
+        for rule in (
+            "`task format FILE=<path>`",
+            "`desc:`",
+            "`task --list`",
+            'no `"*"` task',
+            "`deps:` in parallel",
+            "`includes:` references files in the repository",
+            "`mvdan.cc/sh`",
+        ):
+            with self.subTest(rule=rule):
+                self.assertIn(rule, self.contract)
+
+    def test_repositories_that_have_not_migrated_keep_make(self):
+        self.assertIn("without a root `Taskfile.yml`", self.contract)
+        self.assertIn("`scripts/canonical-target.sh`", self.contract)
+        self.assertIn("`scripts/taskfile_profile.py`", self.contract)
+
+
 class DoctorProfileSelectionTest(unittest.TestCase):
     """template-check.sh picks the profile validator by the runner the repository uses."""
 

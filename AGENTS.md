@@ -4,8 +4,8 @@ Read [CLAUDE.md](CLAUDE.md) completely and follow it before acting; it loads the
 agent profile.
 
 | Capability | Runtime equivalent |
-|------------|--------------------|
-| Hooks | Run `make format && make lint` after edits; guard commands with `.ai/guardrails.md` |
+| -- | -- |
+| Hooks | Run `task format && task lint` after edits (`make` without a root `Taskfile.yml`); guard commands with `.ai/guardrails.md` |
 | Skills | Read matching `.skills/*.skill.md` completely |
 | Memory | Use runtime context; never store secrets |
 
