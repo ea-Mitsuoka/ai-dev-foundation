@@ -55,7 +55,7 @@ updated: 2026-09-13
 | 用語 | [docs/foundation/glossary.md](../glossary.md)、`docs/glossary.md` | 基盤と利用先プロジェクトの統一用語 |
 | ソース構造 | `src/README.md`, `tests/README.md`（利用先所有・存在しないこともある） | コード配置規約・MODULE.md雛形 |
 | 方向性 | `docs/roadmap.md` | 利用先で何を作る/作らないかの指針 |
-| 契約 | `src/modules/*/MODULE.md`, [.ai/contracts/foundation/make-targets.md](../../../.ai/contracts/foundation/make-targets.md) | モジュール/makeターゲットの契約 |
+| 契約 | `src/modules/*/MODULE.md`, [.ai/contracts/foundation/task-targets.md](../../../.ai/contracts/foundation/task-targets.md) | モジュール/正準ターゲットの契約 |
 | 構造化入力 | [.github/](../../../.github/) の Issue/PR テンプレート | AIへの指示を型化 |
 | グローバル | `~/.claude/CLAUDE.md`, `~/projects/CLAUDE.md` | 全リポ共通の好み（リポ外・Claude固有） |
 
@@ -75,7 +75,7 @@ ______________________________________________________________________
 - **利用目的**：Claude以外のエージェント（ChatGPT/Gemini/Codex）の入口。`CLAUDE.md`アダプターへ誘導し、ランタイム機能の等価手段を示す。
 - **利用シーン**：非Claudeエージェントにこのリポジトリを触らせるとき、最初に読ませる。
 - **利用しないシーン**：Claude Code を使うとき（`CLAUDE.md` が自動で読まれるため不要）。
-- **利用例**：ChatGPTに「まず`AGENTS.md`を読んで、その指示に従って」と指定 → profile入力を読み、フックが無い分、`make lint`を手動実行するなどの等価手段に読み替える。
+- **利用例**：ChatGPTに「まず`AGENTS.md`を読んで、その指示に従って」と指定 → profile入力を読み、フックが無い分、`task lint`を手動実行するなどの等価手段に読み替える。
 
 ### `.github/inheritance/agent-profile.json` と `.ai/project/agent-overlay.md`
 
@@ -169,10 +169,10 @@ ______________________________________________________________________
 
 ### [.claude/settings.json](../../../.claude/settings.json)
 
-- **利用目的**：フックの登録（PreToolUse ガード／PostToolUse 整形）と権限制御。`permissions.deny` で `.env` 等の読取拒否、`permissions.allow` で**非変更の読取専用コマンド**（`make doctor/lint/test`・読取系 git など）を事前許可し確認プロンプトを削減。`deny` が `allow` に優先。
+- **利用目的**：フックの登録（PreToolUse ガード／PostToolUse 整形）と権限制御。`permissions.deny` で `.env` 等の読取拒否、`permissions.allow` で**非変更の読取専用コマンド**（`task doctor/lint/test`・読取系 git など）を事前許可し確認プロンプトを削減。`deny` が `allow` に優先。
 - **利用シーン**：Claude Code セッション中、常時自動適用（あなたが意識する必要はない）。
 - **利用しないシーン**：他エージェント（読まれない）。挙動を変えたい時は編集するが、`.local.json` は個人用。
-- **利用例**：ファイル編集後に自動で `make format`/`make lint` が走り、失敗はエージェントへフィードバックされる。`make test` は事前許可済みなので確認なしで実行、`make format`（変更を伴う）は引き続き確認される。
+- **利用例**：ファイル編集後に自動で `task format`/`task lint` が走り、失敗はエージェントへフィードバックされる。`task test` は事前許可済みなので確認なしで実行、`task format`（変更を伴う）は引き続き確認される。
 
 ### [.claude/skills/](../../../.claude/skills/)（ネイティブ Skill ラッパー）
 
@@ -192,12 +192,12 @@ ______________________________________________________________________
 
 - **利用目的**：Edit/Write の後に対象ファイルを自動 format + lint（COD-001）。
 - **利用シーン**：コード編集の直後に自動。
-- **利用しないシーン**：Markdown 等の非コード（スキップされる）。テンプレート状態では Makefile が no-op のため実質何もしない。
+- **利用しないシーン**：Markdown 等の非コード（スキップされる）。テンプレート状態では Taskfile が no-op のため実質何もしない。
 - **利用例**：`.py` を編集 → 自動整形、lint 失敗ならエージェントへ「先に直せ」と返る。
 
 ### [.claude/hooks/tests/guard-bash.test.sh](../../../.claude/hooks/tests/guard-bash.test.sh)
 
-- **利用目的**：ガードの block/allow マトリクス全ケースを固定する回帰テスト（`make doctor` と CI が実行）。
+- **利用目的**：ガードの block/allow マトリクス全ケースを固定する回帰テスト（`task doctor` と CI が実行）。
 - **利用シーン**：ガードの正規表現を変更した時、CI/doctor で自動検証。
 - **利用しないシーン**：通常の開発中に手動で気にする必要はない。
 - **利用例**：ガードを直したら `bash .claude/hooks/tests/guard-bash.test.sh` で全件パスを確認。
@@ -252,11 +252,11 @@ ______________________________________________________________________
 - **利用しないシーン**：既存モジュール内の局所修正で構造が変わらないとき。
 - **利用例**：新機能の置き場所をレイアウト図で確認し、`tests/` が `src/` を鏡写しにする規約（TST-001）に従う。
 
-### [.ai/contracts/foundation/make-targets.md](../../../.ai/contracts/foundation/make-targets.md)（正準ターゲット契約）
+### [.ai/contracts/foundation/task-targets.md](../../../.ai/contracts/foundation/task-targets.md)（正準ターゲット契約）
 
-- **利用目的**：`make` 正準ターゲット（setup/format/lint/test/…/doctor）の**拘束力ある意味論**を定義。読込済みfoundation契約が参照。
-- **利用シーン**：`make` ターゲットの挙動を確認するとき、`Makefile` を追加/編集するとき。
-- **利用しないシーン**：特定スタックの具体コマンドそのもの（各 Makefile 実装を見る）。
+- **利用目的**：`task` で実行する正準ターゲット（setup/format/lint/test/…/doctor）の**拘束力ある意味論**と Taskfile の実装規則を定義。読込済みfoundation契約が参照。
+- **利用シーン**：正準ターゲットの挙動を確認するとき、`Taskfile.yml` を追加/編集するとき。
+- **利用しないシーン**：特定スタックの具体コマンドそのもの（各 `Taskfile.yml` の実装を見る）。
 - **利用例**：`lint` は「チェック専用・自動修正しない」という契約を確認し、lint に fmt を混ぜない。
 
 ______________________________________________________________________
@@ -302,7 +302,7 @@ ______________________________________________________________________
 | -- | -- | -- |
 | 入口 | `CLAUDE.md`（自動読込）→ agent profile | `AGENTS.md` → `CLAUDE.md` → agent profileを明示的に読ませる |
 | ルール/スキル | 同じ（`.ai/`, `.skills/`） | 同じ（プレーンMarkdownなので読める） |
-| 自動強制 | `.claude/` フックが自動で効く | フックは効かない → `make lint` 等を手動実行、GR を自己チェック |
+| 自動強制 | `.claude/` フックが自動で効く | フックは効かない → `task lint` 等を手動実行、GR を自己チェック |
 | グローバル層 | `~/.claude`・親 `CLAUDE.md` 自動 | 読まれない → 必要なら手動で貼る |
 
 ______________________________________________________________________
@@ -332,7 +332,7 @@ ______________________________________________________________________
 
 | グループ | ファイル | 除外理由 |
 | -- | -- | -- |
-| ツール/自動化 | `Makefile`, `profiles/*/Makefile`, `.pre-commit-config.yaml`, `.github/workflows/*`, `scripts/*.sh`, `renovate.json` | 実行インターフェースや強制機構であって挙動の"指示文"ではない（正準ターゲットの契約 = `.ai/contracts/foundation/make-targets.md` は §7 に収録） |
+| ツール/自動化 | `Taskfile.yml`, `profiles/*/Taskfile.yml`, `.pre-commit-config.yaml`, `.github/workflows/*`, `scripts/*.sh`, `renovate.json` | 実行インターフェースや強制機構であって挙動の"指示文"ではない（正準ターゲットの契約 = `.ai/contracts/foundation/task-targets.md` は §7 に収録） |
 | 設定 | `.gitignore`, `.gitattributes`, `.editorconfig`, `.env.example`, `.mdformat.toml`, `.templatesyncignore` | 環境・整形・同期の設定 |
 | ガバナンス metadata | `.github/CODEOWNERS`, `labels.yml`, `discussion-categories.md` | レビュー経路・ラベル・カテゴリ定義。AIは使うが指示ではない |
 | 人間向け | `README.md`, `SECURITY.md`, `docs/foundation/guides/usage.md`, `usage.ja.md` | 人間向け。特に `README.md` はAIを「CLAUDE.mdへ」と誘導する側。AI向けセキュリティは `.ai/security.md`（§3収録）が担う |
