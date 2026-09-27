@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Template self-check ("make doctor"): fast, dependency-free validation that the
-# foundation's own metadata invariants hold. Automates what a manual/agent audit would
-# otherwise catch. Exits non-zero on any violation. Add checks here as invariants grow.
+# Template self-check (the canonical `doctor` target): fast, dependency-free validation
+# that the foundation's own metadata invariants hold. Automates what a manual/agent audit
+# would otherwise catch. Exits non-zero on any violation. Add checks here as invariants
+# grow.
 #
 # Currently verifies:
 #   1. Every .ai/*.md and .skills/*.skill.md begins with a valid YAML frontmatter block
@@ -13,7 +14,8 @@
 #      Template Sync protection contract.
 #   5. Foundation-owned project-documentation guides do not occupy project-owned paths.
 #   6. Declared AI context routes remain bounded without omitting mandatory authorities.
-#   7. Downstream required Make targets do not retain template no-op implementations.
+#   7. Downstream required canonical targets (Taskfile.yml, or Makefile before the
+#      ADR-0026 migration) do not retain template no-op implementations.
 #   8. Root README ownership is valid when marked; legacy missing markers remain warnings.
 
 set -u
@@ -99,16 +101,23 @@ if [ "$is_foundation_root" = true ]; then
 fi
 
 # 6. The canonical Foundation repository intentionally retains its stack-neutral
-# template Makefile. An unpacked Foundation copy without an origin is identified by its
+# template targets. An unpacked Foundation copy without an origin is identified by its
 # immutable README owner marker. Downstream repositories must replace required
 # placeholders; a repository-owned explicit "not applicable" implementation is allowed.
-makefile_profile_args=(--root .)
+# ADR-0026: a root Taskfile.yml is validated by taskfile_profile.py; a repository without
+# one has not migrated and keeps the Makefile check until the contract phase.
+target_profile_args=(--root .)
 if [ "$is_foundation_root" = true ] || \
   grep -qx '<!-- repository-readme-owner: ea-Mitsuoka/ai-dev-foundation -->' README.md 2>/dev/null; then
-  makefile_profile_args+=(--allow-template-placeholders)
+  target_profile_args+=(--allow-template-placeholders)
 fi
-python3 scripts/makefile_profile.py "${makefile_profile_args[@]}" || \
-  err "Required Make targets retain unresolved template placeholders"
+if [ -f Taskfile.yml ]; then
+  target_profile=scripts/taskfile_profile.py
+else
+  target_profile=scripts/makefile_profile.py
+fi
+python3 "$target_profile" "${target_profile_args[@]}" || \
+  err "Required canonical targets retain unresolved template placeholders"
 
 # 7. ADR-0012: route shape is enforced everywhere. Byte and word ceilings fail in the
 # canonical foundation; descendants receive measurements and compatibility warnings

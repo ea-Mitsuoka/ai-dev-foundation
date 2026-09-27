@@ -78,10 +78,12 @@ class FoundationDocsPortabilityTest(unittest.TestCase):
             script,
         )
 
-    def test_child_doctor_rejects_unresolved_makefile_profiles(self):
+    def test_child_doctor_rejects_unresolved_target_profiles(self):
+        # Which validator runs is pinned by test_taskfile_profile.DoctorProfileSelectionTest.
         script = TEMPLATE_CHECK.read_text(encoding="utf-8")
 
-        self.assertIn("python3 scripts/makefile_profile.py", script)
+        self.assertIn("scripts/taskfile_profile.py", script)
+        self.assertIn("scripts/makefile_profile.py", script)
         self.assertIn("--allow-template-placeholders", script)
         self.assertIn("repository-readme-owner: ea-Mitsuoka/ai-dev-foundation", script)
 
