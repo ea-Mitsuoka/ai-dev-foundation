@@ -1,5 +1,28 @@
 # Changelog
 
+## [3.0.0](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.5.0...v3.0.0) (2026-09-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove the foundation's root Makefile (ADR-0026) ([#65](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/65))
+
+### Features
+
+* **profiles:** convert the Python and Node profiles to Taskfiles (ADR-0026) ([#66](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/66)) ([4869571](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/4869571e6de199865fc607c500a8b402cbe511ba))
+* **profiles:** convert the Terraform profile to a Taskfile (ADR-0026) ([#67](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/67)) ([39f27ba](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/39f27baf124872444032e9b37b82c2a5905c3c15))
+* remove the foundation's root Makefile (ADR-0026) ([#65](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/65)) ([3bb1ec5](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/3bb1ec5ffabc9c049d262d0f9a88aba1296607c6))
+* run the foundation's canonical targets with go-task (ADR-0026) ([#64](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/64)) ([fc48d9c](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/fc48d9ccf42a4292328d407d569c372b005e5d2f))
+* **tooling:** add the pinned go-task setup action (ADR-0026) ([#57](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/57)) ([93a4f18](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/93a4f18d14951f7585ede3a33356f72647b0dc68))
+* **tooling:** run canonical targets through task or make (ADR-0026) ([#58](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/58)) ([e91451f](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/e91451f42ede778255281b601075acb06aed2b25))
+* **tooling:** validate Taskfile placeholders in doctor (ADR-0026) ([#59](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/59)) ([9235a6c](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/9235a6c380ffff4c7f5fd3caf133f0b2a2463d8a))
+
+
+### Bug Fixes
+
+* **scripts:** format taskfile_profile.py the way descendants' ruff expects (ADR-0026) ([#70](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/70)) ([c178011](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/c17801103646a1929f4ce3d62dca9ce7bb9b165b))
+* **scripts:** keep one blank line after imports in taskfile_profile.py (ADR-0026) ([#72](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/72)) ([aa0f4a8](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/aa0f4a88d3b637f08356faf139ee2368a6de10d1))
+
 ## [2.5.0](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.4.0...v2.5.0) (2026-09-23)
 
 
