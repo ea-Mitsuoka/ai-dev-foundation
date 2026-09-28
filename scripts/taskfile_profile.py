@@ -5,7 +5,6 @@ import argparse
 import sys
 from pathlib import Path
 
-
 REQUIRED_TARGETS = (
     "setup",
     "format",
