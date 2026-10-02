@@ -12,6 +12,9 @@ repos:
       - id: check-merge-conflict
       - id: check-yaml
       - id: check-json
+        # The Dev Container spec reads devcontainer.json as JSON with comments (JSONC),
+        # which a strict JSON parser rejects.
+        exclude: ^\.devcontainer/devcontainer\.json$
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: trailing-whitespace
