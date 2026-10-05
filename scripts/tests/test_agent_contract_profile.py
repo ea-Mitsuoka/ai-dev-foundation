@@ -270,7 +270,6 @@ class FoundationAgentEntryTest(unittest.TestCase):
             "task sbom",
             "task clean",
             "task doctor",
-            "without a root `Taskfile.yml`",
             "foundation",
             "template",
             "project",

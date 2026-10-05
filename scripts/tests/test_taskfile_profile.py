@@ -166,10 +166,12 @@ class TaskTargetContractTest(unittest.TestCase):
             with self.subTest(rule=rule):
                 self.assertIn(rule, self.contract)
 
-    def test_repositories_that_have_not_migrated_keep_make(self):
-        self.assertIn("without a root `Taskfile.yml`", self.contract)
-        self.assertIn("`scripts/canonical-target.sh`", self.contract)
+    def test_the_make_fallback_is_gone(self):
         self.assertIn("`scripts/taskfile_profile.py`", self.contract)
+        self.assertIn("Inherited automation runs `task` directly.", self.contract)
+        self.assertNotIn("canonical-target.sh", self.contract)
+        self.assertNotIn("makefile_profile.py", self.contract)
+        self.assertNotIn("`make <target>`", self.contract)
 
 
 class TaskfileOwnershipExportTest(unittest.TestCase):
@@ -229,14 +231,14 @@ class DoctorProfileSelectionTest(unittest.TestCase):
             ["scripts/taskfile_profile.py --root ."], self.profile_calls(calls)
         )
 
-    def test_repository_without_a_taskfile_keeps_the_makefile_profile(self):
+    def test_repository_without_a_taskfile_is_still_checked_by_taskfile_profile(self):
         calls = self.run_doctor(taskfile=False)
 
         self.assertEqual(
-            ["scripts/makefile_profile.py --root ."], self.profile_calls(calls)
+            ["scripts/taskfile_profile.py --root ."], self.profile_calls(calls)
         )
 
-    def test_foundation_template_may_keep_placeholders_in_either_profile(self):
+    def test_foundation_template_may_keep_placeholders(self):
         calls = self.run_doctor(taskfile=True, foundation_readme=True)
 
         self.assertEqual(

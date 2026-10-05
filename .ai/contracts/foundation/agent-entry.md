@@ -45,8 +45,7 @@ task test-integration   task coverage   task build   task run
 task security-scan   task sbom   task clean   task doctor
 ```
 
-A repository without a root `Taskfile.yml` runs the same targets with `make` until it
-migrates (ADR-0026). Binding semantics live in `.ai/contracts/foundation/task-targets.md`;
+Binding semantics live in `.ai/contracts/foundation/task-targets.md` (ADR-0026);
 documented no-ops may remain until wired.
 
 ## Runtime integration

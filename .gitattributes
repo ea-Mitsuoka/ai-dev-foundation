@@ -1,11 +1,10 @@
 # Enforce LF across the repo. This foundation targets Linux/WSL; CRLF line endings
-# would break the shell hooks (.claude/hooks/*.sh) and Makefiles when the repo is
+# would break the shell hooks (.claude/hooks/*.sh) when the repo is
 # checked out on Windows with core.autocrlf=true.
 * text=auto eol=lf
 
 # Files where CRLF is outright fatal — pin explicitly.
 *.sh      text eol=lf
-Makefile  text eol=lf
 *.mk      text eol=lf
 *.bash    text eol=lf
 

@@ -8,7 +8,6 @@ docs/**
 profiles/**
 CLAUDE.md
 README.md
-Makefile
 Taskfile.yml
 .env.example
 .ai/mission.md
