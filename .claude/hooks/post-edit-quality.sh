@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # PostToolUse hook: after any Edit/Write, format and lint the touched file via the
-# canonical interface (ADR-0026: `task`, or `make` in a repository without a root
-# Taskfile.yml). Non-blocking on template (targets are no-ops until a project wires them)
-# and when the runner is not installed; lint failures are surfaced to the agent.
+# canonical interface (`task`, ADR-0026). Non-blocking on template (targets are no-ops
+# until a project wires them), in a repository without a root Taskfile.yml, and when
+# go-task is not installed; lint failures are surfaced to the agent.
 # Contract: hook JSON on stdin; exit 0 = ok; exit 2 = feed stderr back to the agent.
 
 set -u
@@ -19,14 +19,14 @@ case "$file_path" in
   *.md|*.txt|*.json|*.yml|*.yaml|*.toml|*.lock) exit 0 ;;
 esac
 
-canonical_target="$(dirname "$0")/../../scripts/canonical-target.sh"
+repository_root="$(cd "$(dirname "$0")/../.." && pwd)"
+[ -f "$repository_root/Taskfile.yml" ] || exit 0
+command -v task >/dev/null 2>&1 || exit 0
 
-bash "$canonical_target" format FILE="$file_path" >/dev/null 2>&1
+(cd "$repository_root" && task format FILE="$file_path") >/dev/null 2>&1
 
-lint_output="$(bash "$canonical_target" lint FILE="$file_path" 2>&1)"
+lint_output="$(cd "$repository_root" && task lint FILE="$file_path" 2>&1)"
 lint_status=$?
-# 127: the runner (or the dispatcher itself) is missing — stay non-blocking.
-[ "$lint_status" -eq 127 ] && exit 0
 if [ "$lint_status" -ne 0 ]; then
   echo "Lint failed for $file_path (COD-001 — fix before proceeding):" >&2
   echo "$lint_output" | tail -n 30 >&2

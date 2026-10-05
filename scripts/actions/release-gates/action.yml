@@ -3,15 +3,13 @@ description: Run tests, vulnerability checks, SBOM generation, build, and proven
 runs:
   using: composite
   steps:
-    # canonical-target.sh runs `task`, or `make` in a repository without a root
-    # Taskfile.yml (ADR-0026); only a Taskfile repository needs go-task installed.
+    # Canonical targets run through go-task (ADR-0026).
     - name: Install go-task
-      if: hashFiles('Taskfile.yml') != ''
       uses: ./scripts/actions/setup-task
-    - run: bash scripts/canonical-target.sh setup
+    - run: task setup
       shell: bash
     - name: Full test suite (gate)
-      run: bash scripts/canonical-target.sh test
+      run: task test
       shell: bash
     - name: Vulnerability gate
       uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
@@ -29,7 +27,7 @@ runs:
         upload-artifact: true
         upload-release-assets: true
     - name: Build release artifact
-      run: bash scripts/canonical-target.sh build
+      run: task build
       shell: bash
     - name: Attest build provenance (SLSA — SEC-031)
       # Private-repository attestations require GitHub Enterprise Cloud. Keep the

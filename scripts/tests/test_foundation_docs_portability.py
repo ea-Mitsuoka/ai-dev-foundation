@@ -64,16 +64,11 @@ class FoundationDocsPortabilityTest(unittest.TestCase):
         self.assertNotIn(".ai/contracts/foundation/make-targets.md", entry)
         self.assertNotIn("profiles/README.md", entry)
 
-    def test_moved_make_target_contract_holds_only_a_pointer(self):
-        # ADR-0026: one contract body; the old path stays until the contract phase so that
-        # links in descendants keep resolving, but it carries no rules of its own.
-        pointer = (
-            REPOSITORY_ROOT / ".ai" / "contracts" / "foundation" / "make-targets.md"
-        ).read_text(encoding="utf-8")
-
-        self.assertIn("(task-targets.md)", pointer)
-        self.assertNotIn("| `lint` |", pointer)
-        self.assertNotIn("## Implementation rules", pointer)
+    def test_make_target_contract_pointer_is_removed(self):
+        # ADR-0026 contract phase: task-targets.md is the only canonical target contract.
+        self.assertFalse(
+            (REPOSITORY_ROOT / ".ai" / "contracts" / "foundation" / "make-targets.md").exists()
+        )
 
     def test_root_check_does_not_classify_legacy_children_by_manifest_absence(self):
         script = TEMPLATE_CHECK.read_text(encoding="utf-8")
@@ -95,7 +90,7 @@ class FoundationDocsPortabilityTest(unittest.TestCase):
         script = TEMPLATE_CHECK.read_text(encoding="utf-8")
 
         self.assertIn("scripts/taskfile_profile.py", script)
-        self.assertIn("scripts/makefile_profile.py", script)
+        self.assertNotIn("scripts/makefile_profile.py", script)
         self.assertIn("--allow-template-placeholders", script)
         self.assertIn("repository-readme-owner: ea-Mitsuoka/ai-dev-foundation", script)
 

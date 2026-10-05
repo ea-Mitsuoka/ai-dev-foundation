@@ -11,9 +11,7 @@ unchanged and its root `Taskfile.yml` MUST implement each target or leave an exp
 repository-owned result such as `[project] build: not applicable — no deployable artifact`. Project-specific tasks may be added freely after them.
 
 Run a target at the repository root as `task <target>` and pass a variable as
-`task format FILE=<path>`. A repository without a root `Taskfile.yml` has not completed its
-ADR-0026 migration: it runs the same targets as `make <target>` from its `Makefile`, and
-the inherited automation reaches either runner through `scripts/canonical-target.sh`.
+`task format FILE=<path>`. Inherited automation runs `task` directly.
 
 ## The canonical targets (binding)
 
@@ -67,9 +65,8 @@ the inherited automation reaches either runner through `scripts/canonical-target
 ## Verifying an implementation
 
 The `doctor` target runs `scripts/taskfile_profile.py`, which rejects a `Taskfile.yml` that
-still carries the template `not wired yet` placeholder for a required target; a
-repository without a root `Taskfile.yml` is checked by `scripts/makefile_profile.py`
-instead. Beyond that, check by hand: `task lint` on dirty code fails; `task format` fixes
+still carries the template `not wired yet` placeholder for a required target, and fails
+when the repository has no root `Taskfile.yml`. Beyond that, check by hand: `task lint` on dirty code fails; `task format` fixes
 it; `task nonexistent` fails; `task test-unit` finishes in seconds.
 
 ## Reference implementations

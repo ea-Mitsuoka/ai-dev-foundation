@@ -38,18 +38,17 @@ repos:
           - mdformat-frontmatter         # keep YAML frontmatter (--- ... ---) intact
           - mdformat-gfm                 # GFM tables, task lists, autolinks (repo is table-heavy)
 
-  # canonical-target.sh runs `task`, or `make` in a repository without a root Taskfile.yml
-  # (ADR-0026).
+  # Canonical targets run through go-task (ADR-0026).
   - repo: local
     hooks:
       - id: lint
         name: lint (canonical lint target)       # COD-001
-        entry: bash scripts/canonical-target.sh lint
+        entry: task lint
         language: system
         pass_filenames: false
       - id: unit-tests
         name: unit tests (canonical test-unit target)  # GR-021 / TST-030
-        entry: bash scripts/canonical-target.sh test-unit
+        entry: task test-unit
         language: system
         pass_filenames: false
         stages: [pre-push]              # fast suite on push; full suite runs in CI
