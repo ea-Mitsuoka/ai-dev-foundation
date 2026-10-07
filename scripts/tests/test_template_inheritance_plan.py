@@ -1301,3 +1301,81 @@ class TemplateInheritanceBootstrapTest(unittest.TestCase):
         self.commit(self.child, "conflicting archive")
         with self.assertRaisesRegex(inheritance.InheritanceError, "differs"):
             self.apply_bootstrap()
+
+    # -- ADR-0028: parent README archive links ------------------------------------------
+
+    ARCHIVE = "docs/inheritance/readmes/acme/parent-template.md"
+
+    def write_archive_body(self, body):
+        self.write(
+            self.payload, self.ARCHIVE,
+            f"---\nsource-repository: {PARENT_REPOSITORY}\nsource-commit: {self.bootstrap_source}\n---\n\n"
+            f"<!-- repository-readme-owner: {PARENT_REPOSITORY} -->\n# Parent\n{body}",
+        )
+
+    def test_bootstrap_apply_refuses_an_archive_that_keeps_relative_links(self):
+        for body in ("See [the guide](docs/foundation/guide.md).\n", "[guide]: docs/foundation/\n"):
+            with self.subTest(body=body):
+                self.write_archive_body(body)
+                with self.assertRaisesRegex(inheritance.InheritanceError, "relative links"):
+                    self.apply_bootstrap()
+
+    def test_bootstrap_apply_accepts_pinned_urls_anchors_and_code(self):
+        self.write_archive_body(
+            "[guide](https://github.com/acme/parent-template/blob/abc/docs/foundation/guide.md)\n"
+            "[top](#parent) [mail](mailto:owner@example.invalid)\n"
+            "```markdown\n[example](docs/example.md)\n```\n"
+        )
+
+        self.assertEqual(self.apply_bootstrap()["status"], "bootstrapped")
+
+    def test_readme_archive_pins_relative_links_to_the_source_commit(self):
+        self.write(
+            self.parent, "README.md",
+            f"<!-- repository-readme-owner: {PARENT_REPOSITORY} -->\n# Parent\n"
+            "[guide](docs/foundation/guide.md) [section](./docs/foundation/guide.md#usage)\n"
+            "[docs](docs/foundation/) [titled](docs/foundation/guide.md \"Guide\")\n"
+            "[top](#parent) [site](https://example.invalid/)\n"
+            "[ref]: inherited/\n"
+            "```\n[code](docs/foundation/guide.md)\n```\n",
+        )
+        source = self.commit(self.parent, "link the README")
+        self.git(self.parent, "update-ref", "refs/remotes/origin/main", source)
+        self.payload = Path(self.temporary_directory.name) / "generated"
+        self.payload.mkdir()
+
+        result = inheritance.write_readme_archive(self.parent, source, self.payload)
+
+        base = f"https://github.com/{PARENT_REPOSITORY}"
+        archive = (self.payload / self.ARCHIVE).read_text(encoding="utf-8")
+        self.assertEqual(result["path"], self.ARCHIVE)
+        self.assertEqual(result["rewritten_links"], 5)
+        self.assertTrue(
+            archive.startswith(
+                f"---\nsource-repository: {PARENT_REPOSITORY}\nsource-commit: {source}\n---\n\n"
+            )
+        )
+        self.assertIn(f"[guide]({base}/blob/{source}/docs/foundation/guide.md)", archive)
+        self.assertIn(f"[section]({base}/blob/{source}/docs/foundation/guide.md#usage)", archive)
+        self.assertIn(f"[docs]({base}/tree/{source}/docs/foundation)", archive)
+        self.assertIn(f'[titled]({base}/blob/{source}/docs/foundation/guide.md "Guide")', archive)
+        self.assertIn(f"[ref]: {base}/tree/{source}/inherited", archive)
+        self.assertIn("[top](#parent) [site](https://example.invalid/)", archive)
+        self.assertIn("[code](docs/foundation/guide.md)", archive)
+        self.assertEqual(inheritance._relative_archive_links(archive), [])
+
+    def test_readme_archive_cli_writes_the_payload(self):
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            exit_code = inheritance.main(
+                [
+                    "readme-archive",
+                    "--parent-root", str(self.parent),
+                    "--source-commit", self.bootstrap_source,
+                    "--payload-root", str(self.payload),
+                ]
+            )
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(json.loads(stdout.getvalue())["path"], self.ARCHIVE)
+        self.assertEqual(self.apply_bootstrap()["status"], "bootstrapped")
