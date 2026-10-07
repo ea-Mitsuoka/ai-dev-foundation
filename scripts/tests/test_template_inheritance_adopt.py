@@ -377,8 +377,11 @@ class AdoptChildTest(unittest.TestCase):
         self.write(self.child, "README.md", "# Different\n")
         self.commit(self.child, "readme without marker")
 
-        with self.assertRaisesRegex(inheritance.InheritanceError, "differs from both parent and desired"):
+        with self.assertRaisesRegex(inheritance.InheritanceError, "differs from both parent and desired") as raised:
             self.apply()
+        # The refusal names the remedy, not only the mismatch.
+        self.assertIn("commit README.md with its ownership marker first", str(raised.exception))
+        self.assertIn("supply the same content as the payload", str(raised.exception))
 
     def test_refuses_wrong_confirmation_and_the_default_branch(self):
         with self.assertRaisesRegex(inheritance.InheritanceError, "confirmation must match"):
