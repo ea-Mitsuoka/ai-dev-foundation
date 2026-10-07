@@ -1,7 +1,7 @@
 ---
 id: adr-0027
 title: ADR-0027 — Write the protected baseline during adoption activation
-status: proposed
+status: accepted
 updated: 2026-10-07
 ---
 
@@ -9,9 +9,9 @@ updated: 2026-10-07
 
 | Field | Value |
 | -- | -- |
-| Status | proposed |
+| Status | accepted |
 | Date | 2026-10-07 |
-| Deciders | repository owner |
+| Deciders | repository owner (approved 2026-10-07, PR #82) |
 | Author | Claude Opus 5.5 (AI agent) |
 | Supersedes / Superseded by | Amends ADR-0021 (protected files are no longer a hand port when absent) and ADR-0022 (phase 3 writes more files); supersedes none |
 
