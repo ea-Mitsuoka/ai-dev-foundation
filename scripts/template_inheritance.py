@@ -1335,12 +1335,20 @@ def _adopt_prepare_payloads(plan, child_root, parent_root, payload_root):
     }
 
 
+def _adopt_path_change(child_root, parent_root, source_commit, path, payload):
+    # An existing repository usually lacks the targets the parent ships (the sync workflow,
+    # the agent overlay and profile); writing an absent path overwrites nothing.
+    if _child_entry(child_root, parent_root, path) is None:
+        return True
+    return _bootstrap_path_change(child_root, parent_root, source_commit, path, payload)
+
+
 def _adopt_prepare_change(child_root, parent_root, source_commit, path, payload):
     # The ignore file is generated, and the transport dependency is the parent's exact blob:
     # a differing child copy is a collision that plan_adopt already required to be accepted.
     if path in {TEMPLATE_SYNC_IGNORE_PATH, ADOPT_MARKER_PATH, ADOPT_TRANSPORT_DEPENDENCY}:
         return not _adopt_matches(child_root, path, payload)
-    return _bootstrap_path_change(child_root, parent_root, source_commit, path, payload)
+    return _adopt_path_change(child_root, parent_root, source_commit, path, payload)
 
 
 def apply_adopt(
@@ -1389,7 +1397,7 @@ def apply_adopt(
     payloads.update(_adopt_metadata_payloads(plan["desired"]))
     changed = [
         path for path, payload in sorted(payloads.items())
-        if _bootstrap_path_change(child_root, parent_root, source_commit, path, payload)
+        if _adopt_path_change(child_root, parent_root, source_commit, path, payload)
     ]
     for path in changed:
         _write_bootstrap_payload(child_root, path, payloads[path])
