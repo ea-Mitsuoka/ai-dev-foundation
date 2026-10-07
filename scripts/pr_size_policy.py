@@ -81,6 +81,9 @@ EXEMPT_PATH_SEGMENTS = frozenset(
 )
 GENERATED_NAME_MARKERS = (".gen.", ".generated.", ".pb.", "_pb2.")
 DECOMPOSITION_CHECKPOINT_LINES = 800
+# ADR-0025: exists only between adoption phase 1 and phase 3, so its removal identifies
+# the activation pull request that ADR-0027 exempts from the hard limit.
+ADOPTION_MARKER = ".github/inheritance/adoption.json"
 
 
 @dataclass(frozen=True)
@@ -123,6 +126,13 @@ def summarize_lockfiles(payload: Any) -> tuple[int, int, int]:
             deletions += deleted
             files += 1
     return additions, deletions, files
+
+
+def removes_adoption_marker(payload: Any) -> bool:
+    return any(
+        entry.get("filename") == ADOPTION_MARKER and entry.get("status") == "removed"
+        for entry in _flatten_pages(payload)
+    )
 
 
 def is_handwritten_source(filename: str) -> bool:
@@ -221,6 +231,7 @@ def main() -> int:
         lockfile_stats = summarize_lockfiles(payload)
         result = evaluate_size(args.additions, args.deletions, args.files, lockfile_stats)
         checkpoints = decomposition_checkpoints(payload, args.root)
+        activation = removes_adoption_marker(payload)
     except (OSError, ValueError, json.JSONDecodeError) as error:
         print(f"::error::Invalid PR-size policy input: {error}")
         return 2
@@ -236,6 +247,13 @@ def main() -> int:
             "Record the MNT-002 responsibility and coupling review in the PR, or link "
             "the approved exception. Cosmetic splitting does not satisfy this."
         )
+    if result.level == "hard" and activation:
+        print(
+            "::warning::PR exceeds the GR-020 hard limit but removes the adoption marker, "
+            "so it is the adoption activation PR that ADR-0027 exempts. Review it against "
+            "the baseline paths listed by the adopt-child plan."
+        )
+        return 0
     if result.level == "hard":
         print(
             "::error::PR exceeds hard size limit (GR-020). Split it "
