@@ -1,5 +1,24 @@
 # Changelog
 
+## [4.0.0](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v3.0.0...v4.0.0) (2026-10-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove the make fallback from inherited automation (ADR-0026) ([#76](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/76))
+
+### Features
+
+* **ci:** exempt the adoption activation PR from the GR-020 hard limit (ADR-0027) ([#85](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/85)) ([60e0260](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/60e02606389c2d15ce45e9105340b7a896dc7bd2))
+* **inheritance:** write the protected baseline during adoption activation (ADR-0027) ([#86](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/86)) ([d1a13b9](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/d1a13b96a3beba7c325ba16f702ca9205fc56e04))
+* remove the make fallback from inherited automation (ADR-0026) ([#76](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/76)) ([d045afc](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/d045afca35acec29970238d87903d18594b5456b))
+
+
+### Bug Fixes
+
+* **inheritance:** let adopt-child write targets the repository lacks ([#78](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/78)) ([7762372](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/7762372c75d370c04a258de52237d0a7d031b8b8))
+* **inheritance:** name the remedy when adopt-child refuses the README ([#80](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/80)) ([f3b4174](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/f3b4174613e71ce3b65fd0e9fde55a1633a6f403))
+
 ## [3.0.0](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.5.0...v3.0.0) (2026-10-02)
 
 
