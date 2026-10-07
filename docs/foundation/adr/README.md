@@ -52,5 +52,6 @@ broaden the search under ADR-0012 when relevance is uncertain.
 | [0024](0024-keep-inherited-documents-free-of-links-into-optional-repository-owned-paths.md) | Keep inherited documents free of links into optional repository-owned paths | template inheritance, documentation, make targets | accepted | 2026-09-23 |
 | [0025](0025-declare-the-direct-parent-with-an-adoption-marker-until-activation.md) | Declare the direct parent with an adoption marker until activation | template inheritance, repository adoption, Template Sync | accepted | 2026-09-24 |
 | [0026](0026-replace-the-canonical-make-interface-with-go-task.md) | Replace the canonical make interface with go-task | canonical commands, make targets, template inheritance, CI tooling | accepted | 2026-09-27 |
+| [0028](0028-pin-relative-links-in-parent-readme-archives.md) | Pin relative links in parent README archives to the source commit | template inheritance, README ownership, documentation links | proposed | 2026-10-07 |
 
 <!-- Append new ADRs to this table (newest last). -->
