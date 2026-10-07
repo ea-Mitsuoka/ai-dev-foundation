@@ -1,7 +1,7 @@
 ---
 id: adr-0028
 title: ADR-0028 — Pin relative links in parent README archives to the source commit
-status: proposed
+status: accepted
 updated: 2026-10-07
 ---
 
@@ -9,9 +9,9 @@ updated: 2026-10-07
 
 | Field | Value |
 | -- | -- |
-| Status | proposed |
+| Status | accepted |
 | Date | 2026-10-07 |
-| Deciders | repository owner |
+| Deciders | repository owner (approved 2026-10-07, PR #83) |
 | Author | Claude Opus 5.5 (AI agent) |
 | Supersedes / Superseded by | Amends ADR-0011 (archive content rule); supersedes none |
 

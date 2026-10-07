@@ -49,6 +49,10 @@ BOOTSTRAP_MANUAL_BOUNDARIES = {
     "README.md",
 }
 README_OWNER_MARKER = re.compile(r"<!--\s*repository-readme-owner:\s*([^\s]+)\s*-->")
+# ADR-0028: Markdown link targets in a parent README archive, outside fenced code.
+MARKDOWN_INLINE_LINK = re.compile(r"(\]\(\s*)(<[^>\n]*>|[^)\s]+)")
+MARKDOWN_REFERENCE_DEFINITION = re.compile(r"^( {0,3}\[[^\]\n]+\]:[ \t]*)(<[^>\n]*>|\S+)")
+LINK_SCHEME = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*:")
 
 
 class InheritanceError(ValueError):
@@ -960,6 +964,101 @@ def _validate_bootstrap_manual_payloads(payloads, repository, parent_repository,
     )
     if not archive.startswith(expected_frontmatter) or README_OWNER_MARKER.findall(archive) != [parent_repository]:
         raise InheritanceError("bootstrap README archive has invalid source provenance")
+    relative = _relative_archive_links(archive)
+    if relative:
+        raise InheritanceError(
+            f"bootstrap README archive keeps relative links {relative[:5]}, which break under "
+            "docs/inheritance/readmes/; generate it with readme-archive (ADR-0028)"
+        )
+
+
+def _map_markdown_links(text, replace):
+    """Apply ``replace`` to every link target outside fenced code blocks."""
+    lines, fence = [], None
+    for line in text.splitlines(keepends=True):
+        stripped = line.lstrip()
+        if fence is None and stripped.startswith(("```", "~~~")):
+            fence = stripped[:3]
+        elif fence is not None:
+            if stripped.startswith(fence):
+                fence = None
+        else:
+            line = MARKDOWN_INLINE_LINK.sub(lambda match: match[1] + replace(match[2]), line)
+            line = MARKDOWN_REFERENCE_DEFINITION.sub(
+                lambda match: match[1] + replace(match[2]), line
+            )
+        lines.append(line)
+    return "".join(lines)
+
+
+def _is_relative_link(target):
+    target = target.strip("<>")
+    return bool(target) and not target.startswith(("#", "/")) and not LINK_SCHEME.match(target)
+
+
+def _relative_archive_links(text):
+    found = []
+
+    def record(target):
+        if _is_relative_link(target):
+            found.append(target.strip("<>"))
+        return target
+
+    _map_markdown_links(text, record)
+    return found
+
+
+def write_readme_archive(parent_root, source_commit, payload_root):
+    """Write the parent README archive payload with links pinned to the source commit.
+
+    The archive records the parent at one commit, so its links point to that commit
+    instead of resolving against the child's tree (ADR-0028).
+    """
+    parent_root, parent_repository, _export = _bootstrap_parent(parent_root, source_commit)
+    entry = _parent_entry(parent_root, source_commit, "README.md")
+    if entry is None:
+        raise InheritanceError("parent has no README.md at the source commit")
+    readme = _bootstrap_text(_git_blob(parent_root, entry[0], "README.md"), "README.md")
+    rewritten = []
+
+    def pin(target):
+        if not _is_relative_link(target):
+            return target
+        bare = target.strip("<>")
+        path, separator, suffix = (re.split(r"([#?])", bare, maxsplit=1) + ["", ""])[:3]
+        parts = [part for part in path.split("/") if part not in ("", ".")]
+        if ".." in parts or not parts:
+            raise InheritanceError(f"parent README link leaves the repository: {bare}")
+        normalized = "/".join(parts)
+        listing = _git(parent_root, ["ls-tree", source_commit, "--", normalized], "link target read")
+        kind = "tree" if listing.split(" ")[1:2] == ["tree"] else "blob"
+        rewritten.append(bare)
+        url = f"https://github.com/{parent_repository}/{kind}/{source_commit}/{normalized}"
+        pinned = url + separator + suffix
+        return f"<{pinned}>" if target.startswith("<") else pinned
+
+    archive = (
+        f"---\nsource-repository: {parent_repository}\nsource-commit: {source_commit}\n---\n\n"
+        + _map_markdown_links(readme, pin)
+    )
+    owner, parent = parent_repository.casefold().split("/", 1)
+    archive_path = f"docs/inheritance/readmes/{owner}/{parent}.md"
+    root = Path(payload_root)
+    if root.is_symlink() or not root.is_dir():
+        raise InheritanceError("readme-archive payload root must be an existing non-symlink directory")
+    destination = root / archive_path
+    try:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(archive, encoding="utf-8")
+    except OSError as error:
+        raise InheritanceError(f"readme-archive write failed: {archive_path}") from error
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "status": "written",
+        "path": archive_path,
+        "parent": {"repository": parent_repository, "commit": source_commit},
+        "rewritten_links": len(rewritten),
+    }
 
 
 def _bootstrap_payloads(plan, child_root, payload_root):
@@ -2255,6 +2354,13 @@ def main(argv=None):
     adopt.add_argument("--payload-root", type=Path)
     adopt.add_argument("--confirm-repository")
     adopt.add_argument("--confirm-source")
+    archive = commands.add_parser(
+        "readme-archive",
+        help="write the parent README archive payload with pinned links (ADR-0028)",
+    )
+    archive.add_argument("--parent-root", type=Path, required=True, help="direct-parent worktree")
+    archive.add_argument("--source-commit", required=True)
+    archive.add_argument("--payload-root", type=Path, required=True)
     finalize = commands.add_parser(
         "finalize-sync",
         help="plan or apply exact-source manual ports on an existing sync branch",
@@ -2344,6 +2450,8 @@ def main(argv=None):
                     args.root, args.parent_root, args.source_commit, args.repository,
                     protect=args.protect, accept=args.accept,
                 )
+        elif args.command == "readme-archive":
+            report = write_readme_archive(args.parent_root, args.source_commit, args.payload_root)
         elif args.command == "finalize-sync":
             if args.apply:
                 report = apply_finalization(

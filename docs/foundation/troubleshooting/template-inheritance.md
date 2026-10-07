@@ -85,3 +85,11 @@ present, the marker was restored or re-added by hand. Delete
 Adoption writes a payload path only when the repository file is absent or already
 identical to the reviewed payload. Fold the ownership marker into the repository's own
 `README.md`, commit it, and supply that same content as the payload.
+
+## `bootstrap README archive keeps relative links`
+
+The archive payload still contains a link such as `[.ai/](.ai/)`. Under
+`docs/inheritance/readmes/<owner>/` that target does not exist, so link-check fails.
+Regenerate the payload with `template_inheritance.py readme-archive`; it rewrites each
+relative link to the parent at the source commit (ADR-0028). Do not exclude the archive
+from link-check instead.

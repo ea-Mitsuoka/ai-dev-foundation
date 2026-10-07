@@ -76,7 +76,12 @@ Complete these items in one reviewed initialization PR:
    Keep `.ai/project/agent-overlay.md` and the profile protected.
 4. Before replacing the copied root README, preserve it under
    `docs/inheritance/readmes/<owner>/<repository>.md`; set the root ownership marker to
-   the new `OWNER/REPOSITORY` (DOC-014).
+   the new `OWNER/REPOSITORY` (DOC-014). Generate the archive payload with
+   `python3 scripts/template_inheritance.py readme-archive --parent-root ../<selected-parent-worktree> --source-commit <commit> --payload-root /path/to/payload`:
+   it pins every relative link to the source commit, because a root-relative link breaks
+   under `docs/inheritance/readmes/`
+   ([ADR-0028](../adr/0028-pin-relative-links-in-parent-readme-archives.md)). The same
+   payload serves `adopt-child` activation.
 5. Make `.templatesyncignore` cover every protected root and all workflows. Extra
    repository-owned exclusions are allowed; the two lists do not need to be identical.
 6. Validate locally before enabling scheduled PR creation:
