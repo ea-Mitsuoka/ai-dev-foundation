@@ -31,6 +31,12 @@ WORKFLOW = ".github/workflows/template-sync.yml"
 ARCHIVE = "docs/inheritance/readmes/acme/parent-template.md"
 CHILD_README = f"<!-- repository-readme-owner: {CHILD} -->\n# Existing Service\n"
 MARKER = ".github/inheritance/adoption.json"
+GUARD = ".claude/hooks/guard.sh"
+BASELINE = [GUARD, ".github/governance/repository.json", ".github/workflows/ci.yml"]
+PARENT_TASKFILE = (
+    'version: "3"\ntasks:\n  lint:\n    cmds:\n      - echo "[template] lint: not wired yet"\n'
+)
+CHILD_TASKFILE = 'version: "3"\ntasks:\n  lint:\n    cmds:\n      - ruff check .\n'
 TRANSPORT_FILES = [WORKFLOW, ".templatesyncignore", MARKER, AUTH]
 METADATA_FILES = [
     ".ai/project/agent-overlay.md",
@@ -59,6 +65,7 @@ class AdoptChildTest(unittest.TestCase):
         self.git(self.parent, "remote", "add", "origin", f"https://github.com/{PARENT}.git")
         protected = sorted(
             {
+                ".claude/hooks/",
                 ".gitignore",
                 ".github/governance/repository.json",
                 ".github/inheritance/lock.json",
@@ -67,8 +74,11 @@ class AdoptChildTest(unittest.TestCase):
                 ".github/workflows/",
                 ".templatesyncignore",
                 ".ai/project/",
+                "CHANGELOG.md",
                 "README.md",
+                "Taskfile.yml",
                 "docs/inheritance/readmes/",
+                "src/",
             }
         )
         export = {
@@ -93,6 +103,16 @@ class AdoptChildTest(unittest.TestCase):
         self.write(self.parent, WORKFLOW, "name: Parent Template Sync\non: workflow_dispatch\n")
         self.write(self.parent, ".ai/project/agent-overlay.md", f"# Overlay\n\nRepository: {PARENT}\n")
         self.write(self.parent, ".github/inheritance/agent-profile.json", "{}\n")
+        # ADR-0027: the protected baseline activation copies when the repository lacks it,
+        # and parent files it must never copy.
+        self.write(self.parent, ".github/workflows/ci.yml", "name: CI\n")
+        self.write(self.parent, ".github/governance/repository.json", '{"reviews": 1}\n')
+        self.write(self.parent, GUARD, "#!/bin/sh\nexit 0\n")
+        (self.parent / GUARD).chmod(0o755)
+        self.write(self.parent, ".gitignore", "parent-only\n")
+        self.write(self.parent, "Taskfile.yml", PARENT_TASKFILE)
+        self.write(self.parent, "src/parent_app.py", "print('parent app')\n")
+        self.write(self.parent, "CHANGELOG.md", "# Parent changelog\n")
         self.source = self.commit(self.parent, "publish export")
         self.git(self.parent, "update-ref", "refs/remotes/origin/main", self.source)
 
@@ -105,6 +125,7 @@ class AdoptChildTest(unittest.TestCase):
         self.write(self.child, "docs/foundation/guide.md", "foundation guide\n")  # identical
         self.write(self.child, "scripts/shared.py", "print('child')\n")  # differs
         self.write(self.child, "scripts/local_tool.py", "print('mine')\n")  # child only
+        self.write(self.child, ".gitignore", "child-only\n")  # protected, already present
         main = self.commit(self.child, "existing history")
         self.git(self.child, "update-ref", "refs/remotes/origin/main", main)
         self.git(self.child, "symbolic-ref", "refs/remotes/origin/HEAD", "refs/remotes/origin/main")
@@ -121,6 +142,7 @@ class AdoptChildTest(unittest.TestCase):
             f"          source_repo_path: \"{PARENT}\"\n"
             f"        env:\n          SOURCE_REPOSITORY: \"{PARENT}\"\n",
         )
+        self.write(self.payload, "Taskfile.yml", CHILD_TASKFILE)
         self.write_archive(self.source)
 
     # -- helpers ---------------------------------------------------------------------------
@@ -337,7 +359,10 @@ class AdoptChildTest(unittest.TestCase):
         result = self.apply()
 
         self.assertEqual(result["status"], "adopted")
-        self.assertEqual(result["changed_paths"], sorted(set(METADATA_FILES) - {"README.md"}))
+        self.assertEqual(
+            result["changed_paths"], sorted({*METADATA_FILES, "Taskfile.yml"} - {"README.md"})
+        )
+        self.assertEqual(result["baseline_paths"], BASELINE)
         self.assertEqual(result["removed_paths"], [MARKER])
         self.assertFalse((self.child / MARKER).exists())
         self.assertEqual(result["protected_collisions"], ["scripts/local_tool.py"])
@@ -352,6 +377,56 @@ class AdoptChildTest(unittest.TestCase):
         self.assertEqual(self.plan()["status"], "already_adopted")
         rerun = self.apply()
         self.assertEqual((rerun["status"], rerun["changed_paths"]), ("already_adopted", []))
+        self.assertEqual(rerun["baseline_paths"], [])
+
+    # -- ADR-0027: the protected baseline -------------------------------------------------
+
+    def activate(self):
+        self.prepare()
+        self.commit(self.child, "chore: prepare adoption")
+        self.simulate_sync()
+        return self.apply()
+
+    def test_plan_lists_the_baseline_and_the_taskfile_payload(self):
+        result = self.plan(protect=["scripts/local_tool.py"], accept=["scripts/shared.py"])
+
+        self.assertEqual(result["payloads"]["baseline"], BASELINE)
+        self.assertIn("Taskfile.yml", result["payloads"]["apply"])
+
+    def test_activation_copies_the_absent_protected_files_from_the_parent(self):
+        self.activate()
+
+        for path in BASELINE:
+            parent_blob = subprocess.run(
+                ["git", "-C", str(self.parent), "show", f"{self.source}:{path}"],
+                capture_output=True, check=True, timeout=5,
+            ).stdout
+            self.assertEqual((self.child / path).read_bytes(), parent_blob, path)
+        self.assertTrue((self.child / GUARD).stat().st_mode & 0o111)  # the mode travels too
+        self.assertFalse((self.child / ".github/workflows/ci.yml").stat().st_mode & 0o111)
+
+    def test_activation_keeps_existing_files_and_never_copies_parent_project_content(self):
+        self.activate()
+
+        self.assertEqual((self.child / ".gitignore").read_text(), "child-only\n")
+        self.assertEqual((self.child / "Taskfile.yml").read_text(), CHILD_TASKFILE)
+        self.assertFalse((self.child / "src/parent_app.py").exists())
+        self.assertFalse((self.child / "CHANGELOG.md").exists())
+
+    def test_activation_needs_a_taskfile_payload_only_when_the_repository_lacks_one(self):
+        (self.payload / "Taskfile.yml").unlink()
+        self.prepare()
+        self.commit(self.child, "chore: prepare adoption")
+        self.simulate_sync()
+        with self.assertRaisesRegex(inheritance.InheritanceError, "must provide Taskfile.yml"):
+            self.apply()
+
+        self.write(self.child, "Taskfile.yml", "version: \"3\"\n")
+        self.commit(self.child, "the repository already has a Taskfile")
+        self.assertNotIn("Taskfile.yml", self.plan()["payloads"]["apply"])
+        result = self.apply()
+        self.assertNotIn("Taskfile.yml", result["changed_paths"])
+        self.assertEqual((self.child / "Taskfile.yml").read_text(), "version: \"3\"\n")
 
     def test_activation_takes_the_commit_the_sync_actually_delivered(self):
         self.prepare()
