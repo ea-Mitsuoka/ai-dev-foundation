@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.0.0](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v3.0.0...v4.0.0) (2026-10-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove the make fallback from inherited automation (ADR-0026) ([#76](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/76))
+
+### Features
+
+* remove the make fallback from inherited automation (ADR-0026) ([#76](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/76)) ([d045afc](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/d045afca35acec29970238d87903d18594b5456b))
+
+
+### Bug Fixes
+
+* **inheritance:** let adopt-child write targets the repository lacks ([#78](https://github.com/ea-Mitsuoka/ai-dev-foundation/issues/78)) ([7762372](https://github.com/ea-Mitsuoka/ai-dev-foundation/commit/7762372c75d370c04a258de52237d0a7d031b8b8))
+
 ## [3.0.0](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.5.0...v3.0.0) (2026-10-02)
 
 
