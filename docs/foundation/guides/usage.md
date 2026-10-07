@@ -340,9 +340,11 @@ Compare the PR's file list with the `pending` classification from step 1 before 
 ### 4. Phase 3 — activate the metadata (PR 3)
 
 Prepare the remaining payloads (root `README.md` carrying the ownership marker,
-`.ai/project/agent-overlay.md`, the parent README archive). Commit the README change
-first: activation writes a payload path only when the repository file is absent or already
-identical to it. Then, with the commit the sync **actually delivered**:
+`.ai/project/agent-overlay.md`, the parent README archive, and — when the repository has
+no `Taskfile.yml` — a `Taskfile.yml` whose required tasks are wired for this repository;
+the parent's required tasks are template placeholders that fail `doctor`). Commit the
+README change first: activation writes a payload path only when the repository file is
+absent or already identical to it. Then, with the commit the sync **actually delivered**:
 
 ```bash
 python3 scripts/template_inheritance.py adopt-child \
@@ -354,15 +356,33 @@ python3 scripts/template_inheritance.py adopt-child \
 
 Activation refuses unless every non-protected inherited path is byte-identical to that
 commit — `bootstrap-child`'s own precondition. Only then does it write the manifest, lock,
-agent profile, README, and archive, deletes the adoption marker, and the full contract
-validates immediately. Protect decisions are read back from the ignore file, so no
-`--protect` flags are needed.
+agent profile, README, archive, and `Taskfile.yml`, deletes the adoption marker, and the
+full contract validates immediately. Protect decisions are read back from the ignore file,
+so no `--protect` flags are needed.
+
+Template Sync never delivers a protected path, yet the inherited tests and `doctor` need
+the parent's protected files. Activation therefore also writes the **protected baseline**:
+every file under the parent's protected roots that the repository lacks, byte-identical to
+the source commit — the workflows, the protected `.ai/` documents and skills, the
+`.claude/` settings and guard hook, `.github/governance/repository.json`, `CLAUDE.md`, and
+so on ([ADR-0027](../adr/0027-write-the-protected-baseline-during-adoption-activation.md)).
+The plan lists them under `payloads.baseline`. A file the repository already has is never
+overwritten, and the parent's own `src/`, `tests/`, `docs/adr/`, `CHANGELOG.md`, and
+`docs/handoff.md` are never copied.
+
+PR 3 therefore exceeds GR-020. Because it removes the adoption marker, `pr-quality`
+reports the hard limit as a warning instead of failing (ADR-0027). State the exemption in
+the description and list `payloads.baseline`; the reviewer compares that list with the
+pull request's files. After merging, replace the copied placeholders (`{{ORG}}` in
+`CODEOWNERS`, the `.ai/mission.md` template fields) and remove workflows the repository
+does not want, each in its own pull request.
 
 The adopted repository publishes no contract root, so it is a **leaf** under
 [ADR-0020](../adr/0020-require-japanese-pull-request-text-in-leaf-repositories.md):
-pull-request bodies are Japanese from PR 1 on, and the `pr-quality` language step must be
-ported into its protected `ci.yml` by hand — as must every other protected workflow the
-parent ships. List those ports in PR 3.
+pull-request bodies are Japanese from PR 1 on. A protected workflow the repository already
+had before adoption is kept and is not replaced by the parent's; port the `pr-quality`
+language step and any other parent checks into such a workflow by hand, and list those
+ports in PR 3.
 
 Rerunning either phase afterwards reports `already_prepared` or `already_adopted` and
 changes nothing.
