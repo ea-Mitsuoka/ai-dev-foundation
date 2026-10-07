@@ -88,6 +88,11 @@ class AdoptChildTest(unittest.TestCase):
         self.write(self.parent, "scripts/shared.py", "print('parent')\n")
         self.write(self.parent, "scripts/other.py", "print('other')\n")
         self.write(self.parent, "README.md", f"<!-- repository-readme-owner: {PARENT} -->\n# Parent\n")
+        # The real foundation ships its own copies of these protected targets, and an
+        # existing repository usually has none of them.
+        self.write(self.parent, WORKFLOW, "name: Parent Template Sync\non: workflow_dispatch\n")
+        self.write(self.parent, ".ai/project/agent-overlay.md", f"# Overlay\n\nRepository: {PARENT}\n")
+        self.write(self.parent, ".github/inheritance/agent-profile.json", "{}\n")
         self.source = self.commit(self.parent, "publish export")
         self.git(self.parent, "update-ref", "refs/remotes/origin/main", self.source)
 
@@ -267,6 +272,15 @@ class AdoptChildTest(unittest.TestCase):
         rerun = self.apply(prepare=True)
         self.assertEqual(rerun["status"], "already_prepared")
         self.assertEqual(rerun["changed_paths"], [])
+
+    def test_prepare_refuses_to_overwrite_the_childs_own_sync_workflow(self):
+        # An absent workflow is written (the parent ships one); an existing one is not.
+        self.write(self.child, WORKFLOW, "name: My Own Sync\non: workflow_dispatch\n")
+        self.commit(self.child, "child has its own sync workflow")
+
+        with self.assertRaisesRegex(inheritance.InheritanceError, "differs from both parent and desired"):
+            self.prepare()
+        self.assertEqual((self.child / WORKFLOW).read_text(), "name: My Own Sync\non: workflow_dispatch\n")
 
     def test_prepare_overwrites_the_transport_dependency_only_when_accepted(self):
         self.write(self.child, AUTH, "print('my own auth')\n")
