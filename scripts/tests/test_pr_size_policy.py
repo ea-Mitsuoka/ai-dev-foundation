@@ -1,13 +1,21 @@
+import contextlib
+import io
+import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from scripts.pr_size_policy import (
     DECOMPOSITION_CHECKPOINT_LINES,
     decomposition_checkpoints,
     evaluate_size,
+    main,
+    removes_adoption_marker,
     summarize_lockfiles,
 )
+
+MARKER = ".github/inheritance/adoption.json"
 
 
 class PullRequestSizePolicyTests(unittest.TestCase):
@@ -160,6 +168,60 @@ class PullRequestSizePolicyTests(unittest.TestCase):
                     [{"additions": 1}],
                     Path(temporary_directory),
                 )
+
+    # -- ADR-0027: the adoption activation pull request -----------------------------------
+
+    def test_only_removing_the_adoption_marker_identifies_activation(self) -> None:
+        self.assertTrue(removes_adoption_marker([[{"filename": MARKER, "status": "removed"}]]))
+        self.assertFalse(removes_adoption_marker([{"filename": MARKER, "status": "added"}]))
+        self.assertFalse(removes_adoption_marker([{"filename": MARKER, "status": "modified"}]))
+        self.assertFalse(
+            removes_adoption_marker([{"filename": "docs/adoption.json", "status": "removed"}])
+        )
+
+    def run_policy(self, files: list[dict], additions: int) -> tuple[int, str]:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            files_json = Path(temporary_directory) / "files.json"
+            files_json.write_text(json.dumps(files), encoding="utf-8")
+            argv = [
+                "pr_size_policy.py",
+                "--files-json",
+                str(files_json),
+                "--additions",
+                str(additions),
+                "--deletions",
+                "0",
+                "--files",
+                str(len(files)),
+                "--root",
+                temporary_directory,
+            ]
+            output = io.StringIO()
+            with mock.patch("sys.argv", argv), contextlib.redirect_stdout(output):
+                code = main()
+        return code, output.getvalue()
+
+    def test_activation_downgrades_the_hard_limit_to_a_warning(self) -> None:
+        workflow = ".github/workflows/ci.yml"
+        files = [
+            {"filename": MARKER, "status": "removed", "additions": 0, "deletions": 0},
+            {"filename": workflow, "status": "added", "additions": 0, "deletions": 0},
+        ]
+
+        code, output = self.run_policy(files, additions=1_900)
+
+        self.assertEqual(code, 0)
+        self.assertIn("::warning::", output)
+        self.assertIn("ADR-0027", output)
+        self.assertNotIn("::error::", output)
+
+    def test_other_pull_requests_still_fail_the_hard_limit(self) -> None:
+        files = [{"filename": "src/app.py", "status": "added", "additions": 0, "deletions": 0}]
+
+        code, output = self.run_policy(files, additions=1_900)
+
+        self.assertEqual(code, 1)
+        self.assertIn("::error::PR exceeds hard size limit", output)
 
 
 if __name__ == "__main__":
