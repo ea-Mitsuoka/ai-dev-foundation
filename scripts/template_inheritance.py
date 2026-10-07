@@ -1108,7 +1108,7 @@ def _bootstrap_path_change(child_root, parent_root, source_commit, path, desired
     raise InheritanceError(f"bootstrap target differs from both parent and desired content: {path}")
 
 
-def _write_bootstrap_payload(child_root, path, payload):
+def _write_bootstrap_payload(child_root, path, payload, *, executable=False):
     destination = child_root / path
     temporary = destination.with_name(f".{destination.name}.bootstrap-tmp")
     if temporary.exists() or temporary.is_symlink():
@@ -1116,7 +1116,7 @@ def _write_bootstrap_payload(child_root, path, payload):
     try:
         destination.parent.mkdir(parents=True, exist_ok=True)
         temporary.write_bytes(payload)
-        temporary.chmod(0o644)
+        temporary.chmod(0o755 if executable else 0o644)
         temporary.replace(destination)
     except OSError as error:
         try:
@@ -1158,6 +1158,26 @@ ADOPT_WORKFLOW_PATH = ".github/workflows/template-sync.yml"
 # ADR-0025: declares the direct parent for the transport check until the manifest exists.
 ADOPT_MARKER_PATH = ".github/inheritance/adoption.json"
 ADOPT_REPORT_LIMIT = 50
+# ADR-0027: activation takes the repository's Taskfile from the payload, because the
+# parent's required tasks are template placeholders that fail doctor outside the foundation.
+ADOPT_TASKFILE_PATH = "Taskfile.yml"
+# ADR-0027: protected parent paths activation never copies. Payloads and generated
+# metadata are written separately; the rest is the parent's own project content.
+ADOPT_BASELINE_EXCLUDED = (
+    *sorted(BOOTSTRAP_MANUAL_BOUNDARIES),
+    ADOPT_TASKFILE_PATH,
+    ADOPT_MARKER_PATH,
+    AGENT_PROFILE_PATH,
+    ".github/inheritance/lock.json",
+    ".github/inheritance/manifest.json",
+    TEMPLATE_SYNC_IGNORE_PATH,
+    "docs/inheritance/readmes/",
+    "CHANGELOG.md",
+    "docs/adr/",
+    "docs/handoff.md",
+    "src/",
+    "tests/",
+)
 
 
 def _adopt_recorded_protections(child_root, export):
@@ -1182,6 +1202,21 @@ def _adopt_recorded_protections(child_root, export):
             and not _owned_by(entry, export["protected_paths"])
         )
     return recorded
+
+
+def _adopt_baseline(child_root, parent_root, source_commit, export):
+    """Return the protected parent files the repository lacks, as path -> tree entry.
+
+    Template Sync never delivers a protected path, yet the inherited tests require these
+    files; a repository created by bootstrap-child starts with them (ADR-0027).
+    """
+    entries = _parent_inherited_entries(parent_root, source_commit, export["protected_paths"])
+    return {
+        path: entry
+        for path, entry in sorted(entries.items())
+        if not _owned_by(path, ADOPT_BASELINE_EXCLUDED)
+        and _child_entry(child_root, parent_root, path) is None
+    }
 
 
 def _adopt_ownership(export, parent_entries, protections):
@@ -1378,6 +1413,8 @@ def plan_adopt(root, parent_root, source_commit, repository, *, protect=(), acce
     else:
         status = "ready_to_prepare"
     owner, parent = parent_repository.casefold().split("/", 1)
+    baseline = _adopt_baseline(child_root, parent_root, source_commit, export)
+    taskfile = [] if (child_root / ADOPT_TASKFILE_PATH).exists() else [ADOPT_TASKFILE_PATH]
     return {
         "schema_version": SCHEMA_VERSION,
         "status": status,
@@ -1409,10 +1446,14 @@ def plan_adopt(root, parent_root, source_commit, repository, *, protect=(), acce
         "desired": desired,
         "payloads": {
             "prepare": [ADOPT_WORKFLOW_PATH],
-            "apply": [
-                *sorted(BOOTSTRAP_MANUAL_BOUNDARIES),
-                f"docs/inheritance/readmes/{owner}/{parent}.md",
-            ],
+            "apply": sorted(
+                [
+                    *BOOTSTRAP_MANUAL_BOUNDARIES,
+                    *taskfile,
+                    f"docs/inheritance/readmes/{owner}/{parent}.md",
+                ]
+            ),
+            "baseline": list(baseline),
         },
     }
 
@@ -1504,12 +1545,24 @@ def apply_adopt(
         )
     payloads = _bootstrap_payloads(plan, child_root, payload_root)
     payloads.update(_adopt_metadata_payloads(plan["desired"]))
+    if ADOPT_TASKFILE_PATH in plan["payloads"]["apply"]:
+        payloads[ADOPT_TASKFILE_PATH] = _bootstrap_payload_file(
+            _bootstrap_payload_root(payload_root, child_root), ADOPT_TASKFILE_PATH
+        )
     changed = [
         path for path, payload in sorted(payloads.items())
         if _adopt_path_change(child_root, parent_root, source_commit, path, payload)
     ]
+    # ADR-0027: read every baseline blob before the first write, so a failed read leaves
+    # the worktree untouched.
+    baseline = {}
+    for path in plan["payloads"]["baseline"]:
+        object_id, executable = _parent_entry(parent_root, source_commit, path)
+        baseline[path] = (_git_blob(parent_root, object_id, path), executable)
     for path in changed:
         _write_bootstrap_payload(child_root, path, payloads[path])
+    for path, (blob, executable) in baseline.items():
+        _write_bootstrap_payload(child_root, path, blob, executable=executable)
     # ADR-0025: the manifest now declares the parent; the transport refuses both at once.
     marker = child_root / ADOPT_MARKER_PATH
     removed = [ADOPT_MARKER_PATH] if marker.is_file() and not marker.is_symlink() else []
@@ -1520,10 +1573,11 @@ def apply_adopt(
     validate_inheritance(child_root)
     return {
         "schema_version": SCHEMA_VERSION,
-        "status": "adopted" if changed or removed else "already_adopted",
+        "status": "adopted" if changed or baseline or removed else "already_adopted",
         "repository": repository,
         "parent": plan["parent"],
         "changed_paths": changed,
+        "baseline_paths": list(baseline),
         "removed_paths": removed,
         "protected_collisions": plan["resolution"]["protect"],
         "accepted_collisions": plan["resolution"]["accept"],
