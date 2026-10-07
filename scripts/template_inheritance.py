@@ -1340,7 +1340,17 @@ def _adopt_path_change(child_root, parent_root, source_commit, path, payload):
     # the agent overlay and profile); writing an absent path overwrites nothing.
     if _child_entry(child_root, parent_root, path) is None:
         return True
-    return _bootstrap_path_change(child_root, parent_root, source_commit, path, payload)
+    try:
+        return _bootstrap_path_change(child_root, parent_root, source_commit, path, payload)
+    except InheritanceError as error:
+        if path != "README.md":
+            raise
+        # An existing repository keeps its own README, so the reviewed payload must be that
+        # README as already committed (docs/foundation/troubleshooting/template-inheritance.md).
+        raise InheritanceError(
+            f"{error}; commit README.md with its ownership marker first, then supply the "
+            "same content as the payload"
+        ) from error
 
 
 def _adopt_prepare_change(child_root, parent_root, source_commit, path, payload):
