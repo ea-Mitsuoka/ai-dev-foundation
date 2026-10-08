@@ -68,6 +68,11 @@ existing code is a separate `refactor` change (COD-021, MNT-003).
   A failing test's name alone should identify the broken behavior.
 - **Independent fixtures**: builders/factories over shared fixtures; a test must be
   readable without opening other files.
+- **Placeholder credentials**: a fake API key, token, or password MUST keep the real
+  format's prefix and length but repeat one character (`"AIzaSy" + "X" * 33`). A
+  hand-typed value with varied characters looks random to secret scanners (GR-001), fails
+  every full-history scan, and cannot be removed from history. Never use a real
+  credential.
 - **Flaky tests** are quarantined with a linked issue within one day — never retried
   into green (GR-040).
 
