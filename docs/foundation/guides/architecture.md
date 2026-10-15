@@ -16,7 +16,7 @@ dependency/integration, changed data flow, new infrastructure component.
 ## Structure (create these files as the system grows)
 
 | File | Content | Format |
-|------|---------|--------|
+| -- | -- | -- |
 | `docs/architecture/c4-context.md` | System in its environment: users, external systems | Mermaid C4/flowchart |
 | `docs/architecture/c4-container.md` | Deployable units and their interactions | Mermaid |
 | `docs/architecture/modules.md` | Bounded-context map: every `src/modules/*` + one-line purpose + dependencies between them | Mermaid + table |

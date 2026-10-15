@@ -11,7 +11,7 @@ They are descriptive mappings. Binding behavior remains in
 [`.ai/documentation.md`](../../../.ai/documentation.md) and the rule files it references.
 
 | Guide | Project-owned destination |
-|-------|---------------------------|
+| -- | -- |
 | [project-documentation.md](project-documentation.md) | `docs/` |
 | [architecture.md](architecture.md) | `docs/architecture/` |
 | [domain.md](domain.md) | `docs/domain/` |
@@ -24,7 +24,7 @@ They are descriptive mappings. Binding behavior remains in
 ## Onboarding references
 
 | Guide | Purpose |
-|-------|---------|
+| -- | -- |
 | [ai-context.md](ai-context.md) | Acquire complete task-relevant AI context within measured declared-route budgets |
 | [usage.md](usage.md) | Create a project from the foundation or develop the foundation itself |
 | [usage.ja.md](usage.ja.md) | Repository-owner-approved Japanese human-facing version of the usage guide (ADR-0008 exception) |

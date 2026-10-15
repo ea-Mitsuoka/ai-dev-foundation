@@ -28,7 +28,7 @@ command, or error contract. Breaking contract changes additionally require the
 ## Structure
 
 | File | Content |
-|------|---------|
+| -- | -- |
 | `docs/api/openapi.yaml` | HTTP API contract (source of truth) |
 | `docs/api/events.md` / `docs/api/asyncapi.yaml` | Published/consumed events |
 | `docs/api/errors.md` | Error catalog: code → meaning → caller action |

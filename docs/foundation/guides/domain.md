@@ -15,7 +15,7 @@ context, changed context relationships, PII-bearing entity added (also SEC-011).
 ## Structure
 
 | File | Content |
-|------|---------|
+| -- | -- |
 | `docs/domain/context-map.md` | Bounded contexts and their relationships (partnership, customer-supplier, ACL...) — Mermaid |
 | `docs/domain/<context>.md` | Per context: core entities, value objects, aggregates, invariants, domain events, state machines |
 

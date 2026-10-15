@@ -71,8 +71,7 @@ The sync workflow's first step found neither `.github/inheritance/manifest.json`
 `.github/inheritance/adoption.json`, so it cannot confirm which repository it may pull
 from. In a repository being adopted, run phase 1 (`adopt-child --prepare --apply`) with a
 foundation release that includes ADR-0025; it writes the marker. A repository that ran
-phase 1 before ADR-0025 reports the older message `Template Sync requires a child
-inheritance manifest` and must re-run phase 1.
+phase 1 before ADR-0025 reports the older message `Template Sync requires a child inheritance manifest` and must re-run phase 1.
 
 ## `Template Sync adoption marker must be removed once the manifest exists`
 
