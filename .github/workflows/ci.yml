@@ -56,6 +56,15 @@ jobs:
       - uses: ./scripts/actions/setup-task
       - run: task doctor
 
+  markdown-format:
+    # The pre-commit hook formats only the files a commit touches, so untouched Markdown
+    # drifted from the shipped .mdformat.toml and failed descendants' hooks after sync.
+    # Check every file against the same hook configuration.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - run: pipx run pre-commit==4.6.0 run mdformat --all-files --show-diff-on-failure
+
   link-check:
     # Broken relative links in docs are a real defect (docs are the product here).
     # Offline mode: verify local file links resolve; external URLs are not fetched.
