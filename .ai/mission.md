@@ -14,7 +14,7 @@ read_when: [onboarding, planning, architecture]
 {{PROJECT_NAME}} — {{ONE_SENTENCE_DESCRIPTION}}
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Problem being solved | {{PROBLEM}} |
 | Primary users | {{USERS}} |
 | Core value | {{VALUE}} |

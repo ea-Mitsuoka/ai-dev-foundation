@@ -14,7 +14,7 @@ an ADR justifies it.
 <!-- TEMPLATE: adjust the stack table when instantiating. The layer rules below are stack-agnostic. -->
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Language / runtime | {{STACK}} |
 | Persistence | {{DATABASE}} |
 | Deployment target | {{DEPLOY_TARGET}} |
@@ -91,7 +91,7 @@ Design modules **deep** (Ousterhout): a lot of behavior behind a small interface
 Before modifying code, classify the blast radius and act accordingly:
 
 | Scope | Definition | Required action |
-|-------|------------|-----------------|
+| -- | -- | -- |
 | Local | inside one module, contract unchanged | proceed |
 | Contract | changes a MODULE.md public API or event | update MODULE.md + all consumers in same PR, note in PR |
 | Architectural | layers, boundaries, storage, public API shape | ADR first (GR-022) |
