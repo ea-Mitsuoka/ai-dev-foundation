@@ -17,7 +17,9 @@ block() {
 # GR-010: direct push to main/master (covers flags, "-u", and "HEAD:main" refspecs).
 # Terminators include " so the guard still works when jq is absent and the raw hook
 # JSON (…main") is grepped; "-" is NOT a terminator so feat/main-nav stays allowed.
-echo "$command_text" | grep -Eq 'git +push\b.*( |:)(main|master)( |"|$)' \
+# Only the push's own arguments are matched: [^&;|]* stops at the next command, so
+# `git push origin feat/x && gh pr create --base main` is not a push to main.
+echo "$command_text" | grep -Eq 'git +push\b[^&;|]*( |:)(main|master)( |"|$|&|;|\|)' \
   && block "GR-010" "direct push to main/master — open a PR from a branch"
 
 # GR-011: force push (word-boundary safe: matches trailing -f/--force too, jq or not).
