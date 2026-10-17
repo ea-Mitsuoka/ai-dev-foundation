@@ -13,7 +13,7 @@ rule ID.
 ## Ownership
 
 | File | Owner | Inheritance |
-|------|-------|-------------|
+| -- | -- | -- |
 | `foundation.json` | ai-dev-foundation | Inherited globally |
 | `profiles/*.json` | Declaring template family | Inherited through each direct child |
 | `repository.json` | Downstream repository | Protected; never overwritten |
@@ -86,7 +86,7 @@ evidence and stops without retry or automatic rollback. Never run `apply` in CI 
 its administrator credential in Actions.
 
 | Command | Exit 0 | Exit 1 | Exit 2 |
-|---------|--------|--------|--------|
+| -- | -- | -- | -- |
 | `validate` | Policy valid | — | Invalid policy or input |
 | `plan` | Comparison completed, including drift or unknown state | — | Policy, input, or GitHub read failure |
 | `audit` | All controls compliant | Drift or unknown state | Policy, input, or GitHub read failure |
