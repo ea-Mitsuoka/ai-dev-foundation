@@ -15,7 +15,7 @@ triage decision within **7 business days**.
 ## Supported versions
 
 | Version | Supported |
-|---------|-----------|
+| -- | -- |
 | latest release | yes |
 | older | no — upgrade to latest |
 
