@@ -8,6 +8,7 @@ from unittest import mock
 
 from scripts.pr_size_policy import (
     DECOMPOSITION_CHECKPOINT_LINES,
+    count_unchanged_renames,
     decomposition_checkpoints,
     evaluate_size,
     main,
@@ -58,6 +59,30 @@ class PullRequestSizePolicyTests(unittest.TestCase):
     def test_rejects_exclusions_larger_than_aggregate_statistics(self) -> None:
         with self.assertRaises(ValueError):
             evaluate_size(10, 10, 1, (11, 0, 1))
+
+    def test_counts_only_renames_that_change_no_line(self) -> None:
+        payload = [
+            [{"filename": "src/new/a.py", "status": "renamed", "additions": 0, "deletions": 0}],
+            [
+                {"filename": "src/new/b.py", "status": "renamed", "additions": 2, "deletions": 1},
+                {"filename": "src/new/c.py", "status": "modified", "additions": 0, "deletions": 0},
+                {"filename": "uv.lock", "status": "renamed", "additions": 0, "deletions": 0},
+            ],
+        ]
+
+        # b.py changed lines, c.py was not renamed, and uv.lock is already a lockfile.
+        self.assertEqual(count_unchanged_renames(payload), 1)
+
+    def test_unchanged_renames_do_not_count_toward_the_file_limit(self) -> None:
+        # A package rename: 390 lines across 48 files, 34 of them moved unchanged.
+        result = evaluate_size(200, 190, 48, (0, 0, 0), unchanged_renames=34)
+
+        self.assertEqual((result.changed_lines, result.changed_files), (390, 14))
+        self.assertEqual(result.level, "soft")
+
+    def test_rejects_exclusions_beyond_the_file_count(self) -> None:
+        with self.assertRaises(ValueError):
+            evaluate_size(10, 0, 3, (0, 0, 2), unchanged_renames=2)
 
     def test_preserves_soft_and_hard_limits(self) -> None:
         self.assertEqual(evaluate_size(401, 0, 1, (0, 0, 0)).level, "soft")
