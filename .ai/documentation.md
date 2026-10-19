@@ -107,7 +107,7 @@ next step with low ambiguity, then update the document from authoritative source
 ## DOC-010: Document inventory and ownership
 
 | Location | Content | Normative? |
-|----------|---------|-----------|
+| -- | -- | -- |
 | `.ai/` | rules for agents | yes (authority table) |
 | `CLAUDE.md`, `AGENTS.md` | agent entry points | yes |
 | `docs/foundation/adr/` | synchronized foundation decisions with context | yes (accepted ADRs) |
@@ -137,7 +137,7 @@ Choose a project-owned path by document scope
 ([ADR-0009](../docs/foundation/adr/0009-place-project-document-singletons-and-collections.md)):
 
 | Scope | Required path | Example |
-|-------|---------------|---------|
+| -- | -- | -- |
 | One authoritative project-wide document | `docs/<category>.md` | `docs/requirements.md` |
 | Independently maintained documents that repeat by subject | `docs/<category>/<subject>.md` | `docs/requirements/account-recovery.md` |
 | Both project-wide and subject scopes | Use both paths, with distinct ownership | `docs/requirements.md` and `docs/requirements/account-recovery.md` |
@@ -156,7 +156,7 @@ completely before acting when any trigger matches. If relevance is uncertain, ap
 broader fallback in [`.ai/README.md`](README.md) and read the authority.
 
 | Trigger | Required rule |
-|---------|---------------|
+| -- | -- |
 | Read or change `docs/development-handoff.md`; transfer active work; change an active issue, pull request, blocker, next action, or verified baseline | DOC-012 |
 | Read or change `docs/roadmap.md`; complete a milestone; change project direction, priority, scope, or roadmap review cadence | DOC-013 |
 | Read or change the root README, onboarding documentation, or inheritance configuration; trace inheritance provenance | DOC-014 |
@@ -166,7 +166,7 @@ broader fallback in [`.ai/README.md`](README.md) and read the authority.
 When a PR contains a change of type X, it MUST update the docs listed:
 
 | Change | Must update |
-|--------|-------------|
+| -- | -- |
 | New/changed project or initiative requirements | `docs/requirements.md` or `docs/requirements/<initiative>.md` |
 | New/changed public API | `docs/api/`, MODULE.md, README if user-facing |
 | New module / boundary change | `docs/architecture/`, MODULE.md, ADR |

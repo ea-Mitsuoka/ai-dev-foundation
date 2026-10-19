@@ -128,6 +128,27 @@ def summarize_lockfiles(payload: Any) -> tuple[int, int, int]:
     return additions, deletions, files
 
 
+def count_unchanged_renames(payload: Any) -> int:
+    """Count files moved without a changed line; a pure move has nothing to review.
+
+    A package rename moves many files and cannot be split without breaking imports, so
+    counting those moves would block a change whose reviewable diff is small.
+    """
+    count = 0
+    for entry in _flatten_pages(payload):
+        filename = entry.get("filename")
+        if not isinstance(filename, str):
+            raise ValueError("file entry is missing a filename")
+        if (
+            entry.get("status") == "renamed"
+            and entry.get("additions") == 0
+            and entry.get("deletions") == 0
+            and PurePosixPath(filename).name not in LOCKFILE_NAMES
+        ):
+            count += 1
+    return count
+
+
 def removes_adoption_marker(payload: Any) -> bool:
     return any(
         entry.get("filename") == ADOPTION_MARKER and entry.get("status") == "removed"
@@ -191,10 +212,13 @@ def evaluate_size(
     deletions: int,
     files: int,
     lockfile_stats: tuple[int, int, int],
+    *,
+    unchanged_renames: int = 0,
 ) -> SizeResult:
     additions = _nonnegative_integer(additions, "additions")
     deletions = _nonnegative_integer(deletions, "deletions")
     files = _nonnegative_integer(files, "files")
+    unchanged_renames = _nonnegative_integer(unchanged_renames, "unchanged renames")
     lock_additions, lock_deletions, lock_files = (
         _nonnegative_integer(value, label)
         for value, label in zip(
@@ -205,9 +229,11 @@ def evaluate_size(
     )
     if lock_additions > additions or lock_deletions > deletions or lock_files > files:
         raise ValueError("lockfile exclusions exceed aggregate PR statistics")
+    if lock_files + unchanged_renames > files:
+        raise ValueError("file exclusions exceed aggregate PR statistics")
 
     changed_lines = additions - lock_additions + deletions - lock_deletions
-    changed_files = files - lock_files
+    changed_files = files - lock_files - unchanged_renames
     if changed_lines > 800 or changed_files > 20:
         level = "hard"
     elif changed_lines > 400 or changed_files > 10:
@@ -229,7 +255,14 @@ def main() -> int:
         with args.files_json.open(encoding="utf-8") as source:
             payload = json.load(source)
         lockfile_stats = summarize_lockfiles(payload)
-        result = evaluate_size(args.additions, args.deletions, args.files, lockfile_stats)
+        renames = count_unchanged_renames(payload)
+        result = evaluate_size(
+            args.additions,
+            args.deletions,
+            args.files,
+            lockfile_stats,
+            unchanged_renames=renames,
+        )
         checkpoints = decomposition_checkpoints(payload, args.root)
         activation = removes_adoption_marker(payload)
     except (OSError, ValueError, json.JSONDecodeError) as error:
@@ -238,7 +271,7 @@ def main() -> int:
 
     print(
         f"Changed lines excluding lockfiles: {result.changed_lines}, "
-        f"files: {result.changed_files}"
+        f"files: {result.changed_files} (unchanged renames excluded: {renames})"
     )
     for filename, lines in checkpoints:
         print(

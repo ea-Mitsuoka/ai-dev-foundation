@@ -1,7 +1,7 @@
 # ADR-0004: Harden multi-level template inheritance
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Status | accepted |
 | Date | 2026-07-16 |
 | Deciders | repository owner |

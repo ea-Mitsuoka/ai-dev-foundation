@@ -41,6 +41,13 @@ expect 2 'git push origin master'
 expect 0 'git push origin feat/123-x'
 expect 0 'git push origin feat/main-nav'     # "main" as a substring of a branch name is fine
 expect 0 'git push origin main-fix'
+# Only the push's own arguments count: "main" after a separator belongs to another command.
+expect 0 'git push -u origin feat/x && gh pr create --base main --title t'
+expect 0 'git push origin feat/x; gh pr view --json baseRefName | grep main'
+expect 0 'git push origin feat/x | grep main'
+expect 2 'git push origin main && echo done'
+expect 2 'git push origin feat/x; git push origin main'
+expect 2 'git status && git push -u origin HEAD:main'
 
 # --- GR-011: force push must block ---
 expect 2 'git push --force origin feat/x'
@@ -138,6 +145,8 @@ expect_jqless() {
   fi
 }
 expect_jqless 2 'git push origin main'          # existing rule — regression guard for the harness itself
+expect_jqless 2 'git push origin main && echo done'
+expect_jqless 0 'git push -u origin feat/x && gh pr create --base main --title t'
 expect_jqless 2 'cat .env'                      # GR-003 file read must survive the raw-JSON path
 expect_jqless 2 'cat ~/.ssh/id_rsa'
 expect_jqless 2 'printenv'

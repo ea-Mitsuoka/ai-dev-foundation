@@ -1,7 +1,7 @@
 # ADR-0006: Reserve a foundation documentation namespace
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Status | accepted |
 | Date | 2026-07-18 |
 | Deciders | repository owner (approved 2026-07-18) |
