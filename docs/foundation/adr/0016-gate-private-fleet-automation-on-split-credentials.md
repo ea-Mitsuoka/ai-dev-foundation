@@ -8,7 +8,7 @@ updated: 2026-08-09
 # ADR-0016: Gate private fleet automation on split credentials
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Status | accepted |
 | Date | 2026-08-09 |
 | Deciders | repository owner |

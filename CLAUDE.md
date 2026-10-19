@@ -13,7 +13,9 @@ Identity-free, vendor-neutral adapter. Every agent reads it completely at task s
 The loaded foundation contract governs all work. Higher rules win; report conflicts.
 
 ## 13. Escalation
+
 See the contract's `Escalation` section.
 
 ## 14. Definition of done
+
 See the contract's `Definition of done` section.

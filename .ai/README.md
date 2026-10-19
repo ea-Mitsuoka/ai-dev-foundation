@@ -15,7 +15,7 @@ foundation, template, and project profile.
 Lower numbers win; apply them and report conflicts.
 
 | Authority | Document | Scope |
-|-----------|----------|-------|
+| -- | -- | -- |
 | 1 | [guardrails.md](guardrails.md) | Absolute prohibitions |
 | 2 | [security.md](security.md) | Security policy |
 | 3 | Loaded contract / `CLAUDE.md` / `AGENTS.md` / this file | Operating contract |
@@ -27,7 +27,7 @@ Lower numbers win; apply them and report conflicts.
 Cite stable normative rule IDs in commits, PRs, and reviews.
 
 | File | Rule prefix | Content |
-|------|-------------|---------|
+| -- | -- | -- |
 | [README.md](README.md) | — | Routing |
 | [mission.md](mission.md) | — | Purpose and success |
 | [guardrails.md](guardrails.md) | GR- | Prohibitions |
@@ -78,7 +78,7 @@ carried by a baseline document; read the full file only on its listed routes.
 Read only the matching task route.
 
 | Task | Read (in order) | Skill |
-|------|-----------------|-------|
+| -- | -- | -- |
 | Any task (baseline) | `CLAUDE.md`, guardrails.md, explicit profile inputs, this file, `docs/development-handoff.md` when present | — |
 | Requirements definition | mission.md, documentation.md | `.skills/requirements.skill.md` |
 | New feature | workflow.md, MNT contract, architecture.md, coding-rules.md, testing.md | `.skills/feature.skill.md` |

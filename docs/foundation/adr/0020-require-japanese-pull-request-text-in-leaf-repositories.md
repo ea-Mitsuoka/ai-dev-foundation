@@ -8,7 +8,7 @@ updated: 2026-09-02
 # ADR-0020: Require Japanese pull-request text in leaf repositories
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Status | accepted |
 | Date | 2026-09-02 |
 | Deciders | repository owner (approved 2026-09-02, PR #24) |

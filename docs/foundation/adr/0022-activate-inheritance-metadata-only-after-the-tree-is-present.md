@@ -8,7 +8,7 @@ updated: 2026-09-02
 # ADR-0022: Activate inheritance metadata only after the inherited tree is present
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Status | accepted |
 | Date | 2026-09-02 |
 | Deciders | repository owner (approved 2026-09-02, PR #32) |

@@ -8,16 +8,19 @@ reads: [.ai/documentation.md, docs/foundation/guides/README.md]
 # Skill: Documentation
 
 ## Purpose
+
 Produce documentation that lets an agent (or human) act correctly without asking —
 current, unambiguous, in the right place, and no larger than needed.
 
 ## Inputs
+
 - The trigger: doc-update matrix obligation (DOC-030), stale doc found (DOC-040), or an
   explicit documentation task.
 - The authoritative source: the code/behavior being described. Verify claims against
   the code — never document from memory or assumption (GR-042).
 
 ## Process
+
 1. Locate the correct home using the inventory (DOC-010) and foundation guide index.
    Search filenames, headings, links, and affected terms without recursively loading
    document bodies. Apply the broader fallback in `.ai/README.md` when ownership or
@@ -39,6 +42,7 @@ current, unambiguous, in the right place, and no larger than needed.
 8. `docs:` PR, or fold into the change PR when fulfilling DOC-030.
 
 ## Decision criteria
+
 - **Where?** Binding rule → `.ai/` (requires careful review). Decision → ADR.
   Description of the system → `docs/`. Module contract → MODULE.md. Front door → README.
 - **How long?** As short as completeness allows. If a section needs >2 screens,
@@ -49,10 +53,12 @@ current, unambiguous, in the right place, and no larger than needed.
   wrong one and note it (DOC-040).
 
 ## Outputs
+
 - Updated/created docs in the correct location, links resolving, examples verified.
 - Removed stale content (or issues filed for larger cleanups).
 
 ## Checklist
+
 - [ ] Facts verified against code; commands and links tested
 - [ ] One-fact-one-place respected; no near-duplicate content created
 - [ ] Frontmatter, logical structure, and representation per DOC-001/DOC-003

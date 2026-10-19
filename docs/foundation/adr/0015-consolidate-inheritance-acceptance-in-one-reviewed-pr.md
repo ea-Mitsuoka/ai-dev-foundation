@@ -8,7 +8,7 @@ updated: 2026-08-08
 # ADR-0015: Consolidate inheritance acceptance in one reviewed PR
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Status | accepted |
 | Date | 2026-08-08 |
 | Deciders | repository owner |

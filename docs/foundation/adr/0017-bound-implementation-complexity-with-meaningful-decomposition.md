@@ -8,7 +8,7 @@ updated: 2026-08-29
 # ADR-0017: Bound implementation complexity with meaningful decomposition
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Status | accepted |
 | Date | 2026-08-29 |
 | Deciders | repository owner |

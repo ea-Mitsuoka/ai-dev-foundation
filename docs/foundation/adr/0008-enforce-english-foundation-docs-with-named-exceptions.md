@@ -8,7 +8,7 @@ updated: 2026-07-22
 # ADR-0008: Enforce English foundation docs with two named Japanese exceptions
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Status | accepted |
 | Date | 2026-07-22 |
 | Deciders | repository owner |

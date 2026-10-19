@@ -8,7 +8,7 @@ updated: 2026-07-26
 # ADR-0009: Place project document singletons and collections by scope
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Status | accepted |
 | Date | 2026-07-26 |
 | Deciders | repository owner (approved 2026-07-26) |

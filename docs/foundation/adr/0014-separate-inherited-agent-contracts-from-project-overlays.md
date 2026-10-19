@@ -8,7 +8,7 @@ updated: 2026-07-29
 # ADR-0014: Separate inherited agent contracts from project overlays
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Status | accepted |
 | Date | 2026-07-29 |
 | Deciders | repository owner (approved 2026-07-29) |

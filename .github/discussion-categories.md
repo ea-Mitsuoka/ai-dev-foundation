@@ -4,7 +4,7 @@ GitHub does not support configuring Discussion categories as code — apply this
 manually in **Settings → Features → Discussions → Categories** when instantiating.
 
 | Category | Format | Purpose |
-|----------|--------|---------|
+| -- | -- | -- |
 | Announcements | Announcement (maintainers post) | Releases, breaking changes, policy updates |
 | Ideas | Open discussion | Early-stage proposals before they become issues/ADRs |
 | Q&A | Question/Answer | Usage and development questions; answered = knowledge base |

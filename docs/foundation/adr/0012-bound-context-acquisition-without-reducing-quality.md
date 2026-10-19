@@ -8,7 +8,7 @@ updated: 2026-07-29
 # ADR-0012: Bound context acquisition without reducing quality
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Status | accepted |
 | Date | 2026-07-29 |
 | Deciders | repository owner (approved 2026-07-29) |
@@ -58,7 +58,7 @@ the search and reading scope whenever evidence is incomplete or ambiguous. Preve
 directory-wide routes and context-budget regressions with local checks.
 
 | Criterion | Option 1 | Option 2 | Option 3 |
-|-----------|----------|----------|----------|
+| -- | -- | -- | -- |
 | Decision quality | Complete but diluted by unrelated context | Depends on lossy summaries | Complete selected sources with broad fallback |
 | Growth | Unbounded with repository history | Bounded but duplicated | Bounded declared routes; history remains searchable |
 | Reversibility | Immediate | Requires restoring source-based routes | Restore previous route declarations |

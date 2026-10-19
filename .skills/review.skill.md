@@ -8,10 +8,12 @@ reads: [.ai/review-checklist.md]
 # Skill: Code Review
 
 ## Purpose
+
 Catch defects and rule violations before merge, with findings precise enough to act on
 immediately — while keeping review latency low.
 
 ## Inputs
+
 - The PR: description, linked issue, full diff, CI results. A PR with an empty
   description or red CI is returned immediately without deep review.
 - The relevant rules: identify the change scope (ARC-020) and load the rule files the
@@ -20,6 +22,7 @@ immediately — while keeping review latency low.
   they remain available in the active context, and reread after compaction.
 
 ## Process
+
 1. Read issue + description first; form an expectation of what the diff should contain.
 2. First pass — intent: does the diff do what the PR claims, and only that? Unrelated
    changes → finding.
@@ -35,6 +38,7 @@ immediately — while keeping review latency low.
    Major) — plus a 2-sentence summary of the change for the merge record.
 
 ## Decision criteria
+
 - **Blocker vs Major?** Guardrail violation, security issue, or would corrupt
   data/break consumers = Blocker. Bug risk or missing tests = Major.
 - **Style opinion?** If the linter allows it and COD rules don't forbid it, it's a Nit —
@@ -45,11 +49,13 @@ immediately — while keeping review latency low.
   list what you did NOT verify honestly in the PR description.
 
 ## Outputs
+
 - Review posted: ranked findings with file:line + rule ID + fix, skipped viewpoints
   named, explicit verdict.
 - For self-review: corrected diff + honest "not verified" list in the PR body.
 
 ## Checklist
+
 - [ ] Reviewed against intent (issue), not just the diff
 - [ ] All 10 viewpoints covered or explicitly skipped
 - [ ] Every finding has file:line + concrete fix; severities justified
