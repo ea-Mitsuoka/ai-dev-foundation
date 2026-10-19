@@ -8,7 +8,7 @@ updated: 2026-09-01
 # ADR-0019: Repoint the inheritance fleet identity to the current account
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Status | accepted |
 | Date | 2026-09-01 |
 | Deciders | repository owner |
