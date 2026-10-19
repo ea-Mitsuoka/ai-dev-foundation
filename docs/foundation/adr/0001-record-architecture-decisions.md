@@ -1,7 +1,7 @@
 # ADR-0001: Record architecture decisions
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Status | accepted |
 | Date | 2026-07-02 |
 | Deciders | repository owner |
@@ -19,14 +19,17 @@ them. The project mandates that architectural changes be deliberate and reviewab
 ## Options considered
 
 ### Option 1: Do nothing (decisions live in PR discussions)
+
 Pros: zero process. Cons: reasoning scattered and unsearchable; agents cannot load it
 as context; decisions effectively lost after squash-merge.
 
 ### Option 2: Single evolving architecture document
+
 Pros: one place. Cons: history of *why* is overwritten by each edit; conflicts with
 the append-only audit trail agents need.
 
 ### Option 3: ADRs (Michael Nygard style) + lightweight decision log
+
 Pros: immutable, numbered, diff-reviewed like code, ideal AI context units; industry
 standard. Cons: small process overhead per decision.
 

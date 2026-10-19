@@ -1,7 +1,7 @@
 # ADR-0007: Constrain transitional Template Sync
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Status | accepted |
 | Date | 2026-07-22 |
 | Deciders | repository owner (approved in PR #53 on 2026-07-22) |

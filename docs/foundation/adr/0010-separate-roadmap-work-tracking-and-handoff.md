@@ -8,7 +8,7 @@ updated: 2026-07-28
 # ADR-0010: Separate roadmap, live work tracking, and development handoff
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Status | accepted |
 | Date | 2026-07-28 |
 | Deciders | repository owner (approved 2026-07-28) |
