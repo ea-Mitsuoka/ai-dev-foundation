@@ -13,7 +13,7 @@ requirements documents. Follow the binding requirements procedure in
 ## Placement
 
 | Scope | Location | Example |
-|-------|----------|---------|
+| -- | -- | -- |
 | Whole project | `docs/requirements.md` | `docs/requirements.md` |
 | One initiative, feature, or major change | `docs/requirements/<initiative>.md` | `docs/requirements/account-recovery.md` |
 

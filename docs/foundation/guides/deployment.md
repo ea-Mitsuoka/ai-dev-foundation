@@ -16,7 +16,7 @@ procedure.
 ## Structure
 
 | File | Content |
-|------|---------|
+| -- | -- |
 | `docs/deployment/environments.md` | Environment matrix: name, purpose, URL, who may deploy, data class allowed (SEC-011) |
 | `docs/deployment/procedure.md` | Deploy pipeline: trigger → stages → verification → rollback; who/what approves (REL-010) |
 | `docs/deployment/configuration.md` | Every config variable: name, purpose, per-env source (secret manager path — never values, GR-001) |

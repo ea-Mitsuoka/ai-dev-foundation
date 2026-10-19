@@ -14,6 +14,7 @@ emergencies), this covers development-time and user-reported problems.
 discovered.
 
 ## Entry format (append to `docs/troubleshooting/known-issues.md`, or use one project
+
 file per area when it grows)
 
 ```markdown

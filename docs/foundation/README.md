@@ -32,7 +32,7 @@ rule in ADR-0005.
 ## Inventory
 
 | Path | Purpose |
-|------|---------|
+| -- | -- |
 | [adr/](adr/) | Preserve and synchronize accepted foundation architecture decisions |
 | [glossary.md](glossary.md) | Define reusable foundation terminology without occupying the project glossary path |
 | [requirements.md](requirements.md) | Choose the project-owned requirements location and naming |
