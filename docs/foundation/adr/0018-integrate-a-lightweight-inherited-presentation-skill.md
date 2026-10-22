@@ -8,7 +8,7 @@ updated: 2026-08-29
 # ADR-0018: Integrate a lightweight inherited presentation skill
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Status | accepted |
 | Date | 2026-08-29 |
 | Deciders | repository owner (approved 2026-08-29) |

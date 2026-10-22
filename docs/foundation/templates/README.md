@@ -9,7 +9,7 @@ Reusable skeletons for standard project documents. Copy a template out of this d
 fill it, and delete the guidance comments. Each template names the skill that drives it.
 
 | Template | Produces | Driven by |
-|----------|----------|-----------|
+| -- | -- | -- |
 | [adr.md](adr.md) | A project architecture decision record under `docs/adr/` | [.skills/architecture.skill.md](../../../.skills/architecture.skill.md) |
 | [glossary.md](glossary.md) | `docs/glossary.md` with project-specific ubiquitous language | [.ai/coding-rules.md](../../../.ai/coding-rules.md) |
 | [requirements.md](requirements.md) | A requirements definition document | [.skills/requirements.skill.md](../../../.skills/requirements.skill.md) |

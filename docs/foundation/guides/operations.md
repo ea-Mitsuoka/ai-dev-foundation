@@ -14,7 +14,7 @@ changed SLO, new scheduled maintenance task, post-incident action items.
 ## Structure
 
 | File | Content |
-|------|---------|
+| -- | -- |
 | `docs/operations/observability.md` | Where logs/metrics/traces go; how to query them; correlation IDs |
 | `docs/operations/slo.md` | SLIs and SLO targets per critical path; error budget policy |
 | `docs/operations/alerts.md` | Alert catalog: condition → severity → runbook link |

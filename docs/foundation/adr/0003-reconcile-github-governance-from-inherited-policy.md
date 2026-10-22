@@ -1,7 +1,7 @@
 # ADR-0003: Reconcile GitHub governance from inherited policy
 
 | Field | Value |
-|-------|-------|
+| -- | -- |
 | Status | accepted |
 | Date | 2026-07-15 |
 | Deciders | repository owner |

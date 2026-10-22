@@ -33,7 +33,9 @@ repos:
         # CHANGELOG.md belongs to release-please, which regenerates it in its own style
         # on every release. Formatting it here only re-dirties the file after each
         # release and blocks the next push; the rendered changelog is unaffected.
-        exclude: ^CHANGELOG\.md$
+        # Document templates keep {{PLACEHOLDER}} values in their YAML frontmatter, which
+        # mdformat-frontmatter re-serializes as YAML mappings ({{X: null}: null}).
+        exclude: ^(CHANGELOG\.md|docs/foundation/templates/(?!README\.md$).*)$
         additional_dependencies:
           - mdformat-frontmatter         # keep YAML frontmatter (--- ... ---) intact
           - mdformat-gfm                 # GFM tables, task lists, autolinks (repo is table-heavy)

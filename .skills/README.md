@@ -30,7 +30,7 @@ Every `*.skill.md` playbook in this directory has YAML frontmatter (`name`,
 ## Inventory
 
 | Skill | Use when |
-|-------|----------|
+| -- | -- |
 | [requirements.skill.md](requirements.skill.md) | defining what to build (requirements definition) |
 | [feature.skill.md](feature.skill.md) | implementing new functionality |
 | [bugfix.skill.md](bugfix.skill.md) | fixing incorrect behavior |
